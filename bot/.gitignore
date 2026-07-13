@@ -1,0 +1,11 @@
+# Secrets — never commit filled-in env
+.env
+.env.local
+
+# Dependencies
+node_modules
+
+# Generated output & logs
+output
+logs
+*.log
