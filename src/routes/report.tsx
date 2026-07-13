@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
 import { ReportBot } from "@/components/report/ReportBot";
 import { useApp } from "@/lib/app-context";
 
@@ -23,21 +22,25 @@ export const Route = createFileRoute("/report")({
 });
 
 function ReportPage() {
-  const { lang, t } = useApp();
+  const { lang } = useApp();
+  const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <div className="mb-6 no-print">
-          <h1 className="font-display text-3xl font-semibold text-foreground">{t("report_bot")}</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            {lang === "ar"
-              ? "أدخل رقم القضية للحصول على تقرير مبسّط بحالتها. (نسخة تجريبية للبوت — ستنتقل لاحقاً إلى تيليجرام.)"
-              : "Enter a case number to get a plain-language status report. (Web preview of the bot — will move to Telegram later.)"}
-          </p>
+    <div className="space-y-6">
+      <div className="no-print">
+        <div className="text-xs uppercase tracking-widest text-gold">
+          {tt("Priority Feature", "الميزة الأساسية")}
         </div>
-        <ReportBot />
-      </main>
+        <h1 className="font-display text-3xl md:text-4xl mt-1">
+          {tt("Report Bot", "بوت التقارير")}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+          {tt(
+            "Clients send a case number and receive a polished bilingual status report in seconds — with the timeline, deadlines, and a branded PDF. Connected to the live backend.",
+            "يرسل العميل رقم القضية ليتلقى تقريراً ثنائي اللغة خلال ثوانٍ — مع الجدول الزمني والمواعيد وتقرير PDF بهوية المكتب. متصل بالخادم المباشر.",
+          )}
+        </p>
+      </div>
+      <ReportBot />
     </div>
   );
 }
