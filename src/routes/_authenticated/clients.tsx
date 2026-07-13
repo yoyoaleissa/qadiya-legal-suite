@@ -16,11 +16,18 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useApp } from "@/lib/app-context";
 import { EmptyState } from "@/components/EmptyState";
 import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
-import { createClient } from "@/lib/cases.functions";
+import { createClient, addTimelineEvent } from "@/lib/cases.functions";
 
 export const Route = createFileRoute("/_authenticated/clients")({
   head: () => ({
