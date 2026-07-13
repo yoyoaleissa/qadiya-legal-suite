@@ -307,6 +307,17 @@ function ClientsPage() {
                             </span>
                           </div>
 
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-3 gap-1.5"
+                            onClick={() => setAddEventCase({ id: cs.id, title: cs.title ?? cs.case_number, status: cs.overall_status })}
+                          >
+                            <CalendarPlus className="h-3.5 w-3.5" />
+                            {tt("Add Event", "إضافة حدث")}
+                          </Button>
+
+
                           {cs.timeline.length > 0 && (
                             <ol className="mt-4 space-y-3 border-s ps-4">
                               {cs.timeline.map((ev, i) => (
