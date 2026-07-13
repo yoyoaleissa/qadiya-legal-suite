@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import {
+  AlertTriangle,
   ArrowRight,
   Bot,
   Calendar,
@@ -9,11 +10,17 @@ import {
   CheckSquare,
   FileText,
   Gavel,
+  Plus,
   Receipt,
   TrendingUp,
   Users,
+  UserPlus,
+  FolderPlus,
+  ClipboardPlus,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import { listClients } from "@/lib/clients.functions";
@@ -30,7 +37,14 @@ function roleLabel(role: string, lang: "en" | "ar") {
     associate: { en: "Associate", ar: "محامٍ" },
     paralegal: { en: "Paralegal", ar: "مساعد قانوني" },
   } as const;
-  return map[role as keyof typeof map][lang];
+  return map[role as keyof typeof map]?.[lang] ?? role;
+}
+
+function getGreeting(lang: "en" | "ar") {
+  const hour = new Date().getHours();
+  if (hour < 12) return lang === "ar" ? "صباح الخير" : "Good morning";
+  if (hour < 17) return lang === "ar" ? "مساء الخير" : "Good afternoon";
+  return lang === "ar" ? "مساء الخير" : "Good evening";
 }
 
 function Dashboard() {
@@ -57,6 +71,10 @@ function Dashboard() {
     ? events.filter((e) => e.type === "hearing" && e.date >= todayStr && e.date <= weekEndStr).length
     : null;
 
+  const overdueTasks = (tasks ?? []).filter(
+    (t) => t.status !== "done" && t.due_date && t.due_date < todayStr,
+  ).length;
+
   const upcoming = (events ?? [])
     .filter((e) => e.date >= todayStr)
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -64,15 +82,24 @@ function Dashboard() {
 
   const openTasks = (tasks ?? []).filter((t) => t.status !== "done").slice(0, 5);
 
+  // Urgent deadlines (within 3 days)
+  const threeDaysOut = new Date(today);
+  threeDaysOut.setDate(threeDaysOut.getDate() + 3);
+  const threeDaysStr = threeDaysOut.toISOString().slice(0, 10);
+  const urgentDeadlines = (events ?? []).filter(
+    (e) => e.type === "deadline" && e.date >= todayStr && e.date <= threeDaysStr,
+  );
+
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">
             {t("Overview", "نظرة عامة")}
           </div>
           <h1 className="font-display text-4xl mt-1">
-            {t("Good morning, ", "صباح الخير، ")}
+            {getGreeting(lang)},{" "}
             <span className="text-gold">{t(roleLabel(role, "en"), roleLabel(role, "ar"))}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -88,21 +115,78 @@ function Dashboard() {
         >
           <Bot className="h-5 w-5" />
           <div>
-            <div className="text-xs opacity-80 uppercase tracking-wider">{t("Try the demo", "جرّب العرض")}</div>
-            <div className="font-medium">{t("Open Report Bot", "افتح روبوت التقارير")}</div>
+            <div className="text-xs opacity-80 uppercase tracking-wider">{t("Case Intelligence", "استعلام القضايا")}</div>
+            <div className="font-medium">{t("Report Bot", "روبوت التقارير")}</div>
           </div>
           <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </Link>
       </div>
 
+      {/* Urgent Alert Banner */}
+      {(urgentDeadlines.length > 0 || overdueTasks > 0) && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+          <div className="flex-1 text-sm">
+            {urgentDeadlines.length > 0 && (
+              <span className="font-medium text-destructive">
+                {t(
+                  `${urgentDeadlines.length} deadline(s) within 3 days`,
+                  `${urgentDeadlines.length} موعد/مواعيد خلال 3 أيام`,
+                )}
+              </span>
+            )}
+            {urgentDeadlines.length > 0 && overdueTasks > 0 && " · "}
+            {overdueTasks > 0 && (
+              <span className="font-medium text-destructive">
+                {t(`${overdueTasks} overdue task(s)`, `${overdueTasks} مهمة متأخرة`)}
+              </span>
+            )}
+          </div>
+          <Link to="/calendar" className="text-xs text-destructive hover:underline font-medium">
+            {t("View →", "عرض ←")}
+          </Link>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-2">
+        <Link to="/clients">
+          <Button variant="outline" size="sm" className="gap-2">
+            <UserPlus className="h-3.5 w-3.5" />
+            {t("New Client", "موكّل جديد")}
+          </Button>
+        </Link>
+        <Link to="/clients">
+          <Button variant="outline" size="sm" className="gap-2">
+            <FolderPlus className="h-3.5 w-3.5" />
+            {t("New Case", "قضية جديدة")}
+          </Button>
+        </Link>
+        <Link to="/tasks">
+          <Button variant="outline" size="sm" className="gap-2">
+            <ClipboardPlus className="h-3.5 w-3.5" />
+            {t("Quick Task", "مهمة سريعة")}
+          </Button>
+        </Link>
+        <Link to="/documents">
+          <Button variant="outline" size="sm" className="gap-2">
+            <FileText className="h-3.5 w-3.5" />
+            {t("New Document", "مستند جديد")}
+          </Button>
+        </Link>
+      </div>
+
+      {/* Stats Grid */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <StatLink to="/clients" icon={Users} label={t("Active clients", "الموكّلون النشطون")} value={activeClients} sub={t("View directory", "عرض السجل")} />
         <StatLink to="/clients" icon={FileText} label={t("Open matters", "قضايا مفتوحة")} value={openMatters} sub={t("across firm", "على مستوى المكتب")} />
         <StatLink to="/calendar" icon={Calendar} label={t("Hearings this week", "جلسات هذا الأسبوع")} value={hearingsThisWeek} sub={t("Court calendar", "التقويم القضائي")} accent />
-        <StatLink to="/billing" icon={Receipt} label={t("Outstanding", "مستحقات")} value="— KWD" sub={t("Billing", "الفوترة")} />
+        <StatLink to="/tasks" icon={CheckSquare} label={t("Open tasks", "مهام مفتوحة")} value={openTasks.length || null} sub={t("Your queue", "قائمتك")} />
       </div>
 
+      {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
+        {/* Upcoming Hearings & Deadlines */}
         <Card className="lg:col-span-2">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
@@ -115,50 +199,68 @@ function Dashboard() {
             {upcoming.length === 0 ? (
               <EmptyRow
                 icon={Calendar}
-                title={t("No hearings synced yet", "لا توجد جلسات متزامنة بعد")}
+                title={t("No upcoming events", "لا توجد أحداث قادمة")}
                 desc={t(
-                  "Connected to the live backend — hearings appear here once cases are added.",
-                  "متصل بالخادم المباشر — تظهر الجلسات هنا بمجرد إضافة القضايا.",
+                  "Hearings and deadlines will appear here once cases are synced from MOJ.",
+                  "ستظهر الجلسات والمواعيد هنا بمجرد مزامنة القضايا من وزارة العدل.",
                 )}
               />
             ) : (
               <div className="space-y-2">
-                {upcoming.map((e) => (
-                  <Link
-                    key={e.id}
-                    to="/calendar"
-                    search={{ date: e.date }}
-                    className="group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:border-gold/50 hover:bg-accent/40"
-                  >
-                    <div
-                      className={cn(
-                        "h-9 w-9 shrink-0 rounded-md flex items-center justify-center",
-                        e.type === "hearing"
-                          ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                          : "bg-destructive/10 text-destructive",
-                      )}
+                {upcoming.map((e) => {
+                  const daysUntil = Math.ceil(
+                    (new Date(e.date).getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+                  );
+                  return (
+                    <Link
+                      key={e.id}
+                      to="/calendar"
+                      search={{ date: e.date }}
+                      className="group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:border-gold/50 hover:bg-accent/40"
                     >
-                      {e.type === "hearing" ? <Gavel className="h-4 w-4" /> : <CalendarClock className="h-4 w-4" />}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium truncate group-hover:text-gold transition-colors">
-                        <span className={lang === "ar" ? "font-arabic" : ""}>
-                          {lang === "ar" ? e.title_ar : e.title}
-                        </span>
+                      <div
+                        className={cn(
+                          "h-9 w-9 shrink-0 rounded-md flex items-center justify-center",
+                          e.type === "hearing"
+                            ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                            : "bg-destructive/10 text-destructive",
+                        )}
+                      >
+                        {e.type === "hearing" ? <Gavel className="h-4 w-4" /> : <CalendarClock className="h-4 w-4" />}
                       </div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {e.date}
-                        {e.case_number ? ` · #${e.case_number}` : ""}
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate group-hover:text-gold transition-colors">
+                          <span className={lang === "ar" ? "font-arabic" : ""}>
+                            {lang === "ar" ? e.title_ar : e.title}
+                          </span>
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {e.date}
+                          {e.case_number ? ` · #${e.case_number}` : ""}
+                        </div>
                       </div>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground rtl:rotate-180 group-hover:text-gold transition-colors" />
-                  </Link>
-                ))}
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "shrink-0 text-[10px]",
+                          daysUntil <= 3 && "border-destructive/50 text-destructive",
+                        )}
+                      >
+                        {daysUntil === 0
+                          ? t("Today", "اليوم")
+                          : daysUntil === 1
+                            ? t("Tomorrow", "غداً")
+                            : t(`${daysUntil} days`, `${daysUntil} يوم`)}
+                      </Badge>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </CardContent>
         </Card>
 
+        {/* Tasks Queue */}
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
@@ -190,9 +292,24 @@ function Dashboard() {
                           {lang === "ar" ? task.title_ar ?? task.title : task.title}
                         </span>
                       </div>
-                      {task.due_date && (
-                        <div className="text-xs text-muted-foreground">{task.due_date}</div>
-                      )}
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {task.due_date && (
+                          <span
+                            className={cn(
+                              "text-xs",
+                              task.due_date < todayStr ? "text-destructive font-medium" : "text-muted-foreground",
+                            )}
+                          >
+                            {task.due_date < todayStr ? "⚠ " : ""}
+                            {task.due_date}
+                          </span>
+                        )}
+                        {task.priority === "high" && (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-destructive/50 text-destructive">
+                            {t("High", "عالية")}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 ))}

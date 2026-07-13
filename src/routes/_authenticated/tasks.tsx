@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { CheckSquare, User, Flag, CalendarClock, FileText, Loader2, X } from "lucide-react";
+import { CheckSquare, User, Flag, CalendarClock, FileText, Loader2, X, Plus, Filter } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/lib/app-context";
 import { EmptyState } from "@/components/EmptyState";
 import { cn } from "@/lib/utils";
@@ -44,11 +46,14 @@ function statusTone(s: string) {
   }
 }
 
+type FilterStatus = "all" | "open" | "in_progress" | "done";
+
 function TasksPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const { taskId } = Route.useSearch();
   const [selectedId, setSelectedId] = useState<string | null>(taskId ?? null);
+  const [filter, setFilter] = useState<FilterStatus>("all");
 
   useEffect(() => {
     if (taskId) setSelectedId(taskId);
@@ -71,16 +76,53 @@ function TasksPage() {
       s === "done" ? "مكتملة" : s === "in_progress" ? "قيد التنفيذ" : "مفتوحة",
     );
 
+  const filtered = (tasks ?? []).filter((t) => {
+    if (filter === "all") return true;
+    return t.status === filter;
+  });
+
   const selected = (tasks ?? []).find((t) => t.id === selectedId) ?? null;
+
+  const counts = {
+    all: (tasks ?? []).length,
+    open: (tasks ?? []).filter((t) => t.status === "open").length,
+    in_progress: (tasks ?? []).filter((t) => t.status === "in_progress").length,
+    done: (tasks ?? []).filter((t) => t.status === "done").length,
+  };
 
   return (
     <div className="space-y-6">
-      <div>
-        <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Workflow", "سير العمل")}</div>
-        <h1 className="font-display text-3xl">{tt("Tasks", "المهام")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {tt("Select a task to see its full details.", "اختر مهمة لعرض تفاصيلها الكاملة.")}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Workflow", "سير العمل")}</div>
+          <h1 className="font-display text-3xl">{tt("Tasks", "المهام")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {tt("Manage your team's workflow and deadlines.", "أدِر سير عمل فريقك والمواعيد النهائية.")}
+          </p>
+        </div>
+        <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90">
+          <Plus className="h-4 w-4" />
+          {tt("Create Task", "إنشاء مهمة")}
+        </Button>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {(["all", "open", "in_progress", "done"] as FilterStatus[]).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={cn(
+              "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+              filter === f
+                ? "bg-navy text-white dark:bg-gold dark:text-navy"
+                : "bg-muted text-muted-foreground hover:bg-accent",
+            )}
+          >
+            {f === "all" ? tt("All", "الكل") : statusLabel(f)}
+            <span className="ms-1.5 opacity-70">{counts[f]}</span>
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
@@ -90,15 +132,15 @@ function TasksPage() {
             {tt("Loading tasks…", "جارٍ تحميل المهام…")}
           </CardContent>
         </Card>
-      ) : (tasks ?? []).length === 0 ? (
+      ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <EmptyState
               icon={CheckSquare}
-              title={tt("No tasks yet", "لا توجد مهام بعد")}
+              title={tt("No tasks found", "لا توجد مهام")}
               desc={tt(
-                "Connected to the live backend. Assigned tasks will appear here for your role.",
-                "متصل بالخادم المباشر. ستظهر المهام المسندة هنا حسب دورك.",
+                "Create a task to start managing your workflow.",
+                "أنشئ مهمة لبدء إدارة سير العمل.",
               )}
             />
           </CardContent>
@@ -106,7 +148,7 @@ function TasksPage() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-5">
           <div className="lg:col-span-3 space-y-3">
-            {(tasks ?? []).map((task) => (
+            {filtered.map((task) => (
               <button
                 key={task.id}
                 onClick={() => setSelectedId(task.id)}
@@ -135,6 +177,14 @@ function TasksPage() {
                       <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
                         <CalendarClock className="h-3 w-3" />
                         {task.due_date}
+                      </span>
+                    )}
+                    {task.assignee && (
+                      <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
+                        <User className="h-3 w-3" />
+                        <span className={lang === "ar" ? "font-arabic" : ""}>
+                          {lang === "ar" ? task.assignee_ar ?? task.assignee : task.assignee}
+                        </span>
                       </span>
                     )}
                   </div>
@@ -193,7 +243,7 @@ function TaskDetail({
               {lang === "ar" ? task.title_ar ?? task.title : task.title}
             </span>
           </h3>
-          <button onClick={onClose} className="lg:hidden text-muted-foreground hover:text-foreground">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="h-4 w-4" />
           </button>
         </div>
