@@ -41,7 +41,7 @@ const NAV: NavItem[] = [
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
   { to: "/billing", labelEn: "Billing", labelAr: "الفوترة", icon: Receipt },
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
-  { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Lock },
+  { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
