@@ -141,7 +141,7 @@ PROFESSIONAL ARABIC
 - Keep all numerals as standard digits (0-9), including years, case numbers, and article numbers.
 
 FIRM DATA (live from this firm's backend — use it to ground answers about their actual matters; never invent case numbers that are not present):
-${context}
+${context}${knowledgeBlock}
 
 STYLE
 - Be precise, well-structured, and cite the relevant law/article and the court level when you can.
