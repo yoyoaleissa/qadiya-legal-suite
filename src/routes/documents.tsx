@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FileText, Download, Sparkles } from "lucide-react";
-import { SiteHeader } from "@/components/SiteHeader";
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,15 +55,16 @@ function DocumentsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <div className="mb-8">
-          <h1 className="font-display text-3xl font-semibold text-foreground">{t("documents")}</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">{t("documents_desc")}</p>
+    <div className="space-y-6">
+      <div>
+        <div className="text-xs uppercase tracking-widest text-muted-foreground">
+          {lang === "ar" ? "الأتمتة" : "Automation"}
         </div>
+        <h1 className="font-display text-3xl">{t("documents")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("documents_desc")}</p>
+      </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
+      <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
           {/* Template picker */}
           <section>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -120,7 +120,6 @@ function DocumentsPage() {
             </div>
           </aside>
         </div>
-      </main>
 
       <PreviewDialog
         open={preview}
