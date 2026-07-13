@@ -17,10 +17,12 @@ import {
   X,
   MoreHorizontal,
 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
+import { claimFirstAdmin } from "@/lib/roles.functions";
 import { cn } from "@/lib/utils";
 import {
   Select,
