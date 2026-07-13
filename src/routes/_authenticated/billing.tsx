@@ -2,18 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Receipt, Plus, Loader2, DollarSign, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Receipt, Plus, Loader2, DollarSign, CheckCircle2, AlertTriangle, ShieldAlert } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/lib/app-context";
+import { useIsAdmin } from "@/hooks/use-roles";
 import { EmptyState } from "@/components/EmptyState";
 import { cn } from "@/lib/utils";
 import { listInvoices, createInvoice, updateInvoiceStatus, type InvoiceItem } from "@/lib/billing.functions";
 
-export const Route = createFileRoute("/billing")({
+export const Route = createFileRoute("/_authenticated/billing")({
   head: () => ({
     meta: [
       { title: "Billing — Qadiya OS" },
@@ -48,12 +49,43 @@ function BillingPage() {
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [showCreate, setShowCreate] = useState(false);
   const queryClient = useQueryClient();
+  const { isAdmin, isLoading: rolesLoading } = useIsAdmin();
 
   const runInvoices = useServerFn(listInvoices);
   const { data: invoices, isLoading } = useQuery({
     queryKey: ["invoices"],
     queryFn: () => runInvoices(),
+    enabled: isAdmin,
   });
+
+  if (rolesLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {tt("Loading…", "جارٍ التحميل…")}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <EmptyState
+            icon={ShieldAlert}
+            title={tt("Admins only", "للمسؤولين فقط")}
+            desc={tt(
+              "Billing and financial data are restricted to firm administrators.",
+              "الفوترة والبيانات المالية مقصورة على مسؤولي المكتب.",
+            )}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
 
   const totalOutstanding = (invoices ?? []).filter((i) => i.status === "sent" || i.status === "overdue").reduce((s, i) => s + i.amount, 0);
   const totalPaid = (invoices ?? []).filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
@@ -145,7 +177,7 @@ function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: st
   const markAs = async (status: "sent" | "paid" | "cancelled") => {
     setLoading(true);
     try {
-      await runUpdateStatus({ id: inv.id, status });
+      await runUpdateStatus({ data: { id: inv.id, status } });
       onUpdate();
     } finally { setLoading(false); }
   };
@@ -185,7 +217,7 @@ function CreateInvoiceDialog({ open, onClose, tt, lang, onCreated }: { open: boo
     if (!numAmount || numAmount <= 0) return;
     setLoading(true);
     try {
-      await runCreate({ amount: numAmount, description: description || undefined, due_date: dueDate || undefined });
+      await runCreate({ data: { amount: numAmount, description: description || undefined, due_date: dueDate || undefined } });
       onCreated();
       onClose();
       setAmount(""); setDescription(""); setDueDate("");

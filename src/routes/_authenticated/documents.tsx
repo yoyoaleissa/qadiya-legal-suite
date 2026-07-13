@@ -13,7 +13,7 @@ import {
 import { useApp } from "@/lib/app-context";
 import { DOCUMENT_TEMPLATES, type DocFields, type DocTemplate } from "@/lib/document-templates";
 
-export const Route = createFileRoute("/documents")({
+export const Route = createFileRoute("/_authenticated/documents")({
   head: () => ({
     meta: [
       { title: "Document Generation — Qadiya OS" },

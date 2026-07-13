@@ -107,7 +107,7 @@ export const updateInvoiceStatus = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
-    const updates: Record<string, unknown> = { status: data.status };
+    const updates: { status: string; paid_date?: string } = { status: data.status };
     if (data.status === "paid") {
       updates.paid_date = new Date().toISOString().slice(0, 10);
     }

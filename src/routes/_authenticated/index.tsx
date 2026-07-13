@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -8,10 +9,12 @@ import {
   Calendar,
   CalendarClock,
   CheckSquare,
+  Clock,
+  DollarSign,
   FileText,
   Gavel,
-  Plus,
-  Receipt,
+  Loader2,
+  Scale,
   TrendingUp,
   Users,
   UserPlus,
@@ -21,13 +24,32 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useApp } from "@/lib/app-context";
+import { useIsAdmin } from "@/hooks/use-roles";
 import { cn } from "@/lib/utils";
 import { listClients } from "@/lib/clients.functions";
 import { listTasks } from "@/lib/tasks.functions";
 import { listCalendarEvents } from "@/lib/calendar.functions";
+import { getDailyBriefing, type DailyBriefing } from "@/lib/briefing.functions";
+import { listInvoices } from "@/lib/billing.functions";
+import { createCase } from "@/lib/cases.functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
 });
 
@@ -49,14 +71,28 @@ function getGreeting(lang: "en" | "ar") {
 
 function Dashboard() {
   const { t, lang, role } = useApp();
+  const { isAdmin } = useIsAdmin();
+  const [showNewCase, setShowNewCase] = useState(false);
 
   const runClients = useServerFn(listClients);
   const runTasks = useServerFn(listTasks);
   const runEvents = useServerFn(listCalendarEvents);
+  const runBriefing = useServerFn(getDailyBriefing);
+  const runInvoices = useServerFn(listInvoices);
 
   const { data: clients } = useQuery({ queryKey: ["clients"], queryFn: () => runClients() });
   const { data: tasks } = useQuery({ queryKey: ["tasks"], queryFn: () => runTasks() });
   const { data: events } = useQuery({ queryKey: ["calendar-events"], queryFn: () => runEvents() });
+  const { data: briefing } = useQuery({ queryKey: ["daily-briefing"], queryFn: () => runBriefing() });
+  const { data: invoices } = useQuery({
+    queryKey: ["invoices"],
+    queryFn: () => runInvoices(),
+    enabled: isAdmin,
+  });
+
+  const outstanding = (invoices ?? [])
+    .filter((i) => i.status === "sent" || i.status === "overdue")
+    .reduce((s, i) => s + i.amount, 0);
 
   const activeClients = clients?.length ?? null;
   const openMatters = clients ? clients.reduce((sum, c) => sum + c.case_count, 0) : null;
@@ -122,6 +158,14 @@ function Dashboard() {
         </Link>
       </div>
 
+      {/* Daily Briefing */}
+      <DailyBriefingCard
+        briefing={briefing}
+        outstanding={isAdmin ? outstanding : null}
+        t={t}
+        lang={lang}
+      />
+
       {/* Urgent Alert Banner */}
       {(urgentDeadlines.length > 0 || overdueTasks > 0) && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 flex items-center gap-3">
@@ -156,12 +200,10 @@ function Dashboard() {
             {t("New Client", "موكّل جديد")}
           </Button>
         </Link>
-        <Link to="/clients">
-          <Button variant="outline" size="sm" className="gap-2">
-            <FolderPlus className="h-3.5 w-3.5" />
-            {t("New Case", "قضية جديدة")}
-          </Button>
-        </Link>
+        <Button variant="outline" size="sm" className="gap-2" onClick={() => setShowNewCase(true)}>
+          <FolderPlus className="h-3.5 w-3.5" />
+          {t("New Case", "قضية جديدة")}
+        </Button>
         <Link to="/tasks">
           <Button variant="outline" size="sm" className="gap-2">
             <ClipboardPlus className="h-3.5 w-3.5" />
@@ -181,7 +223,11 @@ function Dashboard() {
         <StatLink to="/clients" icon={Users} label={t("Active clients", "الموكّلون النشطون")} value={activeClients} sub={t("View directory", "عرض السجل")} />
         <StatLink to="/clients" icon={FileText} label={t("Open matters", "قضايا مفتوحة")} value={openMatters} sub={t("across firm", "على مستوى المكتب")} />
         <StatLink to="/calendar" icon={Calendar} label={t("Hearings this week", "جلسات هذا الأسبوع")} value={hearingsThisWeek} sub={t("Court calendar", "التقويم القضائي")} accent />
-        <StatLink to="/tasks" icon={CheckSquare} label={t("Open tasks", "مهام مفتوحة")} value={openTasks.length || null} sub={t("Your queue", "قائمتك")} />
+        {isAdmin ? (
+          <StatLink to="/billing" icon={DollarSign} label={t("Outstanding", "مستحقة")} value={`${outstanding.toFixed(3)}`} sub={t("KWD receivable", "د.ك مستحقة")} />
+        ) : (
+          <StatLink to="/tasks" icon={CheckSquare} label={t("Open tasks", "مهام مفتوحة")} value={openTasks.length || null} sub={t("Your queue", "قائمتك")} />
+        )}
       </div>
 
       {/* Main Content Grid */}
@@ -318,7 +364,192 @@ function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <NewCaseDialog open={showNewCase} onClose={() => setShowNewCase(false)} clients={clients ?? []} t={t} lang={lang} />
     </div>
+  );
+}
+
+function DailyBriefingCard({
+  briefing,
+  outstanding,
+  t,
+  lang,
+}: {
+  briefing: DailyBriefing | undefined;
+  outstanding: number | null;
+  t: (en: string, ar: string) => string;
+  lang: "en" | "ar";
+}) {
+  const badges: { icon: typeof Scale; en: string; ar: string; tone: "navy" | "warn" | "danger" | "gold" }[] = briefing
+    ? [
+        { icon: Scale, en: `${briefing.hearingsToday} Hearings Today`, ar: `${briefing.hearingsToday} جلسات اليوم`, tone: "navy" },
+        { icon: Calendar, en: `${briefing.hearingsTomorrow} Tomorrow`, ar: `${briefing.hearingsTomorrow} غداً`, tone: "navy" },
+        { icon: AlertTriangle, en: `${briefing.tasksOverdue} Overdue Tasks`, ar: `${briefing.tasksOverdue} مهام متأخرة`, tone: "danger" },
+        { icon: CheckSquare, en: `${briefing.tasksDueToday} Due Today`, ar: `${briefing.tasksDueToday} مستحقة اليوم`, tone: "warn" },
+        { icon: Clock, en: `${briefing.appealWindow} In Appeal Window`, ar: `${briefing.appealWindow} في ميعاد الطعن`, tone: "gold" },
+      ]
+    : [];
+
+  const toneClass = (tone: string) => {
+    switch (tone) {
+      case "danger": return "bg-destructive/10 text-destructive border-destructive/30";
+      case "warn": return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+      case "gold": return "bg-gold/15 text-gold border-gold/40";
+      default: return "bg-navy/10 text-navy dark:bg-gold/10 dark:text-gold border-navy/20 dark:border-gold/20";
+    }
+  };
+
+  return (
+    <Card className="border-gold/40 bg-gradient-to-br from-navy to-navy/85 text-white overflow-hidden">
+      <CardContent className="pt-6">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold mb-3">
+          <Scale className="h-3.5 w-3.5" />
+          <span className={lang === "ar" ? "font-arabic" : ""}>{t("Daily Briefing", "الموجز اليومي")}</span>
+        </div>
+        {!briefing ? (
+          <div className="flex items-center gap-2 text-sm text-white/70">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {t("Preparing your briefing…", "جارٍ إعداد موجزك…")}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {badges.map((b, i) => {
+              const Icon = b.icon;
+              return (
+                <span
+                  key={i}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border bg-white/95 px-3 py-1.5 text-xs font-medium",
+                    toneClass(b.tone),
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span className={lang === "ar" ? "font-arabic" : ""}>{t(b.en, b.ar)}</span>
+                </span>
+              );
+            })}
+            {outstanding !== null && (
+              <span className={cn("inline-flex items-center gap-1.5 rounded-full border bg-white/95 px-3 py-1.5 text-xs font-medium", toneClass("gold"))}>
+                <DollarSign className="h-3.5 w-3.5" />
+                <span className={lang === "ar" ? "font-arabic" : ""}>
+                  {t(`${outstanding.toFixed(3)} KWD Outstanding`, `${outstanding.toFixed(3)} د.ك مستحقة`)}
+                </span>
+              </span>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function NewCaseDialog({
+  open,
+  onClose,
+  clients,
+  t,
+  lang,
+}: {
+  open: boolean;
+  onClose: () => void;
+  clients: { id: string; name: string; name_ar: string | null }[];
+  t: (en: string, ar: string) => string;
+  lang: "en" | "ar";
+}) {
+  const [caseNumber, setCaseNumber] = useState("");
+  const [title, setTitle] = useState("");
+  const [titleAr, setTitleAr] = useState("");
+  const [clientId, setClientId] = useState<string>("");
+  const [caseType, setCaseType] = useState("");
+  const [status, setStatus] = useState<"open" | "active" | "appeal" | "execution" | "closed">("open");
+  const [loading, setLoading] = useState(false);
+  const runCreate = useServerFn(createCase);
+  const qc = useQueryClient();
+
+  const handleSubmit = async () => {
+    if (!caseNumber.trim() || !title.trim()) return;
+    setLoading(true);
+    try {
+      await runCreate({
+        data: {
+          case_number: caseNumber,
+          title,
+          title_ar: titleAr || undefined,
+          client_id: clientId || undefined,
+          case_type: caseType || undefined,
+          overall_status: status,
+        },
+      });
+      qc.invalidateQueries({ queryKey: ["clients"] });
+      qc.invalidateQueries({ queryKey: ["calendar-events"] });
+      onClose();
+      setCaseNumber(""); setTitle(""); setTitleAr(""); setClientId(""); setCaseType(""); setStatus("open");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader><DialogTitle>{t("New Case", "قضية جديدة")}</DialogTitle></DialogHeader>
+        <div className="space-y-4 py-2">
+          <div>
+            <label className="text-xs text-muted-foreground">{t("Case number", "رقم القضية")}</label>
+            <Input value={caseNumber} onChange={(e) => setCaseNumber(e.target.value)} placeholder="e.g. 2026/123" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">{t("Title (English)", "العنوان (إنجليزي)")}</label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Contract dispute" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">{t("Title (Arabic)", "العنوان (عربي)")}</label>
+            <Input value={titleAr} onChange={(e) => setTitleAr(e.target.value)} dir="rtl" placeholder="نزاع عقدي" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">{t("Client", "الموكّل")}</label>
+            <Select value={clientId} onValueChange={setClientId}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("Unassigned", "غير مُسند")} />
+              </SelectTrigger>
+              <SelectContent>
+                {clients.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    <span className={lang === "ar" ? "font-arabic" : ""}>{lang === "ar" ? c.name_ar ?? c.name : c.name}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">{t("Case type", "نوع القضية")}</label>
+              <Input value={caseType} onChange={(e) => setCaseType(e.target.value)} placeholder={t("Civil", "مدني")} />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{t("Status", "الحالة")}</label>
+              <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="open">{t("Open", "مفتوحة")}</SelectItem>
+                  <SelectItem value="active">{t("Active", "نشطة")}</SelectItem>
+                  <SelectItem value="appeal">{t("Appeal", "استئناف")}</SelectItem>
+                  <SelectItem value="execution">{t("Execution", "تنفيذ")}</SelectItem>
+                  <SelectItem value="closed">{t("Closed", "مغلقة")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>{t("Cancel", "إلغاء")}</Button>
+          <Button onClick={handleSubmit} disabled={!caseNumber.trim() || !title.trim() || loading} className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Create Case", "إنشاء القضية")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

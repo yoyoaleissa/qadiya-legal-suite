@@ -39,6 +39,41 @@ async function buildFirmContext(): Promise<string> {
   }
 }
 
+/** Retrieve firm/legal knowledge relevant to the user's latest message (RAG). */
+async function retrieveKnowledge(query: string): Promise<string> {
+  const text = query.trim();
+  if (!text) return "";
+  try {
+    const { embedQuery } = await import("@/lib/embeddings.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const vector = await embedQuery(text);
+    const { data, error } = await supabaseAdmin.rpc("match_legal_knowledge", {
+      query_embedding: JSON.stringify(vector),
+      match_count: 6,
+    });
+    if (error) {
+      console.error("[chat] knowledge retrieval failed", error);
+      return "";
+    }
+
+    const matches = (data ?? []).filter(
+      (m: { similarity: number }) => m.similarity >= 0.2,
+    );
+    if (matches.length === 0) return "";
+
+    return matches
+      .map(
+        (m: { title: string; content: string }, i: number) =>
+          `[${i + 1}] Source: ${m.title}\n${m.content}`,
+      )
+      .join("\n\n---\n\n");
+  } catch (err) {
+    console.error("[chat] knowledge retrieval error", err);
+    return "";
+  }
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -85,6 +120,12 @@ export const Route = createFileRoute("/api/chat")({
 
         const context = await buildFirmContext();
 
+        const lastUser = [...trimmed].reverse().find((m) => m.role === "user");
+        const knowledge = lastUser ? await retrieveKnowledge(lastUser.content) : "";
+        const knowledgeBlock = knowledge
+          ? `\n\nFIRM KNOWLEDGE BASE (retrieved passages from uploaded Kuwaiti law texts and the firm's own briefs — treat these as authoritative primary references and ground your answer on them, citing the source title when you rely on a passage):\n${knowledge}`
+          : "";
+
         const system = `You are "Qadiya Counsel", the senior AI legal assistant inside a Kuwaiti law-firm practice-management system (Qadiya OS).
 
 ROLE & EXPERTISE
@@ -100,7 +141,7 @@ PROFESSIONAL ARABIC
 - Keep all numerals as standard digits (0-9), including years, case numbers, and article numbers.
 
 FIRM DATA (live from this firm's backend — use it to ground answers about their actual matters; never invent case numbers that are not present):
-${context}
+${context}${knowledgeBlock}
 
 STYLE
 - Be precise, well-structured, and cite the relevant law/article and the court level when you can.

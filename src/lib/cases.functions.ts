@@ -70,9 +70,64 @@ export const createCase = createServerFn({ method: "POST" })
         case_id: row.id,
         level: "first_instance",
         court_name: data.court || null,
-        filing_date: data.filed_date || null,
+        registered_date: data.filed_date || null,
       });
     }
 
     return row;
   });
+
+/** Add a manual timeline event to a case, optionally updating the case's overall status. */
+export const addTimelineEvent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        case_id: z.string().uuid(),
+        title: z.string().trim().min(1),
+        title_ar: z.string().optional(),
+        description: z.string().optional(),
+        description_ar: z.string().optional(),
+        event_date: z.string().optional(),
+        event_type: z.string().optional(),
+        new_status: z
+          .enum(["open", "active", "appeal", "execution", "closed"])
+          .optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }) => {
+    const supabase = context.supabase;
+
+    const { data: maxRow } = await supabase
+      .from("case_timeline")
+      .select("sort_order")
+      .eq("case_id", data.case_id)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const nextSort = (maxRow?.sort_order ?? 0) + 1;
+
+    const { error } = await supabase.from("case_timeline").insert({
+      case_id: data.case_id,
+      title: data.title,
+      title_ar: data.title_ar || null,
+      description: data.description || null,
+      description_ar: data.description_ar || null,
+      event_date: data.event_date || null,
+      event_type: data.event_type || "manual",
+      sort_order: nextSort,
+    });
+    if (error) throw new Error(error.message);
+
+    if (data.new_status) {
+      const { error: upErr } = await supabase
+        .from("cases")
+        .update({ overall_status: data.new_status })
+        .eq("id", data.case_id);
+      if (upErr) throw new Error(upErr.message);
+    }
+
+    return { success: true };
+  });
+
