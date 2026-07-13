@@ -47,7 +47,12 @@ function statusTone(s: string) {
 function TasksPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { taskId } = Route.useSearch();
+  const [selectedId, setSelectedId] = useState<string | null>(taskId ?? null);
+
+  useEffect(() => {
+    if (taskId) setSelectedId(taskId);
+  }, [taskId]);
 
   const runTasks = useServerFn(listTasks);
   const { data: tasks, isLoading } = useQuery({
