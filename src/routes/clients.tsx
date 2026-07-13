@@ -142,6 +142,11 @@ function ClientsPage() {
       )}
 
       <ClientDialog clientId={openId} onClose={() => setOpenId(null)} />
+      <ClientChat
+        clientId={chatClient?.id ?? null}
+        clientName={chatClient?.name ?? ""}
+        onClose={() => setChatClient(null)}
+      />
     </div>
   );
 
