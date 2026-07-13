@@ -112,88 +112,32 @@ function CalendarPage() {
             {tt("Hearings, appeal windows, and limitation deadlines.", "الجلسات ومواعيد الاستئناف والتقادم.")}
           </p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90">
-              <ListChecks className="h-4 w-4" />
-              {tt("Monthly Overview", "ملخص الشهر")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="font-display text-2xl">
-                {tt("All appointments —", "كل المواعيد —")}{" "}
-                <span className="text-gold">
-                  {monthName} {view.year}
-                </span>
-              </DialogTitle>
-              <DialogDescription>
-                {tt(
-                  `${monthHearings} hearings · ${monthDeadlines} deadlines this month`,
-                  `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي هذا الشهر`,
-                )}
-              </DialogDescription>
-            </DialogHeader>
-
-            {monthEvents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
-                <CalendarDays className="h-8 w-8 text-muted-foreground" />
-                <div className="text-sm font-medium">{tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}</div>
-              </div>
-            ) : (
-              <ol className="space-y-2 pt-2">
-                {monthEvents.map((e) => {
-                  const day = Number(e.date.slice(8, 10));
-                  return (
-                    <li
-                      key={e.id}
-                      className={cn(
-                        "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4",
-                        e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
-                      )}
-                    >
-                      <div className="flex flex-col items-center justify-center w-11 shrink-0">
-                        <span className="font-display text-lg leading-none">{day}</span>
-                        <span className="text-[10px] uppercase text-muted-foreground mt-0.5">
-                          {(lang === "ar" ? WEEK_AR : WEEK_EN)[new Date(e.date).getDay()]}
-                        </span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span
-                            className={cn(
-                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-                              e.type === "hearing"
-                                ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                                : "bg-destructive/10 text-destructive",
-                            )}
-                          >
-                            {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                            {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
-                          </span>
-                          {e.case_number && (
-                            <span className="text-xs text-muted-foreground">#{e.case_number}</span>
-                          )}
-                        </div>
-                        <div className="font-medium mt-1">
-                          <span className={lang === "ar" ? "font-arabic" : ""}>
-                            {lang === "ar" ? e.title_ar : e.title}
-                          </span>
-                        </div>
-                        {(lang === "ar" ? e.sub_ar : e.sub) && (
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {lang === "ar" ? e.sub_ar : e.sub}
-                          </div>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={showMonth ? "outline" : "default"}
+            onClick={() => setShowMonth(false)}
+            className={cn(
+              "gap-2",
+              !showMonth && "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
             )}
-          </DialogContent>
-        </Dialog>
+          >
+            <CalendarDays className="h-4 w-4" />
+            {tt("Daily Agenda", "أجندة اليوم")}
+          </Button>
+          <Button
+            variant={showMonth ? "default" : "outline"}
+            onClick={() => setShowMonth(true)}
+            className={cn(
+              "gap-2",
+              showMonth && "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
+            )}
+          >
+            <ListChecks className="h-4 w-4" />
+            {tt("Monthly Overview", "ملخص الشهر")}
+          </Button>
+        </div>
       </div>
+
 
 
       <Card>
