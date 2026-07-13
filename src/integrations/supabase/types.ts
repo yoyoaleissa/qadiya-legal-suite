@@ -420,6 +420,65 @@ export type Database = {
         }
         Relationships: []
       }
+      tasks: {
+        Row: {
+          assignee: string | null
+          assignee_ar: string | null
+          case_id: string | null
+          created_at: string
+          description: string | null
+          description_ar: string | null
+          due_date: string | null
+          id: string
+          priority: string
+          sort_order: number
+          status: string
+          title: string
+          title_ar: string | null
+          updated_at: string
+        }
+        Insert: {
+          assignee?: string | null
+          assignee_ar?: string | null
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          description_ar?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          sort_order?: number
+          status?: string
+          title: string
+          title_ar?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assignee?: string | null
+          assignee_ar?: string | null
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          description_ar?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          title_ar?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
