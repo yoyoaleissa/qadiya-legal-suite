@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ReportBot } from "@/components/report/ReportBot";
 import { useApp } from "@/lib/app-context";
 
-export const Route = createFileRoute("/report")({
+export const Route = createFileRoute("/_authenticated/report")({
   head: () => ({
     meta: [
       { title: "Report Bot — Qadiya OS" },

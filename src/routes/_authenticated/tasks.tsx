@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { listTasks, createTask, updateTaskStatus, listWorkflowTemplates, createTasksFromWorkflow, type TaskItem } from "@/lib/tasks.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 
-export const Route = createFileRoute("/tasks")({
+export const Route = createFileRoute("/_authenticated/tasks")({
   validateSearch: (search: Record<string, unknown>): { taskId?: string } => ({
     taskId: typeof search.taskId === "string" ? search.taskId : undefined,
   }),

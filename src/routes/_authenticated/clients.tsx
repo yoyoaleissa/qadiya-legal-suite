@@ -22,7 +22,7 @@ import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
 import { createClient } from "@/lib/cases.functions";
 
-export const Route = createFileRoute("/clients")({
+export const Route = createFileRoute("/_authenticated/clients")({
   head: () => ({
     meta: [
       { title: "Clients & Cases — Qadiya OS" },

@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { cn } from "@/lib/utils";
 import { listInvoices, createInvoice, updateInvoiceStatus, type InvoiceItem } from "@/lib/billing.functions";
 
-export const Route = createFileRoute("/billing")({
+export const Route = createFileRoute("/_authenticated/billing")({
   head: () => ({
     meta: [
       { title: "Billing — Qadiya OS" },

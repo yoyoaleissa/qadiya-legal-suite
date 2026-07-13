@@ -27,7 +27,7 @@ import { listClients } from "@/lib/clients.functions";
 import { listTasks } from "@/lib/tasks.functions";
 import { listCalendarEvents } from "@/lib/calendar.functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
 });
 

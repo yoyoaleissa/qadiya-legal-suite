@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/ai-assistant")({
+export const Route = createFileRoute("/_authenticated/ai-assistant")({
   head: () => ({
     meta: [
       { title: "AI Legal Assistant — Qadiya OS" },
