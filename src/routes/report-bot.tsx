@@ -2,30 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ReportBot } from "@/components/report/ReportBot";
 import { useApp } from "@/lib/app-context";
 
-export const Route = createFileRoute("/report")({
+export const Route = createFileRoute("/report-bot")({
+  component: ReportBotPage,
   head: () => ({
     meta: [
       { title: "Report Bot — Qadiya OS" },
-      {
-        name: "description",
-        content:
-          "Enter a Kuwaiti case number and receive an instant, plain-language status report in Arabic and English, with deadlines and a full case timeline.",
-      },
-      { property: "og:title", content: "Report Bot — Qadiya OS" },
-      {
-        property: "og:description",
-        content: "Instant bilingual case status reports for Kuwaiti law firm clients.",
-      },
+      { name: "description", content: "AI-powered client case report generator for Kuwaiti law firms." },
     ],
   }),
-  component: ReportPage,
 });
 
-function ReportPage() {
+function ReportBotPage() {
   const { t } = useApp();
   return (
     <div className="space-y-6">
-      <div className="no-print">
+      <div>
         <div className="text-xs uppercase tracking-widest text-gold">
           {t("Priority Feature", "الميزة الأساسية")}
         </div>

@@ -35,7 +35,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
-  { to: "/report", labelEn: "Report Bot", labelAr: "بوت التقارير", icon: Bot, highlight: true },
+  { to: "/report-bot", labelEn: "Report Bot", labelAr: "بوت التقارير", icon: Bot, highlight: true },
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "العملاء والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
@@ -45,9 +45,8 @@ const NAV: NavItem[] = [
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { role, setRole, lang, setLang, theme, toggleTheme } = useApp();
+  const { role, setRole, lang, setLang, theme, toggleTheme, t } = useApp();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -82,17 +81,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                <span className={lang === "ar" ? "font-arabic" : ""}>{tt(n.labelEn, n.labelAr)}</span>
+                <span className={lang === "ar" ? "font-arabic" : ""}>{t(n.labelEn, n.labelAr)}</span>
               </Link>
             );
           })}
         </nav>
         <div className="p-4 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
-          <div className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
-            {tt("Live workspace", "بيئة عمل مباشرة")}
-          </div>
-          <div className="mt-1">v1.0 • Kuwait</div>
+          <div>{t("Demo build — mock data", "نسخة تجريبية")}</div>
+          <div className="mt-1">v0.9 • Kuwait</div>
         </div>
       </aside>
 
@@ -101,7 +97,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <div className="md:hidden font-display text-lg">Qadiya OS</div>
             <div className="hidden md:block text-sm text-muted-foreground">
-              {tt("Welcome back", "أهلاً بعودتك")}
+              {t("Welcome back", "أهلاً بعودتك")}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -110,9 +106,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="partner">{tt("Partner", "شريك")}</SelectItem>
-                <SelectItem value="associate">{tt("Associate", "محامٍ")}</SelectItem>
-                <SelectItem value="paralegal">{tt("Paralegal", "مساعد قانوني")}</SelectItem>
+                <SelectItem value="partner">{t("Partner", "شريك")}</SelectItem>
+                <SelectItem value="associate">{t("Associate", "محامٍ")}</SelectItem>
+                <SelectItem value="paralegal">{t("Paralegal", "مساعد قانوني")}</SelectItem>
               </SelectContent>
             </Select>
             <Button
