@@ -94,7 +94,7 @@ export function ReportBot() {
 
   return (
     <div className="grid lg:grid-cols-[1fr,360px] gap-6">
-      <Card className="flex flex-col h-[calc(100vh-11rem)] min-h-[640px] overflow-hidden pt-0 no-print">
+      <Card className="flex flex-col h-[calc(100vh-11rem)] min-h-[640px] overflow-hidden pt-0">
         <div className="border-b bg-gradient-to-r from-navy to-navy/90 text-white px-6 py-4 flex items-center gap-3">
           <div className="h-10 w-10 rounded-md bg-gold text-navy flex items-center justify-center">
             <Gavel className="h-5 w-5" />
