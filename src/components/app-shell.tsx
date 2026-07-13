@@ -1,4 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Calendar,
@@ -12,8 +13,10 @@ import {
   Users,
   Languages,
   CheckSquare,
+  LogOut,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import {
@@ -47,6 +50,15 @@ const NAV: NavItem[] = [
 export function AppShell({ children }: { children: ReactNode }) {
   const { role, setRole, lang, setLang, theme, toggleTheme, t } = useApp();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/login", replace: true });
+  };
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -126,6 +138,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Button>
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="gap-1.5"
+              title={t("Sign out", "تسجيل الخروج")}
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("Sign out", "تسجيل الخروج")}</span>
             </Button>
           </div>
         </header>

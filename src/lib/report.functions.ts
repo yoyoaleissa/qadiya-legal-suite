@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type {
   CaseReport,
   CourtLevelKey,
@@ -129,14 +130,11 @@ Rules:
 }
 
 export const generateCaseReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => Input.parse(data))
-  .handler(async ({ data }): Promise<CaseReport> => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+  .handler(async ({ data, context }): Promise<CaseReport> => {
+    const supabase = context.supabase;
+
 
     const caseNumber = data.caseNumber.trim();
 

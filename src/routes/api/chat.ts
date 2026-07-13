@@ -5,12 +5,8 @@ type ChatBody = { messages?: ChatMessage[]; lang?: "en" | "ar" };
 
 async function buildFirmContext(): Promise<string> {
   try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
+
 
     const [{ data: cases }, { data: clients }, { data: hearings }, { data: tasks }] =
       await Promise.all([
@@ -49,6 +45,28 @@ export const Route = createFileRoute("/api/chat")({
       POST: async ({ request }) => {
         const apiKey = process.env.LOVABLE_API_KEY;
         if (!apiKey) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+
+        // Require an authenticated staff session — this endpoint exposes firm data to the AI.
+        const authHeader = request.headers.get("authorization") ?? "";
+        const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+        if (!token || token.split(".").length !== 3) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+        try {
+          const { createClient } = await import("@supabase/supabase-js");
+          const authClient = createClient(
+            process.env.SUPABASE_URL!,
+            process.env.SUPABASE_PUBLISHABLE_KEY!,
+            { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
+          );
+          const { data, error } = await authClient.auth.getClaims(token);
+          if (error || !data?.claims?.sub) {
+            return new Response("Unauthorized", { status: 401 });
+          }
+        } catch {
+          return new Response("Unauthorized", { status: 401 });
+        }
+
 
         let body: ChatBody;
         try {
