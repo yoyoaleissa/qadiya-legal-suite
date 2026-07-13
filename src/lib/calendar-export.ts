@@ -113,7 +113,7 @@ export async function exportMonthlyOverviewPdf(opts: MonthlyExportOptions): Prom
           ${esc(monthName)} ${year}
         </div>
         <div style="font-size:13px;color:${COLORS.muted};margin-top:4px;">
-          ${t(`${hearings} hearings · ${deadlines} deadlines`, `${hearings} جلسة · ${deadlines} ميعاد نهائي`)}
+          ${t(`${hearings} hearings · ${deadlines} deadlines`, `${hearings} جلسة، ${deadlines} ميعاد نهائي`)}
         </div>
       </div>
       <div style="text-align:${isAr ? "left" : "right"};font-size:11px;color:${COLORS.muted};">
