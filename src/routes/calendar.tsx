@@ -174,7 +174,7 @@ function CalendarPage() {
 
       <div>
         <h2 className="font-display text-xl mb-3">
-          {tt("Agenda for", "أجندة يوم")}{" "}
+          {tt("Agenda for", "جدول أعمال يوم")}{" "}
           <span className="text-gold">{selected}</span>
         </h2>
 

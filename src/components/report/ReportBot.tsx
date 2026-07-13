@@ -106,7 +106,7 @@ export function ReportBot() {
             <div className="text-xs text-white/70">
               {t(
                 "Client-facing case status assistant · MOJ-connected",
-                "مساعد حالة القضية للعميل · متصل بوزارة العدل",
+                "مساعد حالة القضية للموكّل · متصل بوزارة العدل",
               )}
             </div>
           </div>

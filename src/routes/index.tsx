@@ -60,7 +60,7 @@ function Dashboard() {
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Stat icon={Users} label={t("Active clients", "العملاء الفعّالون")} value="—" sub={t("Connect data source", "اربط مصدر البيانات")} />
+        <Stat icon={Users} label={t("Active clients", "الموكّلون النشطون")} value="—" sub={t("Connect data source", "اربط مصدر البيانات")} />
         <Stat icon={FileText} label={t("Open matters", "قضايا مفتوحة")} value="—" sub={t("across firm", "على مستوى المكتب")} />
         <Stat icon={Calendar} label={t("Hearings this week", "جلسات هذا الأسبوع")} value="—" sub={t("Court calendar", "التقويم القضائي")} accent />
         <Stat icon={Receipt} label={t("Outstanding", "مستحقات")} value="— KWD" sub={t("Billing", "الفوترة")} />

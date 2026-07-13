@@ -59,10 +59,10 @@ function ClientsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("CRM", "إدارة العملاء")}</div>
-          <h1 className="font-display text-3xl">{tt("Clients & Cases", "العملاء والقضايا")}</h1>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("CRM", "إدارة الموكّلين")}</div>
+          <h1 className="font-display text-3xl">{tt("Clients & Cases", "الموكّلون والقضايا")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {tt("Select a client to view their legal matter and case history.", "اختر موكّلاً لعرض قضيته وتاريخ قضاياه.")}
+            {tt("Select a client to view their legal matter and case history.", "اختر موكّلاً لعرض موضوع نزاعه وسجل قضاياه.")}
           </p>
         </div>
         <div className="relative w-full sm:w-80">
@@ -75,7 +75,7 @@ function ClientsPage() {
         <Card>
           <CardContent className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            {tt("Loading clients…", "جارٍ تحميل العملاء…")}
+            {tt("Loading clients…", "جارٍ تحميل الموكّلين…")}
           </CardContent>
         </Card>
       ) : filtered.length === 0 ? (
@@ -83,10 +83,10 @@ function ClientsPage() {
           <CardContent className="pt-6">
             <EmptyState
               icon={Users}
-              title={tt("No clients found", "لا يوجد عملاء")}
+              title={tt("No clients found", "لا يوجد موكّلون")}
               desc={tt(
                 "Connected to the live backend. Client and case records will appear here as your firm adds them.",
-                "متصل بالخادم المباشر. ستظهر سجلات العملاء والقضايا هنا بمجرد إضافتها.",
+                "متصل بالخادم المباشر. ستظهر سجلات الموكّلون والقضايا هنا بمجرد إضافتها.",
               )}
             />
           </CardContent>
@@ -163,7 +163,7 @@ function ClientsPage() {
                 <div className="rounded-lg border border-gold/30 bg-gold/5 p-4">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold mb-1">
                     <Scale className="h-3.5 w-3.5" />
-                    {tt("The legal problem", "المشكلة القانونية")}
+                    {tt("The legal problem", "موضوع النزاع")}
                   </div>
                   <p className="text-sm leading-relaxed">
                     {detail.notes ?? tt("No matter summary recorded.", "لا يوجد ملخص مسجّل.")}
