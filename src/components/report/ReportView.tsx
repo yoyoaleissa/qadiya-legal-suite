@@ -1,6 +1,8 @@
-import { Download, RotateCcw, Scale, Info } from "lucide-react";
+import { useState } from "react";
+import { Download, Loader2, RotateCcw, Scale, Info } from "lucide-react";
 import type { CaseReport } from "@/lib/report-types";
 import { COURT_LEVEL_LABELS, useApp } from "@/lib/app-context";
+import { exportCaseReportPdf } from "@/lib/report-export";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/BrandMark";
 import { DeadlineCard } from "./DeadlineCard";
@@ -10,10 +12,21 @@ import { formatDate } from "./format";
 
 export function ReportView({ report, onNew }: { report: CaseReport; onNew: () => void }) {
   const { lang, t } = useApp();
+  const [exporting, setExporting] = useState(false);
   const headline = lang === "ar" ? report.status_headline_ar : report.status_headline_en;
   const stageLabel = report.current_stage
     ? COURT_LEVEL_LABELS[report.current_stage]?.[lang]
     : null;
+
+  const handleDownload = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      await exportCaseReportPdf(report, lang);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -26,8 +39,8 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
           <Button variant="outline" size="sm" onClick={onNew} className="gap-1.5">
             <RotateCcw className="h-4 w-4" /> {t("new_lookup")}
           </Button>
-          <Button size="sm" onClick={() => window.print()} className="gap-1.5">
-            <Download className="h-4 w-4" /> {t("download_pdf")}
+          <Button size="sm" onClick={handleDownload} disabled={exporting} className="gap-1.5">
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} {t("download_pdf")}
           </Button>
         </div>
       </div>
