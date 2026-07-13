@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, Users, FileText, Scale, Loader2, ChevronRight, MessageSquare, Plus } from "lucide-react";
+import { Search, Users, FileText, Scale, Loader2, ChevronRight, MessageSquare, Plus, CalendarPlus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
