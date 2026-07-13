@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 import { listTasks, type TaskItem } from "@/lib/tasks.functions";
 
 export const Route = createFileRoute("/tasks")({
+  validateSearch: (search: Record<string, unknown>): { taskId?: string } => ({
+    taskId: typeof search.taskId === "string" ? search.taskId : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Tasks — Qadiya OS" },
