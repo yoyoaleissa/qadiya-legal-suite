@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export interface ClientListItem {
   id: string;
@@ -37,14 +38,11 @@ export interface ClientDetail {
   cases: ClientCase[];
 }
 
-export const listClients = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ClientListItem[]> => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+export const listClients = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ClientListItem[]> => {
+    const supabase = context.supabase;
+
 
     const { data: clients, error } = await supabase
       .from("clients")
@@ -65,18 +63,15 @@ export const listClients = createServerFn({ method: "GET" }).handler(
       notes: c.notes,
       case_count: counts.get(c.id) ?? 0,
     }));
-  },
-);
+  });
+
 
 export const getClientDetail = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => z.object({ clientId: z.string().uuid() }).parse(data))
-  .handler(async ({ data }): Promise<ClientDetail | null> => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+  .handler(async ({ data, context }): Promise<ClientDetail | null> => {
+    const supabase = context.supabase;
+
 
     const { data: client } = await supabase
       .from("clients")
@@ -108,7 +103,7 @@ export const getClientDetail = createServerFn({ method: "GET" })
         overall_status: cs.overall_status,
         timeline: (timeline ?? []).map((t) => ({
           event_date: t.event_date,
-          title: t.title,
+          title: t.title ?? "",
           title_ar: t.title_ar,
           description: t.description,
           description_ar: t.description_ar,
@@ -135,6 +130,7 @@ export interface ClientMessage {
 }
 
 export const listClientMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => z.object({ clientId: z.string().uuid() }).parse(data))
   .handler(async ({ data }): Promise<ClientMessage[]> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -148,7 +144,9 @@ export const listClientMessages = createServerFn({ method: "GET" })
   });
 
 export const sendClientMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
+
     z
       .object({
         clientId: z.string().uuid(),

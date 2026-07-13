@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type CalendarEventType = "hearing" | "deadline";
 
@@ -14,14 +15,11 @@ export interface CalendarEvent {
   case_number: string | null;
 }
 
-export const listCalendarEvents = createServerFn({ method: "GET" }).handler(
-  async (): Promise<CalendarEvent[]> => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+export const listCalendarEvents = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<CalendarEvent[]> => {
+    const supabase = context.supabase;
+
 
     const [{ data: cases }, { data: hearings }, { data: tasks }] = await Promise.all([
       supabase.from("cases").select("id, case_number, title, title_ar"),
@@ -71,5 +69,5 @@ export const listCalendarEvents = createServerFn({ method: "GET" }).handler(
     }
 
     return events;
-  },
-);
+  });
+

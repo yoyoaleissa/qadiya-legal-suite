@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export interface TaskItem {
   id: string;
@@ -16,14 +17,11 @@ export interface TaskItem {
   case_title_ar: string | null;
 }
 
-export const listTasks = createServerFn({ method: "GET" }).handler(
-  async (): Promise<TaskItem[]> => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+export const listTasks = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<TaskItem[]> => {
+    const supabase = context.supabase;
+
 
     const [{ data: tasks, error }, { data: cases }] = await Promise.all([
       supabase
@@ -56,5 +54,5 @@ export const listTasks = createServerFn({ method: "GET" }).handler(
         case_title_ar: cs?.title_ar ?? null,
       };
     });
-  },
-);
+  });
+
