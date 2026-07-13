@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { KnowledgePanel } from "@/components/KnowledgePanel";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 
