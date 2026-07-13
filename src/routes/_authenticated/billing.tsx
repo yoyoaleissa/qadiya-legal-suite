@@ -48,12 +48,43 @@ function BillingPage() {
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [showCreate, setShowCreate] = useState(false);
   const queryClient = useQueryClient();
+  const { isAdmin, isLoading: rolesLoading } = useIsAdmin();
 
   const runInvoices = useServerFn(listInvoices);
   const { data: invoices, isLoading } = useQuery({
     queryKey: ["invoices"],
     queryFn: () => runInvoices(),
+    enabled: isAdmin,
   });
+
+  if (rolesLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {tt("Loading…", "جارٍ التحميل…")}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <EmptyState
+            icon={ShieldAlert}
+            title={tt("Admins only", "للمسؤولين فقط")}
+            desc={tt(
+              "Billing and financial data are restricted to firm administrators.",
+              "الفوترة والبيانات المالية مقصورة على مسؤولي المكتب.",
+            )}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
 
   const totalOutstanding = (invoices ?? []).filter((i) => i.status === "sent" || i.status === "overdue").reduce((s, i) => s + i.amount, 0);
   const totalPaid = (invoices ?? []).filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
