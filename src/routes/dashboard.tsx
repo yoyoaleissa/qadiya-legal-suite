@@ -64,7 +64,8 @@ function Dashboard() {
       icon: FileText,
       title: lang === "ar" ? "إنشاء المستندات" : "Document Generation",
       desc: lang === "ar" ? "قوالب بتعبئة تلقائية من بيانات القضية والعميل." : "Templates auto-filled from case and client data.",
-      status: "planned" as const,
+      status: "live" as const,
+      to: "/documents" as const,
     },
     {
       icon: BrainCircuit,
