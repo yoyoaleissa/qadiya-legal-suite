@@ -242,13 +242,50 @@ function CalendarPage() {
                 {monthName} {view.year}
               </span>
             </h2>
-            <div className="text-xs text-muted-foreground">
-              {tt(
-                `${monthHearings} hearings · ${monthDeadlines} deadlines`,
-                `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي`,
-              )}
+            <div className="flex items-center gap-3">
+              <div className="text-xs text-muted-foreground">
+                {tt(
+                  `${monthHearings} hearings · ${monthDeadlines} deadlines`,
+                  `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي`,
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                disabled={exporting || isLoading}
+                onClick={async () => {
+                  setExporting(true);
+                  try {
+                    await exportMonthlyOverviewPdf({
+                      monthName,
+                      year: view.year,
+                      lang,
+                      hearings: monthHearings,
+                      deadlines: monthDeadlines,
+                      events: monthEvents.map((e) => ({
+                        date: e.date,
+                        type: e.type,
+                        title: lang === "ar" ? e.title_ar : e.title,
+                        sub: lang === "ar" ? e.sub_ar : e.sub,
+                        case_number: e.case_number,
+                      })),
+                    });
+                  } finally {
+                    setExporting(false);
+                  }
+                }}
+              >
+                {exporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                {tt("Export PDF", "تصدير PDF")}
+              </Button>
             </div>
           </div>
+
 
           {isLoading ? (
             <Card>
