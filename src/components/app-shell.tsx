@@ -5,7 +5,7 @@ import {
   FileText,
   Gavel,
   LayoutDashboard,
-  Lock,
+  Sparkles,
   Moon,
   Receipt,
   Sun,
