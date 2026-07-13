@@ -14,13 +14,13 @@ import {
   Languages,
   CheckSquare,
   LogOut,
-  Menu,
   X,
-  Search,
+  MoreHorizontal,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/lib/app-context";
+import { useIsAdmin } from "@/hooks/use-roles";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -37,6 +37,7 @@ type NavItem = {
   labelAr: string;
   icon: typeof LayoutDashboard;
   highlight?: boolean;
+  adminOnly?: boolean;
 };
 
 const NAV: NavItem[] = [
@@ -45,17 +46,29 @@ const NAV: NavItem[] = [
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "الموكّلون والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
-  { to: "/billing", labelEn: "Billing", labelAr: "الفوترة", icon: Receipt },
+  { to: "/billing", labelEn: "Billing", labelAr: "الفوترة", icon: Receipt, adminOnly: true },
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
 ];
 
+// Core icons for the mobile bottom navigation bar.
+const BOTTOM_NAV: NavItem[] = [
+  { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
+  { to: "/calendar", labelEn: "Calendar", labelAr: "التقويم", icon: Calendar },
+  { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
+  { to: "/clients", labelEn: "Clients", labelAr: "الموكّلون", icon: Users },
+  { to: "/ai-assistant", labelEn: "AI", labelAr: "الذكاء", icon: Sparkles },
+];
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { role, setRole, lang, setLang, theme, toggleTheme, t } = useApp();
+  const { isAdmin } = useIsAdmin();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const nav = NAV.filter((n) => !n.adminOnly || isAdmin);
 
   const handleSignOut = async () => {
     await queryClient.cancelQueries();
@@ -81,8 +94,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </div>
-      <nav className="flex-1 py-4 px-3 space-y-1">
-        {NAV.map((n) => {
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        {nav.map((n) => {
           const Icon = n.icon;
           const active = pathname === n.to;
           return (
@@ -120,7 +133,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SidebarContent />
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile "More" Sidebar Overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
@@ -139,14 +152,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b bg-card/60 backdrop-blur flex items-center justify-between px-4 md:px-6 gap-3">
           <div className="flex items-center gap-3">
-            {/* Mobile hamburger */}
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="md:hidden p-2 rounded-md hover:bg-accent"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <div className="md:hidden font-display text-lg">{t("Qadiya", "قضية")}</div>
+            <div className="md:hidden flex items-center gap-2 font-display text-lg">
+              <div className="h-7 w-7 rounded-md bg-gold flex items-center justify-center text-navy">
+                <Gavel className="h-4 w-4" />
+              </div>
+              {t("Qadiya", "قضية")}
+            </div>
             <div className="hidden md:block text-sm text-muted-foreground">
               {t("Welcome back", "أهلاً بعودتك")}
             </div>
@@ -186,8 +197,38 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Button>
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden">{children}</main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden pb-24 md:pb-6">{children}</main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
+        <div className="grid grid-cols-6">
+          {BOTTOM_NAV.map((n) => {
+            const Icon = n.icon;
+            const active = pathname === n.to;
+            return (
+              <Link
+                key={n.to}
+                to={n.to}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] transition-colors",
+                  active ? "text-gold" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                <span className={lang === "ar" ? "font-arabic" : ""}>{t(n.labelEn, n.labelAr)}</span>
+              </Link>
+            );
+          })}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+            <span className={lang === "ar" ? "font-arabic" : ""}>{t("More", "المزيد")}</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
