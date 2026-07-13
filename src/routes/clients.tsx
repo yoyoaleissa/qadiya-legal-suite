@@ -86,7 +86,7 @@ function ClientsPage() {
               title={tt("No clients found", "لا يوجد موكّلون")}
               desc={tt(
                 "Connected to the live backend. Client and case records will appear here as your firm adds them.",
-                "متصل بالخادم المباشر. ستظهر سجلات الموكّلون والقضايا هنا بمجرد إضافتها.",
+                "متصل بالخادم المباشر. ستظهر سجلات الموكّلين والقضايا هنا بمجرد إضافتها.",
               )}
             />
           </CardContent>
@@ -155,7 +155,7 @@ function ClientsPage() {
                   </span>
                 </DialogTitle>
                 <DialogDescription>
-                  {tt("Legal matter & case history", "القضية وتاريخ القضايا")}
+                  {tt("Legal matter & case history", "موضوع النزاع وسجل القضايا")}
                 </DialogDescription>
               </DialogHeader>
 
@@ -171,7 +171,7 @@ function ClientsPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-display text-lg mb-3">{tt("Case history", "تاريخ القضايا")}</h3>
+                  <h3 className="font-display text-lg mb-3">{tt("Case history", "سجل القضايا")}</h3>
                   {detail.cases.length === 0 ? (
                     <p className="text-sm text-muted-foreground">{tt("No cases on file yet.", "لا توجد قضايا مسجلة.")}</p>
                   ) : (
