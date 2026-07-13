@@ -57,7 +57,7 @@ function DocumentsPage() {
                 <div className="h-10 w-10 rounded-md bg-navy text-white dark:bg-gold dark:text-navy flex items-center justify-center">
                   <FileText className="h-5 w-5" />
                 </div>
-                <Badge variant="outline">{templateCategory(tpl.id)}</Badge>
+                <Badge variant="outline">{templateCategory(tpl.id, lang)}</Badge>
               </div>
               <div className="mt-3 font-display text-lg">{tpl.name[lang]}</div>
               <div className="text-xs text-muted-foreground mt-1">5 {t("merge fields", "حقل دمج")}</div>
@@ -142,8 +142,8 @@ function PreviewDialog({
   );
 }
 
-function templateCategory(id: string) {
-  if (id === "power_of_attorney") return "Authority";
-  if (id === "retainer_agreement") return "Contracts";
-  return "Pleadings";
+function templateCategory(id: string, lang: "en" | "ar") {
+  if (id === "power_of_attorney") return lang === "ar" ? "توكيل" : "Authority";
+  if (id === "retainer_agreement") return lang === "ar" ? "عقود" : "Contracts";
+  return lang === "ar" ? "مذكرات" : "Pleadings";
 }

@@ -57,9 +57,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Gavel className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-display text-xl leading-none">Qadiya OS</div>
+              <div className="font-display text-xl leading-none">
+                <span className={lang === "ar" ? "font-arabic" : ""}>{t("Qadiya OS", "قضية OS")}</span>
+              </div>
               <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/60 mt-1">
-                Kuwait Legal Suite
+                <span className={lang === "ar" ? "font-arabic" : ""}>{t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}</span>
               </div>
             </div>
           </div>
@@ -87,8 +89,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="p-4 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
-          <div>{t("Demo build — mock data", "نسخة تجريبية")}</div>
-          <div className="mt-1">v0.9 • Kuwait</div>
+          <div>
+            <span className={lang === "ar" ? "font-arabic" : ""}>{t("Live backend — Lovable Cloud", "خادم مباشر — لوفابل كلاود")}</span>
+          </div>
+          <div className="mt-1">v1.0 • {t("Kuwait", "الكويت")}</div>
         </div>
       </aside>
 
