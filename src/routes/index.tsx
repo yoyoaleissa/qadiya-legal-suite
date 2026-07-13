@@ -1,123 +1,161 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileText, CalendarClock, Bot, ShieldCheck, Scale, Sparkles } from "lucide-react";
-import { SiteHeader } from "@/components/SiteHeader";
-import { BrandMark } from "@/components/BrandMark";
-import { Button } from "@/components/ui/button";
+import {
+  ArrowRight,
+  Bot,
+  Calendar,
+  CheckSquare,
+  FileText,
+  Receipt,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { useApp } from "@/lib/app-context";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: Dashboard,
 });
 
-function Index() {
-  const { lang, t } = useApp();
+function roleLabel(role: string, lang: "en" | "ar") {
+  const map = {
+    partner: { en: "Partner", ar: "شريك" },
+    associate: { en: "Associate", ar: "محامٍ" },
+    paralegal: { en: "Paralegal", ar: "مساعد قانوني" },
+  } as const;
+  return map[role as keyof typeof map][lang];
+}
 
-  const features = [
-    {
-      icon: Bot,
-      title: lang === "ar" ? "روبوت التقارير" : "Report Bot",
-      desc: t("report_bot_desc"),
-    },
-    {
-      icon: CalendarClock,
-      title: lang === "ar" ? "ذكاء المواعيد" : "Deadline intelligence",
-      desc:
-        lang === "ar"
-          ? "تتبّع مواعيد الاستئناف والتقادم مع تنبيهات عاجلة قبل فوات الأوان."
-          : "Track appeal windows and limitation periods with urgent alerts before they lapse.",
-    },
-    {
-      icon: FileText,
-      title: lang === "ar" ? "ملف قضية موحّد" : "Unified case dossier",
-      desc:
-        lang === "ar"
-          ? "بيانات كل درجة تقاضٍ، الأحكام، الجلسات والتنفيذ في مكان واحد."
-          : "Every court level, judgment, hearing and execution record in one place.",
-    },
-    {
-      icon: ShieldCheck,
-      title: lang === "ar" ? "صلاحيات حسب الدور" : "Role-based access",
-      desc:
-        lang === "ar"
-          ? "صلاحيات مخصّصة للشريك والمحامي والمساعد القانوني."
-          : "Tailored permissions for Partner, Associate and Paralegal.",
-    },
-  ];
+function Dashboard() {
+  const { lang, role } = useApp();
+  const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">
+            {tt("Overview", "نظرة عامة")}
+          </div>
+          <h1 className="font-display text-4xl mt-1">
+            {tt("Good morning, ", "صباح الخير، ")}
+            <span className="text-gold">{tt(roleLabel(role, "en"), roleLabel(role, "ar"))}</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {tt(
+              "Here's what needs your attention today.",
+              "إليك أهم ما يحتاج انتباهك اليوم.",
+            )}
+          </p>
+        </div>
+        <Link
+          to="/report"
+          className="rounded-lg bg-navy text-white dark:bg-gold dark:text-navy px-5 py-3 flex items-center gap-3 hover:shadow-lg transition-shadow"
+        >
+          <Bot className="h-5 w-5" />
+          <div>
+            <div className="text-xs opacity-80 uppercase tracking-wider">{tt("Live", "مباشر")}</div>
+            <div className="font-medium">{tt("Open Report Bot", "افتح بوت التقارير")}</div>
+          </div>
+          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+        </Link>
+      </div>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero">
-        <div className="pointer-events-none absolute -end-24 -top-24 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-          <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-accent">
-              <Scale className="h-3.5 w-3.5" /> {t("tagline")}
-            </span>
-            <h1 className="mt-5 font-display text-4xl font-semibold leading-tight text-primary-foreground sm:text-6xl">
-              {t("hero_title")}
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
-              {t("hero_sub")}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="gap-2 bg-gradient-gold text-gold-foreground shadow-gold hover:opacity-90">
-                <Link to="/report">
-                  {t("open_report_bot")} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/25 bg-white/5 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground">
-                <Link to="/dashboard">{t("staff_portal")}</Link>
-              </Button>
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <Stat icon={Users} label={tt("Active clients", "العملاء الفعّالون")} value="—" sub={tt("Connect data source", "اربط مصدر البيانات")} />
+        <Stat icon={FileText} label={tt("Open matters", "قضايا مفتوحة")} value="—" sub={tt("across firm", "على مستوى المكتب")} />
+        <Stat icon={Calendar} label={tt("Hearings this week", "جلسات هذا الأسبوع")} value="—" sub={tt("Court calendar", "التقويم القضائي")} accent />
+        <Stat icon={Receipt} label={tt("Outstanding", "مستحقات")} value="— KWD" sub={tt("Billing", "الفوترة")} />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Upcoming", "قادم")}</div>
+                <h2 className="font-display text-xl">{tt("Hearings & deadlines", "الجلسات والمواعيد")}</h2>
+              </div>
+              <Link to="/calendar" className="text-xs text-gold hover:underline">{tt("View calendar →", "عرض التقويم ←")}</Link>
             </div>
+            <EmptyRow
+              icon={Calendar}
+              title={tt("No hearings synced yet", "لا توجد جلسات متزامنة بعد")}
+              desc={tt(
+                "Connected to the live backend — hearings appear here once cases are added.",
+                "متصل بالخادم المباشر — تظهر الجلسات هنا بمجرد إضافة القضايا.",
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Your queue", "قائمتك")}</div>
+                <h2 className="font-display text-xl">{tt("Tasks", "المهام")}</h2>
+              </div>
+              <Link to="/tasks" className="text-xs text-gold hover:underline">{tt("All →", "الكل ←")}</Link>
+            </div>
+            <EmptyRow
+              icon={CheckSquare}
+              title={tt("Your queue is clear", "قائمتك فارغة")}
+              desc={tt("New tasks will show up here.", "ستظهر المهام الجديدة هنا.")}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  accent,
+}: {
+  icon: typeof TrendingUp;
+  label: string;
+  value: string;
+  sub: string;
+  accent?: boolean;
+}) {
+  return (
+    <Card className={accent ? "border-gold/50 bg-gold/5" : ""}>
+      <CardContent className="pt-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+            <div className="font-display text-2xl mt-1">{value}</div>
+            <div className="text-xs text-muted-foreground mt-1">{sub}</div>
+          </div>
+          <div className={`h-9 w-9 rounded-md flex items-center justify-center ${accent ? "bg-gold text-navy" : "bg-muted text-muted-foreground"}`}>
+            <Icon className="h-4 w-4" />
           </div>
         </div>
-      </section>
+      </CardContent>
+    </Card>
+  );
+}
 
-      {/* Features */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((f) => (
-            <div key={f.title} className="rounded-2xl border border-border bg-card p-6 shadow-elevate transition-transform hover:-translate-y-1">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-accent/15 text-accent-foreground">
-                <f.icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-4 text-base font-semibold text-foreground">{f.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Report bot CTA band */}
-      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-        <div className="flex flex-col items-start justify-between gap-6 rounded-3xl border border-border bg-card p-8 shadow-elevate sm:flex-row sm:items-center sm:p-10">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-2 text-accent-foreground">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-widest">{t("report_bot")}</span>
-            </div>
-            <h2 className="mt-2 font-display text-2xl font-semibold text-foreground sm:text-3xl">
-              {lang === "ar" ? "تقرير قضية فوري بلغة واضحة" : "Instant, plain-language case reports"}
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">{t("report_bot_desc")}</p>
-          </div>
-          <Button asChild size="lg" className="shrink-0 gap-2">
-            <Link to="/report">
-              {t("generate_report")} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      <footer className="border-t border-border py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-6">
-          <BrandMark />
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Qadiya OS · {t("tagline")}</p>
-        </div>
-      </footer>
+function EmptyRow({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: typeof TrendingUp;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+      <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="text-sm font-medium">{title}</div>
+      <div className="text-xs text-muted-foreground max-w-xs">{desc}</div>
     </div>
   );
 }
