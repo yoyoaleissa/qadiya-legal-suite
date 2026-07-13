@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Users, FileText, Scale, Loader2, ChevronRight } from "lucide-react";
+import { Search, Users, FileText, Scale, Loader2, ChevronRight, MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { useApp } from "@/lib/app-context";
 import { EmptyState } from "@/components/EmptyState";
+import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
 
 export const Route = createFileRoute("/clients")({
@@ -43,6 +45,7 @@ function ClientsPage() {
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [q, setQ] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [chatClient, setChatClient] = useState<{ id: string; name: string } | null>(null);
 
   const runList = useServerFn(listClients);
   const { data: clients, isLoading } = useQuery({
@@ -93,40 +96,57 @@ function ClientsPage() {
         </Card>
       ) : (
         <div className="grid gap-3">
-          {filtered.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setOpenId(c.id)}
-              className="group flex items-center justify-between gap-4 rounded-lg border bg-card px-5 py-4 text-start transition-colors hover:border-gold/50 hover:bg-accent/40"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="h-10 w-10 shrink-0 rounded-full bg-navy text-white dark:bg-gold dark:text-navy flex items-center justify-center font-display">
-                  {(lang === "ar" ? c.name_ar ?? c.name : c.name).charAt(0)}
-                </div>
-                <div className="min-w-0">
-                  <div className="font-medium truncate group-hover:text-gold transition-colors">
-                    <span className={lang === "ar" ? "font-arabic" : ""}>
-                      {lang === "ar" ? c.name_ar ?? c.name : c.name}
-                    </span>
+          {filtered.map((c) => {
+            const displayName = lang === "ar" ? c.name_ar ?? c.name : c.name;
+            return (
+              <div
+                key={c.id}
+                className="group flex items-center justify-between gap-3 rounded-lg border bg-card px-5 py-4 transition-colors hover:border-gold/50 hover:bg-accent/40"
+              >
+                <button
+                  onClick={() => setOpenId(c.id)}
+                  className="flex flex-1 items-center gap-4 min-w-0 text-start"
+                >
+                  <div className="h-10 w-10 shrink-0 rounded-full bg-navy text-white dark:bg-gold dark:text-navy flex items-center justify-center font-display">
+                    {displayName.charAt(0)}
                   </div>
-                  <div className="text-xs text-muted-foreground truncate max-w-md">
-                    {c.notes ?? tt("No matter summary", "لا يوجد ملخص")}
+                  <div className="min-w-0">
+                    <div className="font-medium truncate group-hover:text-gold transition-colors">
+                      <span className={lang === "ar" ? "font-arabic" : ""}>{displayName}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate max-w-md">
+                      {c.notes ?? tt("No matter summary", "لا يوجد ملخص")}
+                    </div>
                   </div>
+                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Badge variant="secondary" className="gap-1 hidden sm:flex">
+                    <FileText className="h-3 w-3" />
+                    {c.case_count} {tt("cases", "قضايا")}
+                  </Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => setChatClient({ id: c.id, name: displayName })}
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{tt("Message", "مراسلة")}</span>
+                  </Button>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground rtl:rotate-180 group-hover:text-gold transition-colors" />
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <Badge variant="secondary" className="gap-1">
-                  <FileText className="h-3 w-3" />
-                  {c.case_count} {tt("cases", "قضايا")}
-                </Badge>
-                <ChevronRight className="h-4 w-4 text-muted-foreground rtl:rotate-180 group-hover:text-gold transition-colors" />
-              </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       )}
 
       <ClientDialog clientId={openId} onClose={() => setOpenId(null)} />
+      <ClientChat
+        clientId={chatClient?.id ?? null}
+        clientName={chatClient?.name ?? ""}
+        onClose={() => setChatClient(null)}
+      />
     </div>
   );
 
@@ -157,6 +177,19 @@ function ClientsPage() {
                 <DialogDescription>
                   {tt("Legal matter & case history", "موضوع النزاع وسجل القضايا")}
                 </DialogDescription>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 w-fit gap-1.5"
+                  onClick={() => {
+                    const displayName = lang === "ar" ? detail.name_ar ?? detail.name : detail.name;
+                    onClose();
+                    setChatClient({ id: detail.id, name: displayName });
+                  }}
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  {tt("Message client", "مراسلة الموكّل")}
+                </Button>
               </DialogHeader>
 
               <div className="space-y-6 pt-2">

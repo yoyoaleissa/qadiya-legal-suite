@@ -125,3 +125,45 @@ export const getClientDetail = createServerFn({ method: "GET" })
       cases: result,
     };
   });
+
+export interface ClientMessage {
+  id: string;
+  client_id: string;
+  sender: "firm" | "client";
+  body: string;
+  created_at: string;
+}
+
+export const listClientMessages = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => z.object({ clientId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }): Promise<ClientMessage[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin
+      .from("client_messages")
+      .select("id, client_id, sender, body, created_at")
+      .eq("client_id", data.clientId)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as ClientMessage[];
+  });
+
+export const sendClientMessage = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        clientId: z.string().uuid(),
+        body: z.string().trim().min(1).max(4000),
+        sender: z.enum(["firm", "client"]).default("firm"),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }): Promise<ClientMessage> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("client_messages")
+      .insert({ client_id: data.clientId, body: data.body, sender: data.sender })
+      .select("id, client_id, sender, body, created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return row as ClientMessage;
+  });
