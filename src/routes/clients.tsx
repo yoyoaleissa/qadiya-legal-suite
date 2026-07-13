@@ -96,36 +96,48 @@ function ClientsPage() {
         </Card>
       ) : (
         <div className="grid gap-3">
-          {filtered.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setOpenId(c.id)}
-              className="group flex items-center justify-between gap-4 rounded-lg border bg-card px-5 py-4 text-start transition-colors hover:border-gold/50 hover:bg-accent/40"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="h-10 w-10 shrink-0 rounded-full bg-navy text-white dark:bg-gold dark:text-navy flex items-center justify-center font-display">
-                  {(lang === "ar" ? c.name_ar ?? c.name : c.name).charAt(0)}
-                </div>
-                <div className="min-w-0">
-                  <div className="font-medium truncate group-hover:text-gold transition-colors">
-                    <span className={lang === "ar" ? "font-arabic" : ""}>
-                      {lang === "ar" ? c.name_ar ?? c.name : c.name}
-                    </span>
+          {filtered.map((c) => {
+            const displayName = lang === "ar" ? c.name_ar ?? c.name : c.name;
+            return (
+              <div
+                key={c.id}
+                className="group flex items-center justify-between gap-3 rounded-lg border bg-card px-5 py-4 transition-colors hover:border-gold/50 hover:bg-accent/40"
+              >
+                <button
+                  onClick={() => setOpenId(c.id)}
+                  className="flex flex-1 items-center gap-4 min-w-0 text-start"
+                >
+                  <div className="h-10 w-10 shrink-0 rounded-full bg-navy text-white dark:bg-gold dark:text-navy flex items-center justify-center font-display">
+                    {displayName.charAt(0)}
                   </div>
-                  <div className="text-xs text-muted-foreground truncate max-w-md">
-                    {c.notes ?? tt("No matter summary", "لا يوجد ملخص")}
+                  <div className="min-w-0">
+                    <div className="font-medium truncate group-hover:text-gold transition-colors">
+                      <span className={lang === "ar" ? "font-arabic" : ""}>{displayName}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate max-w-md">
+                      {c.notes ?? tt("No matter summary", "لا يوجد ملخص")}
+                    </div>
                   </div>
+                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Badge variant="secondary" className="gap-1 hidden sm:flex">
+                    <FileText className="h-3 w-3" />
+                    {c.case_count} {tt("cases", "قضايا")}
+                  </Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => setChatClient({ id: c.id, name: displayName })}
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{tt("Message", "مراسلة")}</span>
+                  </Button>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground rtl:rotate-180 group-hover:text-gold transition-colors" />
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <Badge variant="secondary" className="gap-1">
-                  <FileText className="h-3 w-3" />
-                  {c.case_count} {tt("cases", "قضايا")}
-                </Badge>
-                <ChevronRight className="h-4 w-4 text-muted-foreground rtl:rotate-180 group-hover:text-gold transition-colors" />
-              </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       )}
 
