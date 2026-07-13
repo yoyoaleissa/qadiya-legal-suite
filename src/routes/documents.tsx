@@ -120,7 +120,6 @@ function DocumentsPage() {
             </div>
           </aside>
         </div>
-      </main>
 
       <PreviewDialog
         open={preview}
