@@ -1,6 +1,8 @@
-import { Download, RotateCcw, Scale, Info } from "lucide-react";
+import { useState } from "react";
+import { Download, Loader2, RotateCcw, Scale, Info } from "lucide-react";
 import type { CaseReport } from "@/lib/report-types";
 import { COURT_LEVEL_LABELS, useApp } from "@/lib/app-context";
+import { exportCaseReportPdf } from "@/lib/report-export";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/BrandMark";
 import { DeadlineCard } from "./DeadlineCard";
