@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ReportBotRouteImport } from './routes/report-bot'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as ClientsRouteImport } from './routes/clients'
@@ -27,6 +28,11 @@ const TasksRoute = TasksRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportBotRoute = ReportBotRouteImport.update({
+  id: '/report-bot',
+  path: '/report-bot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportRoute = ReportRouteImport.update({
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/clients': typeof ClientsRoute
   '/documents': typeof DocumentsRoute
   '/report': typeof ReportRoute
+  '/report-bot': typeof ReportBotRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tasks': typeof TasksRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/clients': typeof ClientsRoute
   '/documents': typeof DocumentsRoute
   '/report': typeof ReportRoute
+  '/report-bot': typeof ReportBotRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tasks': typeof TasksRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/clients': typeof ClientsRoute
   '/documents': typeof DocumentsRoute
   '/report': typeof ReportRoute
+  '/report-bot': typeof ReportBotRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tasks': typeof TasksRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/clients'
     | '/documents'
     | '/report'
+    | '/report-bot'
     | '/sitemap.xml'
     | '/tasks'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/clients'
     | '/documents'
     | '/report'
+    | '/report-bot'
     | '/sitemap.xml'
     | '/tasks'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/clients'
     | '/documents'
     | '/report'
+    | '/report-bot'
     | '/sitemap.xml'
     | '/tasks'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   ClientsRoute: typeof ClientsRoute
   DocumentsRoute: typeof DocumentsRoute
   ReportRoute: typeof ReportRoute
+  ReportBotRoute: typeof ReportBotRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TasksRoute: typeof TasksRoute
 }
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report-bot': {
+      id: '/report-bot'
+      path: '/report-bot'
+      fullPath: '/report-bot'
+      preLoaderRoute: typeof ReportBotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report': {
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientsRoute: ClientsRoute,
   DocumentsRoute: DocumentsRoute,
   ReportRoute: ReportRoute,
+  ReportBotRoute: ReportBotRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TasksRoute: TasksRoute,
 }
