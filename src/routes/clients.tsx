@@ -45,6 +45,7 @@ function ClientsPage() {
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [q, setQ] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [chatClient, setChatClient] = useState<{ id: string; name: string } | null>(null);
 
   const runList = useServerFn(listClients);
   const { data: clients, isLoading } = useQuery({
