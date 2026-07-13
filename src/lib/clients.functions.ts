@@ -1,13 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-function anonClient() {
-  const { createClient } = require("@supabase/supabase-js") as typeof import("@supabase/supabase-js");
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-  });
-}
-
 export interface ClientListItem {
   id: string;
   name: string;
@@ -46,7 +39,13 @@ export interface ClientDetail {
 
 export const listClients = createServerFn({ method: "GET" }).handler(
   async (): Promise<ClientListItem[]> => {
-    const supabase = anonClient();
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_PUBLISHABLE_KEY!,
+      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
+    );
+
     const { data: clients, error } = await supabase
       .from("clients")
       .select("id, name, name_ar, notes")
@@ -72,7 +71,13 @@ export const listClients = createServerFn({ method: "GET" }).handler(
 export const getClientDetail = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => z.object({ clientId: z.string().uuid() }).parse(data))
   .handler(async ({ data }): Promise<ClientDetail | null> => {
-    const supabase = anonClient();
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_PUBLISHABLE_KEY!,
+      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
+    );
+
     const { data: client } = await supabase
       .from("clients")
       .select("id, name, name_ar, notes")
