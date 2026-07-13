@@ -349,6 +349,117 @@ function ClientsPage() {
           )}
         </DialogContent>
       </Dialog>
+      <AddEventDialog
+        caseInfo={addEventCase}
+        clientId={clientId}
+        onClose={() => setAddEventCase(null)}
+        tt={tt}
+        lang={lang}
+      />
+      </>
+    );
+  }
+
+  function AddEventDialog({
+    caseInfo,
+    clientId,
+    onClose,
+    tt,
+    lang,
+  }: {
+    caseInfo: { id: string; title: string; status: string } | null;
+    clientId: string | null;
+    onClose: () => void;
+    tt: (en: string, ar: string) => string;
+    lang: string;
+  }) {
+    const [title, setTitle] = useState("");
+    const [titleAr, setTitleAr] = useState("");
+    const [description, setDescription] = useState("");
+    const [eventDate, setEventDate] = useState("");
+    const [updateStatus, setUpdateStatus] = useState(false);
+    const [newStatus, setNewStatus] = useState<"open" | "active" | "appeal" | "execution" | "closed">("active");
+    const [loading, setLoading] = useState(false);
+    const runAdd = useServerFn(addTimelineEvent);
+    const qc = useQueryClient();
+
+    const handleSubmit = async () => {
+      if (!caseInfo || !title.trim()) return;
+      setLoading(true);
+      try {
+        await runAdd({
+          data: {
+            case_id: caseInfo.id,
+            title,
+            title_ar: titleAr || undefined,
+            description: description || undefined,
+            event_date: eventDate || undefined,
+            new_status: updateStatus ? newStatus : undefined,
+          },
+        });
+        qc.invalidateQueries({ queryKey: ["client", clientId] });
+        onClose();
+        setTitle(""); setTitleAr(""); setDescription(""); setEventDate(""); setUpdateStatus(false); setNewStatus("active");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <Dialog open={!!caseInfo} onOpenChange={(o) => !o && onClose()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{tt("Add Timeline Event", "إضافة حدث زمني")}</DialogTitle>
+            {caseInfo && (
+              <DialogDescription>
+                <span className={lang === "ar" ? "font-arabic" : ""}>{caseInfo.title}</span>
+              </DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Event date", "تاريخ الحدث")}</label>
+              <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Title (English)", "العنوان (إنجليزي)")}</label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={tt("e.g. Hearing adjourned", "مثال: تأجيل الجلسة")} />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Title (Arabic)", "العنوان (عربي)")}</label>
+              <Input value={titleAr} onChange={(e) => setTitleAr(e.target.value)} dir="rtl" placeholder="تأجيل الجلسة" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Details", "التفاصيل")}</label>
+              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+            </div>
+            <div className="rounded-lg border p-3 space-y-3">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={updateStatus} onChange={(e) => setUpdateStatus(e.target.checked)} className="h-4 w-4 accent-[var(--gold)]" />
+                {tt("Also update case status", "تحديث حالة القضية أيضاً")}
+              </label>
+              {updateStatus && (
+                <Select value={newStatus} onValueChange={(v) => setNewStatus(v as typeof newStatus)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="open">{tt("Open", "مفتوحة")}</SelectItem>
+                    <SelectItem value="active">{tt("Active", "نشطة")}</SelectItem>
+                    <SelectItem value="appeal">{tt("Appeal", "استئناف")}</SelectItem>
+                    <SelectItem value="execution">{tt("Execution", "تنفيذ")}</SelectItem>
+                    <SelectItem value="closed">{tt("Closed", "مغلقة")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>{tt("Cancel", "إلغاء")}</Button>
+            <Button onClick={handleSubmit} disabled={!title.trim() || loading} className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : tt("Add Event", "إضافة الحدث")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 }
