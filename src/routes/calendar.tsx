@@ -231,68 +231,155 @@ function CalendarPage() {
         </CardContent>
       </Card>
 
-      <div>
-        <h2 className="font-display text-xl mb-3">
-          {tt("Agenda for", "جدول أعمال يوم")}{" "}
-          <span className="text-gold">{selected}</span>
-        </h2>
-
-        {isLoading ? (
-          <Card>
-            <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {tt("Loading…", "جارٍ التحميل…")}
-            </CardContent>
-          </Card>
-        ) : selectedEvents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
-            <CalendarDays className="h-8 w-8 text-muted-foreground" />
-            <div className="text-sm font-medium">{tt("Nothing scheduled", "لا يوجد مواعيد")}</div>
+      {showMonth ? (
+        <div>
+          <div className="flex flex-wrap items-end justify-between gap-2 mb-3">
+            <h2 className="font-display text-xl">
+              {tt("All appointments —", "كل المواعيد —")}{" "}
+              <span className="text-gold">
+                {monthName} {view.year}
+              </span>
+            </h2>
             <div className="text-xs text-muted-foreground">
-              {tt("Select a highlighted day to see its hearings and deadlines.", "اختر يوماً مميزاً لعرض جلساته ومواعيده.")}
+              {tt(
+                `${monthHearings} hearings · ${monthDeadlines} deadlines`,
+                `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي`,
+              )}
             </div>
           </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {selectedEvents.map((e) => (
-              <div
-                key={e.id}
-                className={cn(
-                  "rounded-lg border bg-card p-4 border-s-4",
-                  e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
-                )}
-              >
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span
+
+          {isLoading ? (
+            <Card>
+              <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {tt("Loading…", "جارٍ التحميل…")}
+              </CardContent>
+            </Card>
+          ) : monthEvents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
+              <CalendarRange className="h-8 w-8 text-muted-foreground" />
+              <div className="text-sm font-medium">{tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}</div>
+            </div>
+          ) : (
+            <ol className="space-y-2">
+              {monthEvents.map((e) => {
+                const day = Number(e.date.slice(8, 10));
+                return (
+                  <li
+                    key={e.id}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                      e.type === "hearing"
-                        ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                        : "bg-destructive/10 text-destructive",
+                      "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4 transition-colors cursor-pointer hover:border-gold/50 hover:bg-accent/40",
+                      e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
                     )}
+                    onClick={() => {
+                      setSelected(e.date);
+                      setShowMonth(false);
+                    }}
                   >
-                    {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                    {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
-                  </span>
-                  {e.case_number && (
-                    <span className="text-xs text-muted-foreground">#{e.case_number}</span>
+                    <div className="flex flex-col items-center justify-center w-11 shrink-0">
+                      <span className="font-display text-lg leading-none">{day}</span>
+                      <span className="text-[10px] uppercase text-muted-foreground mt-0.5">
+                        {(lang === "ar" ? WEEK_AR : WEEK_EN)[new Date(e.date).getDay()]}
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+                            e.type === "hearing"
+                              ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                              : "bg-destructive/10 text-destructive",
+                          )}
+                        >
+                          {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                          {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
+                        </span>
+                        {e.case_number && (
+                          <span className="text-xs text-muted-foreground">#{e.case_number}</span>
+                        )}
+                      </div>
+                      <div className="font-medium mt-1">
+                        <span className={lang === "ar" ? "font-arabic" : ""}>
+                          {lang === "ar" ? e.title_ar : e.title}
+                        </span>
+                      </div>
+                      {(lang === "ar" ? e.sub_ar : e.sub) && (
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {lang === "ar" ? e.sub_ar : e.sub}
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      ) : (
+        <div>
+          <h2 className="font-display text-xl mb-3">
+            {tt("Agenda for", "جدول أعمال يوم")}{" "}
+            <span className="text-gold">{selected}</span>
+          </h2>
+
+          {isLoading ? (
+            <Card>
+              <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {tt("Loading…", "جارٍ التحميل…")}
+              </CardContent>
+            </Card>
+          ) : selectedEvents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
+              <CalendarDays className="h-8 w-8 text-muted-foreground" />
+              <div className="text-sm font-medium">{tt("Nothing scheduled", "لا يوجد مواعيد")}</div>
+              <div className="text-xs text-muted-foreground">
+                {tt("Select a highlighted day to see its hearings and deadlines.", "اختر يوماً مميزاً لعرض جلساته ومواعيده.")}
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {selectedEvents.map((e) => (
+                <div
+                  key={e.id}
+                  className={cn(
+                    "rounded-lg border bg-card p-4 border-s-4",
+                    e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+                        e.type === "hearing"
+                          ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                          : "bg-destructive/10 text-destructive",
+                      )}
+                    >
+                      {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                      {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
+                    </span>
+                    {e.case_number && (
+                      <span className="text-xs text-muted-foreground">#{e.case_number}</span>
+                    )}
+                  </div>
+                  <div className="font-medium">
+                    <span className={lang === "ar" ? "font-arabic" : ""}>
+                      {lang === "ar" ? e.title_ar : e.title}
+                    </span>
+                  </div>
+                  {(lang === "ar" ? e.sub_ar : e.sub) && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {lang === "ar" ? e.sub_ar : e.sub}
+                    </div>
                   )}
                 </div>
-                <div className="font-medium">
-                  <span className={lang === "ar" ? "font-arabic" : ""}>
-                    {lang === "ar" ? e.title_ar : e.title}
-                  </span>
-                </div>
-                {(lang === "ar" ? e.sub_ar : e.sub) && (
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {lang === "ar" ? e.sub_ar : e.sub}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
