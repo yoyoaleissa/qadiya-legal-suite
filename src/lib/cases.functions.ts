@@ -70,7 +70,7 @@ export const createCase = createServerFn({ method: "POST" })
         case_id: row.id,
         level: "first_instance",
         court_name: data.court || null,
-        filing_date: data.filed_date || null,
+        registered_date: data.filed_date || null,
       });
     }
 
