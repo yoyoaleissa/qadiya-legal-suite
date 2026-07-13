@@ -62,7 +62,7 @@ function ClientsPage() {
           <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("CRM", "إدارة العملاء")}</div>
           <h1 className="font-display text-3xl">{tt("Clients & Cases", "العملاء والقضايا")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {tt("Select a client to view their legal matter and case history.", "اختر عميلاً لعرض قضيته وتاريخ قضاياه.")}
+            {tt("Select a client to view their legal matter and case history.", "اختر موكّلاً لعرض قضيته وتاريخ قضاياه.")}
           </p>
         </div>
         <div className="relative w-full sm:w-80">

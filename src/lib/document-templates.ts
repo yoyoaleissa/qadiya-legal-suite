@@ -57,7 +57,7 @@ const powerOfAttorney: DocTemplate = {
   name: { en: "General Power of Attorney", ar: "توكيل عام" },
   description: {
     en: "Authorizes the firm to represent the client before all courts and authorities.",
-    ar: "يفوّض المكتب بتمثيل العميل أمام كافة المحاكم والجهات.",
+    ar: "يفوّض المكتب بتمثيل الموكّل أمام كافة المحاكم والجهات.",
   },
   render: (f, lang) => {
     const date = longDate(f.date, lang);
@@ -230,7 +230,7 @@ const statementOfClaim: DocTemplate = {
   name: { en: "Statement of Claim", ar: "صحيفة دعوى" },
   description: {
     en: "A pleading initiating an action before the court on the client's behalf.",
-    ar: "مذكرة دعوى تُرفع نيابةً عن العميل أمام المحكمة.",
+    ar: "مذكرة دعوى تُرفع نيابةً عن الموكّل أمام المحكمة.",
   },
   render: (f, lang) => {
     const date = longDate(f.date, lang);

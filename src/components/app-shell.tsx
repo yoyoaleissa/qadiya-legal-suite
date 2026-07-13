@@ -35,7 +35,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
-  { to: "/report-bot", labelEn: "Report Bot", labelAr: "بوت التقارير", icon: Bot, highlight: true },
+  { to: "/report-bot", labelEn: "Report Bot", labelAr: "روبوت التقارير", icon: Bot, highlight: true },
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "العملاء والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
