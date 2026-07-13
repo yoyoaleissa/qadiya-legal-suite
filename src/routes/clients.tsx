@@ -177,6 +177,19 @@ function ClientsPage() {
                 <DialogDescription>
                   {tt("Legal matter & case history", "موضوع النزاع وسجل القضايا")}
                 </DialogDescription>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 w-fit gap-1.5"
+                  onClick={() => {
+                    const displayName = lang === "ar" ? detail.name_ar ?? detail.name : detail.name;
+                    onClose();
+                    setChatClient({ id: detail.id, name: displayName });
+                  }}
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  {tt("Message client", "مراسلة الموكّل")}
+                </Button>
               </DialogHeader>
 
               <div className="space-y-6 pt-2">
