@@ -49,7 +49,7 @@ import { getDailyBriefing, type DailyBriefing } from "@/lib/briefing.functions";
 import { listInvoices } from "@/lib/billing.functions";
 import { createCase } from "@/lib/cases.functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
 });
 
