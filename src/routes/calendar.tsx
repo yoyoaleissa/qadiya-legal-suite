@@ -88,6 +88,18 @@ function CalendarPage() {
   const selectedEvents = byDate.get(selected) ?? [];
   const todayIso = iso(today.getFullYear(), today.getMonth(), today.getDate());
 
+  const monthPrefix = `${view.year}-${String(view.month + 1).padStart(2, "0")}`;
+  const monthEvents = useMemo(
+    () =>
+      (events ?? [])
+        .filter((e) => e.date.startsWith(monthPrefix))
+        .sort((a, b) => a.date.localeCompare(b.date)),
+    [events, monthPrefix],
+  );
+  const monthHearings = monthEvents.filter((e) => e.type === "hearing").length;
+  const monthDeadlines = monthEvents.filter((e) => e.type === "deadline").length;
+  const monthName = lang === "ar" ? MONTHS_AR[view.month] : MONTHS_EN[view.month];
+
   function shiftMonth(delta: number) {
     setView((v) => {
       const m = v.month + delta;
