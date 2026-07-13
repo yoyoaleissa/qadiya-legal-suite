@@ -238,6 +238,7 @@ function ClientsPage() {
     });
 
     return (
+      <>
       <Dialog open={!!clientId} onOpenChange={(o) => !o && onClose()}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           {loadingDetail || !detail ? (
