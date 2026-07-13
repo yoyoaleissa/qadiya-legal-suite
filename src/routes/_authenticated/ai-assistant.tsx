@@ -252,6 +252,12 @@ function AiAssistantPage() {
           </p>
         </div>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="knowledge" className="flex-1 overflow-hidden mt-4 data-[state=inactive]:hidden">
+          <KnowledgePanel tt={tt} lang={lang} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
