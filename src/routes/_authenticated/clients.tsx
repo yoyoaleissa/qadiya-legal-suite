@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { Search, Users, FileText, Scale, Loader2, ChevronRight, MessageSquare } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Search, Users, FileText, Scale, Loader2, ChevronRight, MessageSquare, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +14,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { useApp } from "@/lib/app-context";
 import { EmptyState } from "@/components/EmptyState";
 import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
+import { createClient } from "@/lib/cases.functions";
 
 export const Route = createFileRoute("/clients")({
   head: () => ({
@@ -46,6 +49,7 @@ function ClientsPage() {
   const [q, setQ] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
   const [chatClient, setChatClient] = useState<{ id: string; name: string } | null>(null);
+  const [showCreateClient, setShowCreateClient] = useState(false);
 
   const runList = useServerFn(listClients);
   const { data: clients, isLoading } = useQuery({
@@ -68,9 +72,15 @@ function ClientsPage() {
             {tt("Select a client to view their legal matter and case history.", "اختر موكّلاً لعرض موضوع نزاعه وسجل قضاياه.")}
           </p>
         </div>
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tt("Search clients…", "بحث…")} className="ps-9" />
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tt("Search clients…", "بحث…")} className="ps-9" />
+          </div>
+          <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90 shrink-0" onClick={() => setShowCreateClient(true)}>
+            <Plus className="h-4 w-4" />
+            {tt("New Client", "موكّل جديد")}
+          </Button>
         </div>
       </div>
 
@@ -147,8 +157,69 @@ function ClientsPage() {
         clientName={chatClient?.name ?? ""}
         onClose={() => setChatClient(null)}
       />
+      <CreateClientDialog open={showCreateClient} onClose={() => setShowCreateClient(false)} tt={tt} lang={lang} />
     </div>
   );
+
+  function CreateClientDialog({ open, onClose, tt, lang }: { open: boolean; onClose: () => void; tt: (en: string, ar: string) => string; lang: string }) {
+    const [name, setName] = useState("");
+    const [nameAr, setNameAr] = useState("");
+    const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
+    const [notes, setNotes] = useState("");
+    const [loading, setLoading] = useState(false);
+    const runCreate = useServerFn(createClient);
+    const qc = useQueryClient();
+
+    const handleSubmit = async () => {
+      if (!name.trim()) return;
+      setLoading(true);
+      try {
+        await runCreate({ name, name_ar: nameAr || undefined, phone: phone || undefined, email: email || undefined, notes: notes || undefined });
+        qc.invalidateQueries({ queryKey: ["clients"] });
+        onClose();
+        setName(""); setNameAr(""); setPhone(""); setEmail(""); setNotes("");
+      } finally { setLoading(false); }
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>{tt("New Client", "موكّل جديد")}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Name (English)", "الاسم (إنجليزي)")}</label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Kuwait Trading Co." />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Name (Arabic)", "الاسم (عربي)")}</label>
+              <Input value={nameAr} onChange={(e) => setNameAr(e.target.value)} dir="rtl" placeholder="شركة الكويت للتجارة" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{tt("Phone", "الهاتف")}</label>
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+965 XXXX XXXX" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{tt("Email", "البريد")}</label>
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="client@email.com" />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{tt("Legal Matter / Notes", "موضوع النزاع / ملاحظات")}</label>
+              <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder={tt("Brief description of the legal matter", "وصف موجز لموضوع النزاع")} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>{tt("Cancel", "إلغاء")}</Button>
+            <Button onClick={handleSubmit} disabled={!name.trim() || loading} className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : tt("Create Client", "إنشاء موكّل")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   function ClientDialog({ clientId, onClose }: { clientId: string | null; onClose: () => void }) {
     const runDetail = useServerFn(getClientDetail);

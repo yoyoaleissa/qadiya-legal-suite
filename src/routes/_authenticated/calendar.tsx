@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange, Download } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange, Download, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
+import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 
 export const Route = createFileRoute("/calendar")({
@@ -348,6 +349,20 @@ function CalendarPage() {
                           {lang === "ar" ? e.sub_ar : e.sub}
                         </div>
                       )}
+                      <a
+                        href={buildGoogleCalendarUrl({
+                          title: `${e.type === "hearing" ? "⚖️" : "⏰"} ${lang === "ar" ? e.title_ar : e.title}${e.case_number ? ` #${e.case_number}` : ""}`,
+                          date: e.date,
+                          description: `${e.type === "hearing" ? "Court Hearing" : "Deadline"}${e.case_number ? ` — Case #${e.case_number}` : ""}`,
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(ev) => ev.stopPropagation()}
+                        className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-gold transition-colors"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {tt("Google Cal", "تقويم Google")}
+                      </a>
                     </div>
                   </li>
                 );
@@ -413,6 +428,19 @@ function CalendarPage() {
                       {lang === "ar" ? e.sub_ar : e.sub}
                     </div>
                   )}
+                  <a
+                    href={buildGoogleCalendarUrl({
+                      title: `${e.type === "hearing" ? "⚖️" : "⏰"} ${lang === "ar" ? e.title_ar : e.title}${e.case_number ? ` #${e.case_number}` : ""}`,
+                      date: e.date,
+                      description: `${e.type === "hearing" ? "Court Hearing" : "Deadline"}${e.case_number ? ` — Case #${e.case_number}` : ""}\n${(lang === "ar" ? e.sub_ar : e.sub) ?? ""}`,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    {tt("Add to Google Calendar", "إضافة إلى تقويم Google")}
+                  </a>
                 </div>
               ))}
             </div>
