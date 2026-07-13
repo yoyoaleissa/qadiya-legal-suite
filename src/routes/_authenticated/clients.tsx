@@ -230,6 +230,7 @@ function ClientsPage() {
 
   function ClientDialog({ clientId, onClose }: { clientId: string | null; onClose: () => void }) {
     const runDetail = useServerFn(getClientDetail);
+    const [addEventCase, setAddEventCase] = useState<{ id: string; title: string; status: string } | null>(null);
     const { data: detail, isLoading: loadingDetail } = useQuery({
       queryKey: ["client", clientId],
       queryFn: () => runDetail({ data: { clientId: clientId! } }),
