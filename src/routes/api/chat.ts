@@ -39,6 +39,41 @@ async function buildFirmContext(): Promise<string> {
   }
 }
 
+/** Retrieve firm/legal knowledge relevant to the user's latest message (RAG). */
+async function retrieveKnowledge(query: string): Promise<string> {
+  const text = query.trim();
+  if (!text) return "";
+  try {
+    const { embedQuery } = await import("@/lib/embeddings.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const vector = await embedQuery(text);
+    const { data, error } = await supabaseAdmin.rpc("match_legal_knowledge", {
+      query_embedding: JSON.stringify(vector),
+      match_count: 6,
+    });
+    if (error) {
+      console.error("[chat] knowledge retrieval failed", error);
+      return "";
+    }
+
+    const matches = (data ?? []).filter(
+      (m: { similarity: number }) => m.similarity >= 0.2,
+    );
+    if (matches.length === 0) return "";
+
+    return matches
+      .map(
+        (m: { title: string; content: string }, i: number) =>
+          `[${i + 1}] Source: ${m.title}\n${m.content}`,
+      )
+      .join("\n\n---\n\n");
+  } catch (err) {
+    console.error("[chat] knowledge retrieval error", err);
+    return "";
+  }
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
