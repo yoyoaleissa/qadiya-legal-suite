@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { CheckSquare, User, Flag, CalendarClock, FileText, Loader2, X } from "lucide-react";
@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 import { listTasks, type TaskItem } from "@/lib/tasks.functions";
 
 export const Route = createFileRoute("/tasks")({
+  validateSearch: (search: Record<string, unknown>): { taskId?: string } => ({
+    taskId: typeof search.taskId === "string" ? search.taskId : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Tasks — Qadiya OS" },
@@ -44,7 +47,12 @@ function statusTone(s: string) {
 function TasksPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { taskId } = Route.useSearch();
+  const [selectedId, setSelectedId] = useState<string | null>(taskId ?? null);
+
+  useEffect(() => {
+    if (taskId) setSelectedId(taskId);
+  }, [taskId]);
 
   const runTasks = useServerFn(listTasks);
   const { data: tasks, isLoading } = useQuery({

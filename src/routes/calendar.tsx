@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2 } from "lucide-react";
@@ -10,6 +10,12 @@ import { cn } from "@/lib/utils";
 import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
 
 export const Route = createFileRoute("/calendar")({
+  validateSearch: (search: Record<string, unknown>): { date?: string } => ({
+    date:
+      typeof search.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(search.date)
+        ? search.date
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Court Calendar — Qadiya OS" },
@@ -31,10 +37,22 @@ function iso(y: number, m: number, d: number) {
 function CalendarPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+  const { date } = Route.useSearch();
 
   const today = new Date();
-  const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
-  const [selected, setSelected] = useState(iso(today.getFullYear(), today.getMonth(), today.getDate()));
+  const todayStr = iso(today.getFullYear(), today.getMonth(), today.getDate());
+  const initial = date ?? todayStr;
+  const [iy, im] = initial.split("-").map(Number);
+  const [view, setView] = useState({ year: iy, month: im - 1 });
+  const [selected, setSelected] = useState(initial);
+
+  useEffect(() => {
+    if (date) {
+      const [y, m] = date.split("-").map(Number);
+      setView({ year: y, month: m - 1 });
+      setSelected(date);
+    }
+  }, [date]);
 
   const runEvents = useServerFn(listCalendarEvents);
   const { data: events, isLoading } = useQuery({
