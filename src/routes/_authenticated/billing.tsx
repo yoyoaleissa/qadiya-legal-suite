@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/lib/app-context";
+import { useIsAdmin } from "@/hooks/use-roles";
 import { EmptyState } from "@/components/EmptyState";
 import { cn } from "@/lib/utils";
 import { listInvoices, createInvoice, updateInvoiceStatus, type InvoiceItem } from "@/lib/billing.functions";
