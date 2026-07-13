@@ -12,10 +12,21 @@ import { formatDate } from "./format";
 
 export function ReportView({ report, onNew }: { report: CaseReport; onNew: () => void }) {
   const { lang, t } = useApp();
+  const [exporting, setExporting] = useState(false);
   const headline = lang === "ar" ? report.status_headline_ar : report.status_headline_en;
   const stageLabel = report.current_stage
     ? COURT_LEVEL_LABELS[report.current_stage]?.[lang]
     : null;
+
+  const handleDownload = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      await exportCaseReportPdf(report, lang);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
