@@ -120,6 +120,12 @@ export const Route = createFileRoute("/api/chat")({
 
         const context = await buildFirmContext();
 
+        const lastUser = [...trimmed].reverse().find((m) => m.role === "user");
+        const knowledge = lastUser ? await retrieveKnowledge(lastUser.content) : "";
+        const knowledgeBlock = knowledge
+          ? `\n\nFIRM KNOWLEDGE BASE (retrieved passages from uploaded Kuwaiti law texts and the firm's own briefs — treat these as authoritative primary references and ground your answer on them, citing the source title when you rely on a passage):\n${knowledge}`
+          : "";
+
         const system = `You are "Qadiya Counsel", the senior AI legal assistant inside a Kuwaiti law-firm practice-management system (Qadiya OS).
 
 ROLE & EXPERTISE
