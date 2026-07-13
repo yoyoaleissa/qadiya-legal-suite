@@ -13,7 +13,6 @@ import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as DocumentsRouteImport } from './routes/documents'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as BillingRouteImport } from './routes/billing'
@@ -38,11 +37,6 @@ const ReportRoute = ReportRouteImport.update({
 const DocumentsRoute = DocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientsRoute = ClientsRouteImport.update({
@@ -77,7 +71,6 @@ export interface FileRoutesByFullPath {
   '/billing': typeof BillingRoute
   '/calendar': typeof CalendarRoute
   '/clients': typeof ClientsRoute
-  '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/report': typeof ReportRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -89,7 +82,6 @@ export interface FileRoutesByTo {
   '/billing': typeof BillingRoute
   '/calendar': typeof CalendarRoute
   '/clients': typeof ClientsRoute
-  '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/report': typeof ReportRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -102,7 +94,6 @@ export interface FileRoutesById {
   '/billing': typeof BillingRoute
   '/calendar': typeof CalendarRoute
   '/clients': typeof ClientsRoute
-  '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/report': typeof ReportRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -116,7 +107,6 @@ export interface FileRouteTypes {
     | '/billing'
     | '/calendar'
     | '/clients'
-    | '/dashboard'
     | '/documents'
     | '/report'
     | '/sitemap.xml'
@@ -128,7 +118,6 @@ export interface FileRouteTypes {
     | '/billing'
     | '/calendar'
     | '/clients'
-    | '/dashboard'
     | '/documents'
     | '/report'
     | '/sitemap.xml'
@@ -140,7 +129,6 @@ export interface FileRouteTypes {
     | '/billing'
     | '/calendar'
     | '/clients'
-    | '/dashboard'
     | '/documents'
     | '/report'
     | '/sitemap.xml'
@@ -153,7 +141,6 @@ export interface RootRouteChildren {
   BillingRoute: typeof BillingRoute
   CalendarRoute: typeof CalendarRoute
   ClientsRoute: typeof ClientsRoute
-  DashboardRoute: typeof DashboardRoute
   DocumentsRoute: typeof DocumentsRoute
   ReportRoute: typeof ReportRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -188,13 +175,6 @@ declare module '@tanstack/react-router' {
       path: '/documents'
       fullPath: '/documents'
       preLoaderRoute: typeof DocumentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clients': {
@@ -241,7 +221,6 @@ const rootRouteChildren: RootRouteChildren = {
   BillingRoute: BillingRoute,
   CalendarRoute: CalendarRoute,
   ClientsRoute: ClientsRoute,
-  DashboardRoute: DashboardRoute,
   DocumentsRoute: DocumentsRoute,
   ReportRoute: ReportRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
