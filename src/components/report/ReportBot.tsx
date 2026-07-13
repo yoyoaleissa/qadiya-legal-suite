@@ -119,33 +119,33 @@ export function ReportBot() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-4 bg-muted/30">
           {messages.map((m, i) => (
             <MessageBubble key={i} msg={m} onNew={reset} onTry={() => submit("222486500")} />
-          )}
+          ))}
         </div>
 
         <div className="border-t bg-card p-4">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit(input);
-          }}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit(input);
+            }}
             className="flex gap-2"
-        >
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+          >
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               placeholder={t(
                 "Type a case number (try 222486500)…",
                 "اكتب رقم القضية (جرّب 222486500)…",
               )}
-            inputMode="numeric"
+              inputMode="numeric"
               disabled={busy}
-            className="flex-1"
-          />
+              className="flex-1"
+            />
             <Button type="submit" disabled={busy || !input.trim()} className="gap-1">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
               {t("Send", "إرسال")}
-          </Button>
-        </form>
+            </Button>
+          </form>
           <button
             type="button"
             onClick={() => submit("222486500")}
