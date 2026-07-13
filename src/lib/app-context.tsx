@@ -21,7 +21,7 @@ interface AppState {
   toggleTheme: () => void;
   setLang: (l: Lang) => void;
   toggleLang: () => void;
-  t: (key: keyof typeof translations.en) => string;
+  t: (keyOrEn: keyof typeof translations.en | string, ar?: string) => string;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -187,7 +187,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const t = useCallback(
-    (key: keyof typeof translations.en) => translations[lang][key] ?? translations.en[key],
+    (keyOrEn: keyof typeof translations.en | string, ar?: string) => {
+      if (typeof ar === "string") return lang === "ar" ? ar : keyOrEn;
+      const key = keyOrEn as keyof typeof translations.en;
+      return translations[lang][key] ?? translations.en[key] ?? keyOrEn;
+    },
     [lang],
   );
 

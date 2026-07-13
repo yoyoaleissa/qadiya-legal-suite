@@ -26,45 +26,44 @@ function roleLabel(role: string, lang: "en" | "ar") {
 }
 
 function Dashboard() {
-  const { lang, role } = useApp();
-  const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+  const { t, role } = useApp();
 
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">
-            {tt("Overview", "نظرة عامة")}
+            {t("Overview", "نظرة عامة")}
           </div>
           <h1 className="font-display text-4xl mt-1">
-            {tt("Good morning, ", "صباح الخير، ")}
-            <span className="text-gold">{tt(roleLabel(role, "en"), roleLabel(role, "ar"))}</span>
+            {t("Good morning, ", "صباح الخير، ")}
+            <span className="text-gold">{t(roleLabel(role, "en"), roleLabel(role, "ar"))}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {tt(
+            {t(
               "Here's what needs your attention today.",
               "إليك أهم ما يحتاج انتباهك اليوم.",
             )}
           </p>
         </div>
         <Link
-          to="/report"
+          to="/report-bot"
           className="rounded-lg bg-navy text-white dark:bg-gold dark:text-navy px-5 py-3 flex items-center gap-3 hover:shadow-lg transition-shadow"
         >
           <Bot className="h-5 w-5" />
           <div>
-            <div className="text-xs opacity-80 uppercase tracking-wider">{tt("Live", "مباشر")}</div>
-            <div className="font-medium">{tt("Open Report Bot", "افتح بوت التقارير")}</div>
+            <div className="text-xs opacity-80 uppercase tracking-wider">{t("Try the demo", "جرّب العرض")}</div>
+            <div className="font-medium">{t("Open Report Bot", "افتح بوت التقارير")}</div>
           </div>
           <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </Link>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Stat icon={Users} label={tt("Active clients", "العملاء الفعّالون")} value="—" sub={tt("Connect data source", "اربط مصدر البيانات")} />
-        <Stat icon={FileText} label={tt("Open matters", "قضايا مفتوحة")} value="—" sub={tt("across firm", "على مستوى المكتب")} />
-        <Stat icon={Calendar} label={tt("Hearings this week", "جلسات هذا الأسبوع")} value="—" sub={tt("Court calendar", "التقويم القضائي")} accent />
-        <Stat icon={Receipt} label={tt("Outstanding", "مستحقات")} value="— KWD" sub={tt("Billing", "الفوترة")} />
+        <Stat icon={Users} label={t("Active clients", "العملاء الفعّالون")} value="—" sub={t("Connect data source", "اربط مصدر البيانات")} />
+        <Stat icon={FileText} label={t("Open matters", "قضايا مفتوحة")} value="—" sub={t("across firm", "على مستوى المكتب")} />
+        <Stat icon={Calendar} label={t("Hearings this week", "جلسات هذا الأسبوع")} value="—" sub={t("Court calendar", "التقويم القضائي")} accent />
+        <Stat icon={Receipt} label={t("Outstanding", "مستحقات")} value="— KWD" sub={t("Billing", "الفوترة")} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -72,15 +71,15 @@ function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Upcoming", "قادم")}</div>
-                <h2 className="font-display text-xl">{tt("Hearings & deadlines", "الجلسات والمواعيد")}</h2>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">{t("Upcoming", "قادم")}</div>
+                <h2 className="font-display text-xl">{t("Hearings & deadlines", "الجلسات والمواعيد")}</h2>
               </div>
-              <Link to="/calendar" className="text-xs text-gold hover:underline">{tt("View calendar →", "عرض التقويم ←")}</Link>
+              <Link to="/calendar" className="text-xs text-gold hover:underline">{t("View calendar →", "عرض التقويم ←")}</Link>
             </div>
             <EmptyRow
               icon={Calendar}
-              title={tt("No hearings synced yet", "لا توجد جلسات متزامنة بعد")}
-              desc={tt(
+              title={t("No hearings synced yet", "لا توجد جلسات متزامنة بعد")}
+              desc={t(
                 "Connected to the live backend — hearings appear here once cases are added.",
                 "متصل بالخادم المباشر — تظهر الجلسات هنا بمجرد إضافة القضايا.",
               )}
@@ -92,15 +91,15 @@ function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Your queue", "قائمتك")}</div>
-                <h2 className="font-display text-xl">{tt("Tasks", "المهام")}</h2>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">{t("Your queue", "قائمتك")}</div>
+                <h2 className="font-display text-xl">{t("Tasks", "المهام")}</h2>
               </div>
-              <Link to="/tasks" className="text-xs text-gold hover:underline">{tt("All →", "الكل ←")}</Link>
+              <Link to="/tasks" className="text-xs text-gold hover:underline">{t("All →", "الكل ←")}</Link>
             </div>
             <EmptyRow
               icon={CheckSquare}
-              title={tt("Your queue is clear", "قائمتك فارغة")}
-              desc={tt("New tasks will show up here.", "ستظهر المهام الجديدة هنا.")}
+              title={t("Your queue is clear", "قائمتك فارغة")}
+              desc={t("New tasks will show up here.", "ستظهر المهام الجديدة هنا.")}
             />
           </CardContent>
         </Card>
