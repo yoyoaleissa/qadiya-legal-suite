@@ -145,7 +145,7 @@ function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: st
   const markAs = async (status: "sent" | "paid" | "cancelled") => {
     setLoading(true);
     try {
-      await runUpdateStatus({ id: inv.id, status });
+      await runUpdateStatus({ data: { id: inv.id, status } });
       onUpdate();
     } finally { setLoading(false); }
   };
@@ -185,7 +185,7 @@ function CreateInvoiceDialog({ open, onClose, tt, lang, onCreated }: { open: boo
     if (!numAmount || numAmount <= 0) return;
     setLoading(true);
     try {
-      await runCreate({ amount: numAmount, description: description || undefined, due_date: dueDate || undefined });
+      await runCreate({ data: { amount: numAmount, description: description || undefined, due_date: dueDate || undefined } });
       onCreated();
       onClose();
       setAmount(""); setDescription(""); setDueDate("");

@@ -175,7 +175,7 @@ function ClientsPage() {
       if (!name.trim()) return;
       setLoading(true);
       try {
-        await runCreate({ name, name_ar: nameAr || undefined, phone: phone || undefined, email: email || undefined, notes: notes || undefined });
+        await runCreate({ data: { name, name_ar: nameAr || undefined, phone: phone || undefined, email: email || undefined, notes: notes || undefined } });
         qc.invalidateQueries({ queryKey: ["clients"] });
         onClose();
         setName(""); setNameAr(""); setPhone(""); setEmail(""); setNotes("");

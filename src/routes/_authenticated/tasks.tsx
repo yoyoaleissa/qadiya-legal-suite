@@ -214,7 +214,7 @@ function CreateTaskDialog({ open, onClose, tt, lang, onCreated }: { open: boolea
     if (!title.trim()) return;
     setLoading(true);
     try {
-      await runCreate({ title, title_ar: titleAr || undefined, description: description || undefined, priority: priority as "high" | "medium" | "low", assignee: assignee || undefined, due_date: dueDate || undefined });
+      await runCreate({ data: { title, title_ar: titleAr || undefined, description: description || undefined, priority: priority as "high" | "medium" | "low", assignee: assignee || undefined, due_date: dueDate || undefined } });
       onCreated();
       onClose();
       setTitle(""); setTitleAr(""); setDescription(""); setPriority("medium"); setAssignee(""); setDueDate("");
@@ -289,7 +289,7 @@ function WorkflowDialog({ open, onClose, tt, lang, onCreated }: { open: boolean;
     if (!selectedTemplate) return;
     setLoading(true);
     try {
-      await runCreate({ template_id: selectedTemplate, assignee: assignee || undefined });
+      await runCreate({ data: { template_id: selectedTemplate, assignee: assignee || undefined } });
       onCreated();
       onClose();
       setSelectedTemplate(""); setAssignee("");
@@ -352,7 +352,7 @@ function TaskDetail({ task, onClose, tt, lang, priorityLabel, statusLabel }: { t
   const handleStatusChange = async (newStatus: "open" | "in_progress" | "done") => {
     setUpdating(true);
     try {
-      await runUpdate({ id: task.id, status: newStatus });
+      await runUpdate({ data: { id: task.id, status: newStatus } });
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     } finally { setUpdating(false); }
   };
