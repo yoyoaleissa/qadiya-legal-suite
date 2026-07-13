@@ -186,6 +186,13 @@ function AiAssistantPage() {
         )}
       </div>
 
+      <Tabs defaultValue="chat" className="flex-1 flex flex-col overflow-hidden">
+        <TabsList className="w-fit">
+          <TabsTrigger value="chat">{tt("Chat", "المحادثة")}</TabsTrigger>
+          <TabsTrigger value="knowledge">{tt("Upload Knowledge", "رفع المعرفة")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="chat" className="flex-1 flex flex-col overflow-hidden mt-4 data-[state=inactive]:hidden">
       <Card className="flex-1 flex flex-col overflow-hidden">
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
           {!hasChat ? (
