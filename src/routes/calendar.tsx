@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange, Download } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
+import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 
 export const Route = createFileRoute("/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
@@ -46,6 +47,7 @@ function CalendarPage() {
   const [view, setView] = useState({ year: iy, month: im - 1 });
   const [selected, setSelected] = useState(initial);
   const [showMonth, setShowMonth] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (date) {
@@ -240,13 +242,50 @@ function CalendarPage() {
                 {monthName} {view.year}
               </span>
             </h2>
-            <div className="text-xs text-muted-foreground">
-              {tt(
-                `${monthHearings} hearings · ${monthDeadlines} deadlines`,
-                `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي`,
-              )}
+            <div className="flex items-center gap-3">
+              <div className="text-xs text-muted-foreground">
+                {tt(
+                  `${monthHearings} hearings · ${monthDeadlines} deadlines`,
+                  `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي`,
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                disabled={exporting || isLoading}
+                onClick={async () => {
+                  setExporting(true);
+                  try {
+                    await exportMonthlyOverviewPdf({
+                      monthName,
+                      year: view.year,
+                      lang,
+                      hearings: monthHearings,
+                      deadlines: monthDeadlines,
+                      events: monthEvents.map((e) => ({
+                        date: e.date,
+                        type: e.type,
+                        title: lang === "ar" ? e.title_ar : e.title,
+                        sub: lang === "ar" ? e.sub_ar : e.sub,
+                        case_number: e.case_number,
+                      })),
+                    });
+                  } finally {
+                    setExporting(false);
+                  }
+                }}
+              >
+                {exporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                {tt("Export PDF", "تصدير PDF")}
+              </Button>
             </div>
           </div>
+
 
           {isLoading ? (
             <Card>
