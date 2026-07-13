@@ -69,6 +69,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const runClaimAdmin = useServerFn(claimFirstAdmin);
+
+  // Bootstrap: the first user to sign in becomes admin (no-op once an admin exists).
+  useEffect(() => {
+    runClaimAdmin()
+      .then((r) => {
+        if (r.claimed) queryClient.invalidateQueries({ queryKey: ["my-roles"] });
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nav = NAV.filter((n) => !n.adminOnly || isAdmin);
 
