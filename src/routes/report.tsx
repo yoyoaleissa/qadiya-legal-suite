@@ -30,12 +30,12 @@ function ReportPage() {
           {t("Priority Feature", "الميزة الأساسية")}
         </div>
         <h1 className="font-display text-3xl md:text-4xl mt-1">
-          {t("Report Bot", "بوت التقارير")}
+          {t("Report Bot", "روبوت التقارير")}
         </h1>
         <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
           {t(
             "This is what your clients experience on Telegram: they send a case number, receive a polished bilingual status report in seconds — with the timeline, deadlines, and a branded PDF.",
-            "هذه هي التجربة التي يعيشها عملاؤك عبر تلغرام: يُرسل العميل رقم القضية ليتلقى تقريراً ثنائي اللغة خلال ثوانٍ — مع الجدول الزمني والمواعيد وتقرير PDF بهوية المكتب.",
+            "هذه هي التجربة التي يعيشها موكّلوك عبر تلغرام: يُرسل الموكّل رقم القضية ليتلقى تقريراً ثنائي اللغة خلال ثوانٍ — مع الجدول الزمني والمواعيد وتقرير PDF بهوية المكتب.",
           )}
         </p>
       </div>

@@ -101,12 +101,12 @@ export function ReportBot() {
           </div>
           <div className="flex-1">
             <div className="font-display text-lg leading-tight">
-              {t("Report Bot", "بوت التقارير")}
+              {t("Report Bot", "روبوت التقارير")}
             </div>
             <div className="text-xs text-white/70">
               {t(
                 "Client-facing case status assistant · MOJ-connected",
-                "مساعد حالة القضية للعميل · متصل بوزارة العدل",
+                "مساعد حالة القضية للموكّل · متصل بوزارة العدل",
               )}
             </div>
           </div>
@@ -165,10 +165,10 @@ export function ReportBot() {
               {t("How it works", "كيف يعمل")}
             </div>
             <ol className="text-sm text-muted-foreground space-y-2 list-decimal ps-5">
-              <li>{t("Client sends a case number in Telegram / WhatsApp.", "يرسل العميل رقم القضية عبر تلغرام / واتساب.")}</li>
+              <li>{t("Client sends a case number in Telegram / WhatsApp.", "يرسل الموكّل رقم القضية عبر تلغرام / واتساب.")}</li>
               <li>{t("Bot fetches the latest MOJ extract.", "يجلب البوت آخر بيانات وزارة العدل.")}</li>
               <li>{t("AI produces a bilingual, plain-language brief.", "يُولّد الذكاء الاصطناعي ملخصاً واضحاً بالعربية والإنجليزية.")}</li>
-              <li>{t("Client downloads a branded PDF report.", "يحمّل العميل تقريراً بصيغة PDF بهوية المكتب.")}</li>
+              <li>{t("Client downloads a branded PDF report.", "يحمّل الموكّل تقريراً بصيغة PDF بهوية المكتب.")}</li>
             </ol>
           </CardContent>
         </Card>

@@ -53,14 +53,14 @@ function Dashboard() {
           <Bot className="h-5 w-5" />
           <div>
             <div className="text-xs opacity-80 uppercase tracking-wider">{t("Try the demo", "جرّب العرض")}</div>
-            <div className="font-medium">{t("Open Report Bot", "افتح بوت التقارير")}</div>
+            <div className="font-medium">{t("Open Report Bot", "افتح روبوت التقارير")}</div>
           </div>
           <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </Link>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Stat icon={Users} label={t("Active clients", "العملاء الفعّالون")} value="—" sub={t("Connect data source", "اربط مصدر البيانات")} />
+        <Stat icon={Users} label={t("Active clients", "الموكّلون النشطون")} value="—" sub={t("Connect data source", "اربط مصدر البيانات")} />
         <Stat icon={FileText} label={t("Open matters", "قضايا مفتوحة")} value="—" sub={t("across firm", "على مستوى المكتب")} />
         <Stat icon={Calendar} label={t("Hearings this week", "جلسات هذا الأسبوع")} value="—" sub={t("Court calendar", "التقويم القضائي")} accent />
         <Stat icon={Receipt} label={t("Outstanding", "مستحقات")} value="— KWD" sub={t("Billing", "الفوترة")} />

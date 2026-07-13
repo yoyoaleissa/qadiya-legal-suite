@@ -46,7 +46,7 @@ function DocumentsPage() {
       <div>
         <div className="text-xs uppercase tracking-widest text-muted-foreground">{t("Automation", "الأتمتة")}</div>
         <h1 className="font-display text-3xl">{t("Document Generation", "توليد المستندات")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("Auto-fill any template with client and matter data.", "تعبئة تلقائية لأي قالب ببيانات العميل والقضية.")}</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("Auto-fill any template with client and matter data.", "تعبئة تلقائية لأي قالب ببيانات الموكّل والقضية.")}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -166,7 +166,7 @@ function CalendarPage() {
               <span className="h-2 w-2 rounded-full bg-navy dark:bg-gold" /> {tt("Hearing", "جلسة")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-destructive" /> {tt("Deadline", "موعد نهائي")}
+              <span className="h-2 w-2 rounded-full bg-destructive" /> {tt("Deadline", "ميعاد نهائي")}
             </span>
           </div>
         </CardContent>
@@ -174,7 +174,7 @@ function CalendarPage() {
 
       <div>
         <h2 className="font-display text-xl mb-3">
-          {tt("Agenda for", "أجندة يوم")}{" "}
+          {tt("Agenda for", "جدول أعمال يوم")}{" "}
           <span className="text-gold">{selected}</span>
         </h2>
 
@@ -213,7 +213,7 @@ function CalendarPage() {
                     )}
                   >
                     {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                    {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "موعد نهائي")}
+                    {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
                   </span>
                   {e.case_number && (
                     <span className="text-xs text-muted-foreground">#{e.case_number}</span>
