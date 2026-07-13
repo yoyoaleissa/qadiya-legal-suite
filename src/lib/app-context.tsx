@@ -154,12 +154,15 @@ export const COURT_LEVEL_LABELS: Record<string, { en: string; ar: string }> = {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [lang, setLangState] = useState<Lang>("en");
+  const [role, setRoleState] = useState<Role>("partner");
 
   useEffect(() => {
     const storedTheme = (localStorage.getItem("qadiya-theme") as Theme) || "light";
     const storedLang = (localStorage.getItem("qadiya-lang") as Lang) || "en";
+    const storedRole = (localStorage.getItem("qadiya-role") as Role) || "partner";
     setTheme(storedTheme);
     setLangState(storedLang);
+    setRoleState(storedRole);
   }, []);
 
   useEffect(() => {
@@ -178,6 +181,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleTheme = useCallback(() => setTheme((p) => (p === "light" ? "dark" : "light")), []);
   const setLang = useCallback((l: Lang) => setLangState(l), []);
   const toggleLang = useCallback(() => setLangState((p) => (p === "en" ? "ar" : "en")), []);
+  const setRole = useCallback((r: Role) => {
+    setRoleState(r);
+    localStorage.setItem("qadiya-role", r);
+  }, []);
 
   const t = useCallback(
     (key: keyof typeof translations.en) => translations[lang][key] ?? translations.en[key],
@@ -185,9 +192,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<AppState>(
-    () => ({ theme, lang, dir: lang === "ar" ? "rtl" : "ltr", toggleTheme, setLang, toggleLang, t }),
-    [theme, lang, toggleTheme, setLang, toggleLang, t],
+    () => ({ theme, lang, dir: lang === "ar" ? "rtl" : "ltr", role, setRole, toggleTheme, setLang, toggleLang, t }),
+    [theme, lang, role, setRole, toggleTheme, setLang, toggleLang, t],
   );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
