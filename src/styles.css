@@ -229,7 +229,23 @@
   .no-print {
     display: none !important;
   }
+  /* Isolate the document/report body so overlays and page chrome don't print. */
+  body:has(.print-area) * {
+    visibility: hidden;
+  }
+  body:has(.print-area) .print-area,
+  body:has(.print-area) .print-area * {
+    visibility: visible;
+  }
   .print-area {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    max-height: none !important;
+    overflow: visible !important;
     box-shadow: none !important;
+    border: none !important;
   }
 }
+
