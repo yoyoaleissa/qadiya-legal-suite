@@ -89,8 +89,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="p-4 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
-          <div>{t("Demo build — mock data", "نسخة تجريبية")}</div>
-          <div className="mt-1">v0.9 • Kuwait</div>
+          <div>
+            <span className={lang === "ar" ? "font-arabic" : ""}>{t("Live backend — Lovable Cloud", "خادم مباشر — لوفابل كلاود")}</span>
+          </div>
+          <div className="mt-1">v1.0 • {t("Kuwait", "الكويت")}</div>
         </div>
       </aside>
 
