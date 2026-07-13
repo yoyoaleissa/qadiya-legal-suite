@@ -47,6 +47,7 @@ function CalendarPage() {
   const [view, setView] = useState({ year: iy, month: im - 1 });
   const [selected, setSelected] = useState(initial);
   const [showMonth, setShowMonth] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (date) {
