@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   AlertCircle,
@@ -93,7 +93,7 @@ export function ReportBot() {
   }
 
   return (
-    <div className="grid lg:grid-cols-[1fr,360px] gap-6">
+    <div className="grid lg:grid-cols-[1fr_360px] gap-6">
       <Card className="flex flex-col h-[calc(100vh-11rem)] min-h-[640px] overflow-hidden pt-0">
         <div className="border-b bg-gradient-to-r from-navy to-navy/90 text-white px-6 py-4 flex items-center gap-3">
           <div className="h-10 w-10 rounded-md bg-gold text-navy flex items-center justify-center">
@@ -242,7 +242,7 @@ function MessageBubble({ msg, onNew, onTry }: { msg: Msg; onNew: () => void; onT
   );
 }
 
-function BotWrap({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
+function BotWrap({ children, wide }: { children: ReactNode; wide?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className="h-8 w-8 shrink-0 rounded-md bg-gold/20 border border-gold/40 flex items-center justify-center">
