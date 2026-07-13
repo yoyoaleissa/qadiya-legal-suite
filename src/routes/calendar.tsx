@@ -2,9 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2 } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
