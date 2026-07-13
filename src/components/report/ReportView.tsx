@@ -39,8 +39,8 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
           <Button variant="outline" size="sm" onClick={onNew} className="gap-1.5">
             <RotateCcw className="h-4 w-4" /> {t("new_lookup")}
           </Button>
-          <Button size="sm" onClick={() => window.print()} className="gap-1.5">
-            <Download className="h-4 w-4" /> {t("download_pdf")}
+          <Button size="sm" onClick={handleDownload} disabled={exporting} className="gap-1.5">
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} {t("download_pdf")}
           </Button>
         </div>
       </div>
