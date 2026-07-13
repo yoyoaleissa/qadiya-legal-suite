@@ -10,11 +10,14 @@ import {
 
 export type Theme = "light" | "dark";
 export type Lang = "en" | "ar";
+export type Role = "partner" | "associate" | "paralegal";
 
 interface AppState {
   theme: Theme;
   lang: Lang;
   dir: "ltr" | "rtl";
+  role: Role;
+  setRole: (r: Role) => void;
   toggleTheme: () => void;
   setLang: (l: Lang) => void;
   toggleLang: () => void;
