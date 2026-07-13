@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarDays } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
-import { EmptyState } from "@/components/EmptyState";
+import { cn } from "@/lib/utils";
+import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -14,9 +19,57 @@ export const Route = createFileRoute("/calendar")({
   component: CalendarPage,
 });
 
+const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const WEEK_EN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const WEEK_AR = ["أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"];
+
+function iso(y: number, m: number, d: number) {
+  return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
 function CalendarPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+
+  const today = new Date();
+  const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
+  const [selected, setSelected] = useState(iso(today.getFullYear(), today.getMonth(), today.getDate()));
+
+  const runEvents = useServerFn(listCalendarEvents);
+  const { data: events, isLoading } = useQuery({
+    queryKey: ["calendar-events"],
+    queryFn: () => runEvents(),
+  });
+
+  const byDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    for (const e of events ?? []) {
+      const arr = map.get(e.date) ?? [];
+      arr.push(e);
+      map.set(e.date, arr);
+    }
+    return map;
+  }, [events]);
+
+  const daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
+  const firstWeekday = new Date(view.year, view.month, 1).getDay();
+  const cells: (number | null)[] = [
+    ...Array(firstWeekday).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+
+  const selectedEvents = byDate.get(selected) ?? [];
+  const todayIso = iso(today.getFullYear(), today.getMonth(), today.getDate());
+
+  function shiftMonth(delta: number) {
+    setView((v) => {
+      const m = v.month + delta;
+      return { year: v.year + Math.floor(m / 12), month: ((m % 12) + 12) % 12 };
+    });
+  }
+
+  const weekdays = lang === "ar" ? WEEK_AR : WEEK_EN;
 
   return (
     <div className="space-y-6">
@@ -27,18 +80,160 @@ function CalendarPage() {
           {tt("Hearings, appeal windows, and limitation deadlines.", "الجلسات ومواعيد الاستئناف والتقادم.")}
         </p>
       </div>
+
       <Card>
         <CardContent className="pt-6">
-          <EmptyState
-            icon={CalendarDays}
-            title={tt("No hearings scheduled", "لا توجد جلسات مجدولة")}
-            desc={tt(
-              "Connected to the live backend. Hearings and deadlines will populate the calendar automatically as cases are added.",
-              "متصل بالخادم المباشر. ستظهر الجلسات والمواعيد في التقويم تلقائياً بمجرد إضافة القضايا.",
-            )}
-          />
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-xl">
+              {lang === "ar" ? MONTHS_AR[view.month] : MONTHS_EN[view.month]} {view.year}
+            </h2>
+            <div className="flex items-center gap-1">
+              <Button variant="outline" size="icon" onClick={() => shiftMonth(-1)}>
+                <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setView({ year: today.getFullYear(), month: today.getMonth() });
+                  setSelected(todayIso);
+                }}
+              >
+                {tt("Today", "اليوم")}
+              </Button>
+              <Button variant="outline" size="icon" onClick={() => shiftMonth(1)}>
+                <ChevronRight className="h-4 w-4 rtl:rotate-180" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+            {weekdays.map((w) => (
+              <div key={w} className="text-center text-xs font-medium text-muted-foreground py-1">
+                {w}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1.5">
+            {cells.map((day, idx) => {
+              if (day === null) return <div key={`e-${idx}`} className="aspect-square" />;
+              const dateStr = iso(view.year, view.month, day);
+              const dayEvents = byDate.get(dateStr) ?? [];
+              const isSelected = dateStr === selected;
+              const isToday = dateStr === todayIso;
+              return (
+                <button
+                  key={dateStr}
+                  onClick={() => setSelected(dateStr)}
+                  className={cn(
+                    "aspect-square rounded-md border p-1.5 flex flex-col items-center justify-start gap-1 transition-colors relative",
+                    isSelected
+                      ? "border-gold bg-gold/10"
+                      : "border-border hover:border-gold/50 hover:bg-accent/40",
+                    isToday && !isSelected && "border-navy/40 dark:border-gold/40",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "text-sm",
+                      isSelected && "font-semibold text-gold",
+                      isToday && !isSelected && "font-semibold",
+                    )}
+                  >
+                    {day}
+                  </span>
+                  {dayEvents.length > 0 && (
+                    <span className="flex flex-wrap justify-center gap-0.5 mt-auto">
+                      {dayEvents.slice(0, 3).map((e, i) => (
+                        <span
+                          key={i}
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            e.type === "hearing" ? "bg-navy dark:bg-gold" : "bg-destructive",
+                          )}
+                        />
+                      ))}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-navy dark:bg-gold" /> {tt("Hearing", "جلسة")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-destructive" /> {tt("Deadline", "موعد نهائي")}
+            </span>
+          </div>
         </CardContent>
       </Card>
+
+      <div>
+        <h2 className="font-display text-xl mb-3">
+          {tt("Agenda for", "أجندة يوم")}{" "}
+          <span className="text-gold">{selected}</span>
+        </h2>
+
+        {isLoading ? (
+          <Card>
+            <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {tt("Loading…", "جارٍ التحميل…")}
+            </CardContent>
+          </Card>
+        ) : selectedEvents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
+            <CalendarDays className="h-8 w-8 text-muted-foreground" />
+            <div className="text-sm font-medium">{tt("Nothing scheduled", "لا يوجد مواعيد")}</div>
+            <div className="text-xs text-muted-foreground">
+              {tt("Select a highlighted day to see its hearings and deadlines.", "اختر يوماً مميزاً لعرض جلساته ومواعيده.")}
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {selectedEvents.map((e) => (
+              <div
+                key={e.id}
+                className={cn(
+                  "rounded-lg border bg-card p-4 border-s-4",
+                  e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
+                )}
+              >
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+                      e.type === "hearing"
+                        ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                        : "bg-destructive/10 text-destructive",
+                    )}
+                  >
+                    {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                    {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "موعد نهائي")}
+                  </span>
+                  {e.case_number && (
+                    <span className="text-xs text-muted-foreground">#{e.case_number}</span>
+                  )}
+                </div>
+                <div className="font-medium">
+                  <span className={lang === "ar" ? "font-arabic" : ""}>
+                    {lang === "ar" ? e.title_ar : e.title}
+                  </span>
+                </div>
+                {(lang === "ar" ? e.sub_ar : e.sub) && (
+                  <div className="text-sm text-muted-foreground mt-1">
+                    {lang === "ar" ? e.sub_ar : e.sub}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
