@@ -105,64 +105,80 @@ function BillingPage() {
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-3 pt-5 pb-4">
-            <div className="h-10 w-10 rounded-lg bg-gold/15 flex items-center justify-center"><DollarSign className="h-5 w-5 text-gold" /></div>
-            <div>
-              <div className="text-xs text-muted-foreground">{tt("Outstanding", "مستحقة")}</div>
-              <div className="text-xl font-display">{totalOutstanding.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 pt-5 pb-4">
-            <div className="h-10 w-10 rounded-lg bg-success/15 flex items-center justify-center"><CheckCircle2 className="h-5 w-5 text-success" /></div>
-            <div>
-              <div className="text-xs text-muted-foreground">{tt("Collected", "محصّلة")}</div>
-              <div className="text-xl font-display">{totalPaid.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 pt-5 pb-4">
-            <div className="h-10 w-10 rounded-lg bg-destructive/15 flex items-center justify-center"><AlertTriangle className="h-5 w-5 text-destructive" /></div>
-            <div>
-              <div className="text-xs text-muted-foreground">{tt("Overdue", "متأخرة")}</div>
-              <div className="text-xl font-display">{overdueCount} <span className="text-xs text-muted-foreground">{tt("invoices", "فواتير")}</span></div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Invoice List */}
       {isLoading ? (
         <Card><CardContent className="flex items-center justify-center gap-2 py-16 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />{tt("Loading…", "جارٍ التحميل…")}</CardContent></Card>
       ) : (invoices ?? []).length === 0 ? (
-        <Card><CardContent className="pt-6"><EmptyState icon={Receipt} title={tt("No invoices yet", "لا توجد فواتير بعد")} desc={tt("Create your first invoice to start tracking payments.", "أنشئ أول فاتورة لبدء تتبع المدفوعات.")} /></CardContent></Card>
+        <Card>
+          <CardContent className="pt-6">
+            <EmptyState
+              icon={Receipt}
+              title={tt("No invoices yet", "لا توجد فواتير بعد")}
+              desc={tt("Create your first invoice to start tracking payments and outstanding balances.", "أنشئ أول فاتورة لبدء تتبع المدفوعات والأرصدة المستحقة.")}
+              action={
+                <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90" onClick={() => setShowCreate(true)}>
+                  <Plus className="h-4 w-4" />
+                  {tt("New Invoice", "فاتورة جديدة")}
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3 text-start">{tt("Invoice", "الفاتورة")}</th>
-                  <th className="px-4 py-3 text-start">{tt("Client", "العميل")}</th>
-                  <th className="px-4 py-3 text-start">{tt("Amount", "المبلغ")}</th>
-                  <th className="px-4 py-3 text-start">{tt("Status", "الحالة")}</th>
-                  <th className="px-4 py-3 text-start">{tt("Issue Date", "تاريخ الإصدار")}</th>
-                  <th className="px-4 py-3 text-start">{tt("Actions", "إجراءات")}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {(invoices ?? []).map((inv) => (
-                  <InvoiceRow key={inv.id} inv={inv} tt={tt} lang={lang} onUpdate={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* Summary Cards */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Card>
+              <CardContent className="flex items-center gap-3 pt-5 pb-4">
+                <div className="h-10 w-10 rounded-lg bg-gold/15 flex items-center justify-center"><DollarSign className="h-5 w-5 text-gold" /></div>
+                <div>
+                  <div className="text-xs text-muted-foreground">{tt("Outstanding", "مستحقة")}</div>
+                  <div className="text-xl font-display">{totalOutstanding.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="flex items-center gap-3 pt-5 pb-4">
+                <div className="h-10 w-10 rounded-lg bg-success/15 flex items-center justify-center"><CheckCircle2 className="h-5 w-5 text-success" /></div>
+                <div>
+                  <div className="text-xs text-muted-foreground">{tt("Collected", "محصّلة")}</div>
+                  <div className="text-xl font-display">{totalPaid.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="flex items-center gap-3 pt-5 pb-4">
+                <div className="h-10 w-10 rounded-lg bg-destructive/15 flex items-center justify-center"><AlertTriangle className="h-5 w-5 text-destructive" /></div>
+                <div>
+                  <div className="text-xs text-muted-foreground">{tt("Overdue", "متأخرة")}</div>
+                  <div className="text-xl font-display">{overdueCount} <span className="text-xs text-muted-foreground">{tt("invoices", "فواتير")}</span></div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
+
+          {/* Invoice List */}
+          <div className="rounded-lg border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-3 text-start">{tt("Invoice", "الفاتورة")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Client", "العميل")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Amount", "المبلغ")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Status", "الحالة")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Issue Date", "تاريخ الإصدار")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Actions", "إجراءات")}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {(invoices ?? []).map((inv) => (
+                    <InvoiceRow key={inv.id} inv={inv} tt={tt} lang={lang} onUpdate={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       <CreateInvoiceDialog open={showCreate} onClose={() => setShowCreate(false)} tt={tt} lang={lang} onCreated={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
