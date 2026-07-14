@@ -275,6 +275,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </nav>
+
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }
