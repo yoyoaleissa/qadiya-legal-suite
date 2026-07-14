@@ -44,7 +44,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
-  { to: "/report-bot", labelEn: "Report Bot", labelAr: "روبوت التقارير", icon: Bot, highlight: true },
+  { to: "/reports", labelEn: "Case Reports", labelAr: "تقارير القضايا", icon: FileText, highlight: true },
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "الموكّلون والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
@@ -171,9 +171,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               {t("Qadiya", "قضية")}
             </div>
-            <div className="hidden md:block text-sm text-muted-foreground">
-              {t("Welcome back", "أهلاً بعودتك")}
-            </div>
+            <div className="hidden md:block" />
           </div>
           <div className="flex items-center gap-2">
             <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>

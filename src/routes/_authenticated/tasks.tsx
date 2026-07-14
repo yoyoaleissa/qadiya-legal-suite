@@ -160,8 +160,9 @@ function TasksPage() {
                     <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", priorityTone(task.priority))}>{priorityLabel(task.priority)}</span>
                     <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", statusTone(task.status))}>{statusLabel(task.status)}</span>
                     {task.due_date && (
-                      <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
+                      <span className={cn("text-[11px] inline-flex items-center gap-1", task.status !== "done" && task.due_date < new Date().toISOString().slice(0, 10) ? "text-destructive font-semibold" : "text-muted-foreground")}>
                         <CalendarClock className="h-3 w-3" />{task.due_date}
+                        {task.status !== "done" && task.due_date < new Date().toISOString().slice(0, 10) && " ⚠️"}
                       </span>
                     )}
                     {task.assignee && (

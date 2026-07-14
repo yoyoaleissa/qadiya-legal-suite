@@ -146,13 +146,13 @@ function Dashboard() {
           </p>
         </div>
         <Link
-          to="/report-bot"
+          to="/reports"
           className="rounded-lg bg-navy text-white dark:bg-gold dark:text-navy px-5 py-3 flex items-center gap-3 hover:shadow-lg transition-shadow"
         >
-          <Bot className="h-5 w-5" />
+          <Scale className="h-5 w-5" />
           <div>
             <div className="text-xs opacity-80 uppercase tracking-wider">{t("Case Intelligence", "استعلام القضايا")}</div>
-            <div className="font-medium">{t("Report Bot", "روبوت التقارير")}</div>
+            <div className="font-medium">{t("Case Reports", "تقارير القضايا")}</div>
           </div>
           <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </Link>
