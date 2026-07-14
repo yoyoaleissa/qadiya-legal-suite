@@ -92,22 +92,35 @@ function AiAssistantPage() {
     abortRef.current = controller;
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) {
+        setMessages((m) => m.slice(0, -1));
+        setError(tt("Your session has expired. Please sign in again.", "انتهت جلستك. يُرجى تسجيل الدخول مجدداً."));
+        return;
+      }
+
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ messages: next, lang }),
         signal: controller.signal,
       });
 
       if (!res.ok || !res.body) {
-        const code = await res.text().catch(() => "");
+        const code = (await res.text().catch(() => "")).trim();
         setMessages((m) => m.slice(0, -1));
         if (res.status === 429 || code === "RATE_LIMIT")
           setError(tt("Too many requests — please wait a moment and try again.", "طلبات كثيرة — يُرجى الانتظار قليلاً ثم المحاولة."));
         else if (res.status === 402 || code === "NO_CREDITS")
           setError(tt("AI credits are exhausted. Please top up to continue.", "انتهى رصيد الذكاء الاصطناعي. يُرجى إعادة الشحن للمتابعة."));
+        else if (res.status === 401)
+          setError(tt(`Unauthorized: ${code || "please sign in again."}`, `غير مصرح: ${code || "يُرجى تسجيل الدخول مجدداً."}`));
         else
-          setError(tt("The assistant is unavailable right now. Please try again.", "المساعد غير متاح حالياً. يُرجى المحاولة مرة أخرى."));
+          setError(tt(`Assistant error (${res.status}): ${code || "unknown"}`, `خطأ في المساعد (${res.status}): ${code || "غير معروف"}`));
         return;
       }
 
