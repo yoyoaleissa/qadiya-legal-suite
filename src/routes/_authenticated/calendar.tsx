@@ -394,13 +394,18 @@ function CalendarPage() {
               </CardContent>
             </Card>
           ) : selectedEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
-              <CalendarDays className="h-8 w-8 text-muted-foreground" />
-              <div className="text-sm font-medium">{tt("Nothing scheduled", "لا يوجد مواعيد")}</div>
-              <div className="text-xs text-muted-foreground">
-                {tt("Select a highlighted day to see its hearings and deadlines.", "اختر يوماً مميزاً لعرض جلساته ومواعيده.")}
-              </div>
-            </div>
+            <Card>
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={CalendarDays}
+                  title={tt("Nothing scheduled", "لا يوجد مواعيد")}
+                  desc={tt(
+                    "Select a highlighted day to see its hearings and deadlines.",
+                    "اختر يوماً مميزاً لعرض جلساته ومواعيده.",
+                  )}
+                />
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {selectedEvents.map((e) => (
