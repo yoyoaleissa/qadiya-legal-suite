@@ -25,6 +25,7 @@ import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { claimFirstAdmin } from "@/lib/roles.functions";
 import { cn } from "@/lib/utils";
+import { DemoTour } from "@/components/DemoTour";
 import {
   Select,
   SelectContent,
@@ -277,6 +278,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </nav>
 
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      <DemoTour />
     </div>
   );
 }
