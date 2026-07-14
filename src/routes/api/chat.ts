@@ -79,13 +79,16 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         const apiKey = process.env.LOVABLE_API_KEY;
-        if (!apiKey) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        if (!apiKey) return new Response("LOVABLE_API_KEY is not configured on the server.", { status: 500 });
 
         // Require an authenticated staff session — this endpoint exposes firm data to the AI.
         const authHeader = request.headers.get("authorization") ?? "";
         const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-        if (!token || token.split(".").length !== 3) {
-          return new Response("Unauthorized", { status: 401 });
+        if (!token) {
+          return new Response("Missing Bearer token — please sign in again.", { status: 401 });
+        }
+        if (token.split(".").length !== 3) {
+          return new Response("Malformed auth token.", { status: 401 });
         }
         try {
           const { createClient } = await import("@supabase/supabase-js");
@@ -96,10 +99,10 @@ export const Route = createFileRoute("/api/chat")({
           );
           const { data, error } = await authClient.auth.getClaims(token);
           if (error || !data?.claims?.sub) {
-            return new Response("Unauthorized", { status: 401 });
+            return new Response(`Invalid session: ${error?.message ?? "no claims"}`, { status: 401 });
           }
-        } catch {
-          return new Response("Unauthorized", { status: 401 });
+        } catch (e) {
+          return new Response(`Auth verification failed: ${(e as Error).message}`, { status: 401 });
         }
 
 
@@ -168,7 +171,10 @@ STYLE
         if (!upstream.ok || !upstream.body) {
           const text = await upstream.text().catch(() => "");
           console.error("[chat] gateway error", upstream.status, text);
-          return new Response("AI_ERROR", { status: 502 });
+          return new Response(
+            `AI gateway error ${upstream.status}: ${text.slice(0, 400) || "no body"}`,
+            { status: 502 },
+          );
         }
 
         return new Response(upstream.body, {
