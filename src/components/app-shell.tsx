@@ -9,6 +9,7 @@ import {
   Sparkles,
   Moon,
   Receipt,
+  Search,
   Sun,
   Users,
   Languages,
@@ -32,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 type NavItem = {
   to: string;
@@ -69,7 +71,20 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const runClaimAdmin = useServerFn(claimFirstAdmin);
+
+  // Global Cmd/Ctrl+K opens the search palette.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   // Bootstrap: the first user to sign in becomes admin (no-op once an admin exists).
   useEffect(() => {
@@ -171,7 +186,27 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               {t("Qadiya", "قضية")}
             </div>
-            <div className="hidden md:block" />
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="hidden md:flex items-center gap-2 rounded-md border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-gold/50 hover:text-foreground w-56 lg:w-72"
+            >
+              <Search className="h-4 w-4 shrink-0" />
+              <span className={cn("flex-1 text-start truncate", lang === "ar" && "font-arabic")}>
+                {t("Search clients, cases, tasks…", "بحث الموكّلين والقضايا والمهام…")}
+              </span>
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
+                ⌘K
+              </kbd>
+            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setSearchOpen(true)}
+              aria-label={t("Search", "بحث")}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
           </div>
           <div className="flex items-center gap-2">
             <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>
@@ -240,6 +275,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </nav>
+
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }

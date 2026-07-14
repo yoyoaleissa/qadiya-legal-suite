@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Users, FileText, Scale, Loader2, ChevronRight, MessageSquare, Plus, CalendarPlus } from "lucide-react";
@@ -30,6 +30,9 @@ import { listClients, getClientDetail } from "@/lib/clients.functions";
 import { createClient, addTimelineEvent } from "@/lib/cases.functions";
 
 export const Route = createFileRoute("/_authenticated/clients")({
+  validateSearch: (search: Record<string, unknown>): { clientId?: string } => ({
+    clientId: typeof search.clientId === "string" ? search.clientId : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Clients & Cases — Qadiya OS" },
@@ -53,10 +56,15 @@ function statusTone(status: string) {
 function ClientsPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+  const { clientId } = Route.useSearch();
   const [q, setQ] = useState("");
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(clientId ?? null);
   const [chatClient, setChatClient] = useState<{ id: string; name: string } | null>(null);
   const [showCreateClient, setShowCreateClient] = useState(false);
+
+  useEffect(() => {
+    if (clientId) setOpenId(clientId);
+  }, [clientId]);
 
   const runList = useServerFn(listClients);
   const { data: clients, isLoading } = useQuery({

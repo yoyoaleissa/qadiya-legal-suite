@@ -169,6 +169,19 @@ function LoginPage() {
         </div>
 
         <div className="mx-auto my-auto w-full max-w-sm py-10">
+          {/* Firm logo placeholder */}
+          <div className="mb-8 flex flex-col items-center gap-2 text-center">
+            <span className="grid h-16 w-16 place-items-center rounded-2xl bg-gold/15 text-gold ring-1 ring-gold/30">
+              <Scale className="h-8 w-8" />
+            </span>
+            <div className="font-display text-2xl leading-none text-foreground">
+              <span className={isAr ? "font-arabic" : ""}>{t("Qadiya", "قضية")}</span>
+            </div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              <span className={isAr ? "font-arabic" : ""}>{t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}</span>
+            </div>
+          </div>
+
           <h2 className="font-display text-2xl font-semibold text-foreground">
             <span className={isAr ? "font-arabic" : ""}>
               {mode === "signin"

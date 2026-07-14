@@ -369,9 +369,10 @@ function Bubble({
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
           </div>
         ) : (
-          <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            {tt("Thinking…", "جارٍ التفكير…")}
+          <span className="inline-flex items-center gap-1 py-1" aria-label={tt("Thinking…", "جارٍ التفكير…")}>
+            <span className="h-2 w-2 rounded-full bg-navy/60 dark:bg-gold/70 animate-bounce [animation-delay:-0.3s]" />
+            <span className="h-2 w-2 rounded-full bg-navy/60 dark:bg-gold/70 animate-bounce [animation-delay:-0.15s]" />
+            <span className="h-2 w-2 rounded-full bg-navy/60 dark:bg-gold/70 animate-bounce" />
           </span>
         )}
         {!isUser && streaming && message.content && (

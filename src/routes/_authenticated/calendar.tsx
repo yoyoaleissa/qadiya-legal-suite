@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
+import { EmptyState } from "@/components/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
@@ -206,12 +207,12 @@ function CalendarPage() {
                     {day}
                   </span>
                   {dayEvents.length > 0 && (
-                    <span className="flex flex-wrap justify-center gap-0.5 mt-auto">
+                    <span className="flex flex-wrap justify-center gap-1 mt-auto">
                       {dayEvents.slice(0, 3).map((e, i) => (
                         <span
                           key={i}
                           className={cn(
-                            "h-1.5 w-1.5 rounded-full",
+                            "h-2 w-2 rounded-full",
                             e.type === "hearing" ? "bg-navy dark:bg-gold" : "bg-destructive",
                           )}
                         />
@@ -296,10 +297,18 @@ function CalendarPage() {
               </CardContent>
             </Card>
           ) : monthEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
-              <CalendarRange className="h-8 w-8 text-muted-foreground" />
-              <div className="text-sm font-medium">{tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}</div>
-            </div>
+            <Card>
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={CalendarRange}
+                  title={tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}
+                  desc={tt(
+                    "Hearings and deadlines for this month will appear here as they are added.",
+                    "ستظهر هنا الجلسات والمواعيد النهائية لهذا الشهر بمجرد إضافتها.",
+                  )}
+                />
+              </CardContent>
+            </Card>
           ) : (
             <ol className="space-y-2">
               {monthEvents.map((e) => {
@@ -385,13 +394,18 @@ function CalendarPage() {
               </CardContent>
             </Card>
           ) : selectedEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
-              <CalendarDays className="h-8 w-8 text-muted-foreground" />
-              <div className="text-sm font-medium">{tt("Nothing scheduled", "لا يوجد مواعيد")}</div>
-              <div className="text-xs text-muted-foreground">
-                {tt("Select a highlighted day to see its hearings and deadlines.", "اختر يوماً مميزاً لعرض جلساته ومواعيده.")}
-              </div>
-            </div>
+            <Card>
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={CalendarDays}
+                  title={tt("Nothing scheduled", "لا يوجد مواعيد")}
+                  desc={tt(
+                    "Select a highlighted day to see its hearings and deadlines.",
+                    "اختر يوماً مميزاً لعرض جلساته ومواعيده.",
+                  )}
+                />
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {selectedEvents.map((e) => (
