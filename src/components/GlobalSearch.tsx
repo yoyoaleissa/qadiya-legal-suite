@@ -3,8 +3,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { Users, FileText, CheckSquare, Loader2 } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
-  CommandDialog,
+  Command,
   CommandInput,
   CommandList,
   CommandEmpty,
