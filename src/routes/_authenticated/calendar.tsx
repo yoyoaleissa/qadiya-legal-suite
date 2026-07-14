@@ -296,10 +296,18 @@ function CalendarPage() {
               </CardContent>
             </Card>
           ) : monthEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
-              <CalendarRange className="h-8 w-8 text-muted-foreground" />
-              <div className="text-sm font-medium">{tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}</div>
-            </div>
+            <Card>
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={CalendarRange}
+                  title={tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}
+                  desc={tt(
+                    "Hearings and deadlines for this month will appear here as they are added.",
+                    "ستظهر هنا الجلسات والمواعيد النهائية لهذا الشهر بمجرد إضافتها.",
+                  )}
+                />
+              </CardContent>
+            </Card>
           ) : (
             <ol className="space-y-2">
               {monthEvents.map((e) => {
