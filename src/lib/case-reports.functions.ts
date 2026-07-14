@@ -12,7 +12,7 @@ export const saveCaseReport = createServerFn({ method: "POST" })
       .insert({
         user_id: userId,
         case_number: data.caseNumber,
-        json_data: data.report as unknown as Record<string, unknown>,
+        json_data: data.report as never,
       })
       .select("id, created_at")
       .single();
