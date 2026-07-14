@@ -1,23 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Calendar as CalendarIcon,
   Bell,
   CheckSquare,
   RefreshCw,
-  UserPlus,
   MessageSquare,
   Users,
   FileDown,
   StickyNote,
-  ExternalLink,
   Search,
   Loader2,
   FileText,
   Scale,
+  History,
+  Clock,
 } from "lucide-react";
 import { generateCaseReport } from "@/lib/report.functions";
+import {
+  saveCaseReport,
+  listRecentReports,
+  getCaseReport,
+  type RecentReportRow,
+} from "@/lib/case-reports.functions";
 import type { CaseReport } from "@/lib/report-types";
 import { useApp } from "@/lib/app-context";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
@@ -27,7 +33,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ReportView } from "@/components/report/ReportView";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   component: CaseReportsPage,
@@ -39,15 +44,59 @@ export const Route = createFileRoute("/_authenticated/reports")({
   }),
 });
 
+const RECENT_CACHE_KEY = "qadiya:recent-reports:v1";
+
+function readCachedRecent(): RecentReportRow[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_CACHE_KEY);
+    return raw ? (JSON.parse(raw) as RecentReportRow[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCachedRecent(rows: RecentReportRow[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(RECENT_CACHE_KEY, JSON.stringify(rows.slice(0, 20)));
+  } catch {
+    // ignore quota errors
+  }
+}
+
 function CaseReportsPage() {
-  const { t, lang } = useApp();
+  const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const runReport = useServerFn(generateCaseReport);
+  const saveReport = useServerFn(saveCaseReport);
+  const fetchRecent = useServerFn(listRecentReports);
+  const fetchReport = useServerFn(getCaseReport);
   const [report, setReport] = useState<CaseReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
   const [noteText, setNoteText] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [recent, setRecent] = useState<RecentReportRow[]>(() => readCachedRecent());
+  const [loadingRecent, setLoadingRecent] = useState(false);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  const refreshRecent = useCallback(async () => {
+    setLoadingRecent(true);
+    try {
+      const rows = await fetchRecent();
+      setRecent(rows);
+      writeCachedRecent(rows);
+    } catch {
+      // keep cached
+    } finally {
+      setLoadingRecent(false);
+    }
+  }, [fetchRecent]);
+
+  useEffect(() => {
+    void refreshRecent();
+  }, [refreshRecent]);
 
   async function handleLookup() {
     const trimmed = input.trim();
@@ -57,10 +106,32 @@ function CaseReportsPage() {
     try {
       const result = await runReport({ data: { caseNumber: trimmed } });
       setReport(result);
+      if (result?.found) {
+        try {
+          await saveReport({ data: { caseNumber: trimmed, report: result } });
+          await refreshRecent();
+        } catch {
+          // don't block UI on save failure
+        }
+      }
     } catch {
       // handled by UI
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleOpenRecent(row: RecentReportRow) {
+    if (loadingId) return;
+    setLoadingId(row.id);
+    try {
+      const rep = await fetchReport({ data: { id: row.id } });
+      if (rep) {
+        setReport(rep);
+        setInput(row.case_number);
+      }
+    } finally {
+      setLoadingId(null);
     }
   }
 
@@ -139,6 +210,8 @@ function CaseReportsPage() {
         </p>
       </div>
 
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="space-y-6 min-w-0">
       {/* Search Bar */}
       <div className="flex gap-2 max-w-lg">
         <Input
@@ -357,6 +430,64 @@ function CaseReportsPage() {
           </CardContent>
         </Card>
       )}
+        </div>
+
+        {/* Recent Reports Sidebar */}
+        <aside className="lg:sticky lg:top-4 lg:self-start">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold flex items-center gap-2">
+                  <History className="h-4 w-4 text-gold" />
+                  {tt("Recent Reports", "التقارير الأخيرة")}
+                </h3>
+                {loadingRecent && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+              </div>
+              {recent.length === 0 && !loadingRecent && (
+                <p className="text-xs text-muted-foreground py-4 text-center">
+                  {tt("No past lookups yet.", "لا توجد عمليات بحث سابقة.")}
+                </p>
+              )}
+              <ul className="space-y-1.5 max-h-[70vh] overflow-y-auto">
+                {recent.map((r) => {
+                  const isActive = loadingId === r.id;
+                  return (
+                    <li key={r.id}>
+                      <button
+                        onClick={() => handleOpenRecent(r)}
+                        disabled={isActive}
+                        className="w-full text-start rounded-md border border-border/60 hover:border-gold/50 hover:bg-muted/40 transition-colors p-2.5 disabled:opacity-60"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-xs" dir="ltr">{r.case_number}</span>
+                          {isActive && <Loader2 className="h-3 w-3 animate-spin" />}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                          {(lang === "ar" ? r.status_headline_ar : r.status_headline_en) || ""}
+                        </p>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {r.next_hearing_date && (
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 gap-1 border-gold/40 text-gold">
+                              <CalendarIcon className="h-2.5 w-2.5" />
+                              {r.next_hearing_date}
+                            </Badge>
+                          )}
+                          {r.deadline_date && (
+                            <Badge variant="destructive" className="text-[10px] h-4 px-1.5 gap-1">
+                              <Clock className="h-2.5 w-2.5" />
+                              {r.deadline_days}{tt("d", "ي")}
+                            </Badge>
+                          )}
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 }

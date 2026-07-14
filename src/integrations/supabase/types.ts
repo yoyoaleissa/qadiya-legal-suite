@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      case_reports: {
+        Row: {
+          case_number: string
+          created_at: string
+          id: string
+          json_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          case_number: string
+          created_at?: string
+          id?: string
+          json_data: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          case_number?: string
+          created_at?: string
+          id?: string
+          json_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       case_timeline: {
         Row: {
           case_id: string
