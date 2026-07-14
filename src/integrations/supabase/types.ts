@@ -607,6 +607,47 @@ export type Database = {
           },
         ]
       }
+      time_entries: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          entry_date: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          entry_date?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          entry_date?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
