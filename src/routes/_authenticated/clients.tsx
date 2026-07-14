@@ -30,6 +30,9 @@ import { listClients, getClientDetail } from "@/lib/clients.functions";
 import { createClient, addTimelineEvent } from "@/lib/cases.functions";
 
 export const Route = createFileRoute("/_authenticated/clients")({
+  validateSearch: (search: Record<string, unknown>): { clientId?: string } => ({
+    clientId: typeof search.clientId === "string" ? search.clientId : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Clients & Cases — Qadiya OS" },
