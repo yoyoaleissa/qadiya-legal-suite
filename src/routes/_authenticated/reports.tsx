@@ -210,6 +210,8 @@ function CaseReportsPage() {
         </p>
       </div>
 
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="space-y-6 min-w-0">
       {/* Search Bar */}
       <div className="flex gap-2 max-w-lg">
         <Input
