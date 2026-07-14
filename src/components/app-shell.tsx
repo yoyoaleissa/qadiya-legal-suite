@@ -186,7 +186,27 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               {t("Qadiya", "قضية")}
             </div>
-            <div className="hidden md:block" />
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="hidden md:flex items-center gap-2 rounded-md border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-gold/50 hover:text-foreground w-56 lg:w-72"
+            >
+              <Search className="h-4 w-4 shrink-0" />
+              <span className={cn("flex-1 text-start truncate", lang === "ar" && "font-arabic")}>
+                {t("Search clients, cases, tasks…", "بحث الموكّلين والقضايا والمهام…")}
+              </span>
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
+                ⌘K
+              </kbd>
+            </button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setSearchOpen(true)}
+              aria-label={t("Search", "بحث")}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
           </div>
           <div className="flex items-center gap-2">
             <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>
