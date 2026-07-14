@@ -66,14 +66,37 @@ function writeCachedRecent(rows: RecentReportRow[]) {
 }
 
 function CaseReportsPage() {
-  const { t, lang } = useApp();
+  const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const runReport = useServerFn(generateCaseReport);
+  const saveReport = useServerFn(saveCaseReport);
+  const fetchRecent = useServerFn(listRecentReports);
+  const fetchReport = useServerFn(getCaseReport);
   const [report, setReport] = useState<CaseReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
   const [noteText, setNoteText] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [recent, setRecent] = useState<RecentReportRow[]>(() => readCachedRecent());
+  const [loadingRecent, setLoadingRecent] = useState(false);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  const refreshRecent = useCallback(async () => {
+    setLoadingRecent(true);
+    try {
+      const rows = await fetchRecent();
+      setRecent(rows);
+      writeCachedRecent(rows);
+    } catch {
+      // keep cached
+    } finally {
+      setLoadingRecent(false);
+    }
+  }, [fetchRecent]);
+
+  useEffect(() => {
+    void refreshRecent();
+  }, [refreshRecent]);
 
   async function handleLookup() {
     const trimmed = input.trim();
@@ -83,10 +106,32 @@ function CaseReportsPage() {
     try {
       const result = await runReport({ data: { caseNumber: trimmed } });
       setReport(result);
+      if (result?.found) {
+        try {
+          await saveReport({ data: { caseNumber: trimmed, report: result } });
+          await refreshRecent();
+        } catch {
+          // don't block UI on save failure
+        }
+      }
     } catch {
       // handled by UI
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleOpenRecent(row: RecentReportRow) {
+    if (loadingId) return;
+    setLoadingId(row.id);
+    try {
+      const rep = await fetchReport({ data: { id: row.id } });
+      if (rep) {
+        setReport(rep);
+        setInput(row.case_number);
+      }
+    } finally {
+      setLoadingId(null);
     }
   }
 
