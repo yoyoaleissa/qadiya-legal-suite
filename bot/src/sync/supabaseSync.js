@@ -2,26 +2,46 @@
  * Supabase Sync Module
  * Upserts scraped MOJ data into the shared Supabase database
  * so the dashboard sees live case data from the Telegram bot.
- * 
- * Uses the same schema as Yousef's Lovable project:
- * - cases, court_levels, hearings, judgments, case_timeline,
- *   execution_procedures, execution_receipts
+ *
+ * Authentication model:
+ *   The bot signs in as a regular user account (BOT_EMAIL / BOT_PASSWORD)
+ *   that has been granted the 'bot' role in the user_roles table. RLS
+ *   policies on cases/hearings/judgments allow that role to INSERT/UPDATE.
+ *   No service_role key is used or required.
  */
 
 const { createClient } = require('@supabase/supabase-js');
 const logger = require('../utils/logger');
 
 let supabase = null;
+let signInPromise = null;
 
-function getClient() {
+async function getClient() {
   if (supabase) return supabase;
+
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY;
-  if (!url || !key) {
-    logger.warn('Supabase credentials not configured — sync disabled');
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const email = process.env.BOT_EMAIL;
+  const password = process.env.BOT_PASSWORD;
+
+  if (!url || !anonKey || !email || !password) {
+    logger.warn('Supabase bot credentials not configured — sync disabled');
     return null;
   }
-  supabase = createClient(url, key);
+
+  const client = createClient(url, anonKey, {
+    auth: { persistSession: false, autoRefreshToken: true },
+  });
+
+  signInPromise = signInPromise || client.auth.signInWithPassword({ email, password });
+  const { error } = await signInPromise;
+  if (error) {
+    logger.error(`Bot sign-in failed: ${error.message}`);
+    signInPromise = null;
+    return null;
+  }
+
+  supabase = client;
   return supabase;
 }
 
@@ -31,7 +51,7 @@ function getClient() {
  * @param {string} caseNumber - The case auto number
  */
 async function syncCase(caseData, caseNumber) {
-  const sb = getClient();
+  const sb = await getClient();
   if (!sb) return;
 
   try {
