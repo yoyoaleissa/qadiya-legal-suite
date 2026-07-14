@@ -171,7 +171,10 @@ STYLE
         if (!upstream.ok || !upstream.body) {
           const text = await upstream.text().catch(() => "");
           console.error("[chat] gateway error", upstream.status, text);
-          return new Response("AI_ERROR", { status: 502 });
+          return new Response(
+            `AI gateway error ${upstream.status}: ${text.slice(0, 400) || "no body"}`,
+            { status: 502 },
+          );
         }
 
         return new Response(upstream.body, {
