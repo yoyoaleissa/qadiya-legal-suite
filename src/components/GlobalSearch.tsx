@@ -152,7 +152,9 @@ export function GlobalSearch({
             )}
           </>
         )}
-      </CommandList>
-    </CommandDialog>
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }
