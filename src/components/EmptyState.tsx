@@ -1,13 +1,18 @@
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 export function EmptyState({
   icon: Icon,
   title,
   desc,
+  action,
+  showConnected = true,
 }: {
   icon: LucideIcon;
   title: string;
   desc: string;
+  action?: ReactNode;
+  showConnected?: boolean;
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-14 text-center">
@@ -16,10 +21,13 @@ export function EmptyState({
       </div>
       <div className="font-display text-lg">{title}</div>
       <div className="text-sm text-muted-foreground max-w-md">{desc}</div>
-      <div className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-        <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
-        Live backend connected
-      </div>
+      {action && <div className="mt-1">{action}</div>}
+      {showConnected && (
+        <div className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
+          Live backend connected
+        </div>
+      )}
     </div>
   );
 }
