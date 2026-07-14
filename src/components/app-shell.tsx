@@ -9,6 +9,7 @@ import {
   Sparkles,
   Moon,
   Receipt,
+  Search,
   Sun,
   Users,
   Languages,
@@ -32,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 type NavItem = {
   to: string;
