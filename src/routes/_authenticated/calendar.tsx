@@ -206,12 +206,12 @@ function CalendarPage() {
                     {day}
                   </span>
                   {dayEvents.length > 0 && (
-                    <span className="flex flex-wrap justify-center gap-0.5 mt-auto">
+                    <span className="flex flex-wrap justify-center gap-1 mt-auto">
                       {dayEvents.slice(0, 3).map((e, i) => (
                         <span
                           key={i}
                           className={cn(
-                            "h-1.5 w-1.5 rounded-full",
+                            "h-2 w-2 rounded-full",
                             e.type === "hearing" ? "bg-navy dark:bg-gold" : "bg-destructive",
                           )}
                         />
