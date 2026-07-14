@@ -430,6 +430,64 @@ function CaseReportsPage() {
           </CardContent>
         </Card>
       )}
+        </div>
+
+        {/* Recent Reports Sidebar */}
+        <aside className="lg:sticky lg:top-4 lg:self-start">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold flex items-center gap-2">
+                  <History className="h-4 w-4 text-gold" />
+                  {tt("Recent Reports", "التقارير الأخيرة")}
+                </h3>
+                {loadingRecent && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+              </div>
+              {recent.length === 0 && !loadingRecent && (
+                <p className="text-xs text-muted-foreground py-4 text-center">
+                  {tt("No past lookups yet.", "لا توجد عمليات بحث سابقة.")}
+                </p>
+              )}
+              <ul className="space-y-1.5 max-h-[70vh] overflow-y-auto">
+                {recent.map((r) => {
+                  const isActive = loadingId === r.id;
+                  return (
+                    <li key={r.id}>
+                      <button
+                        onClick={() => handleOpenRecent(r)}
+                        disabled={isActive}
+                        className="w-full text-start rounded-md border border-border/60 hover:border-gold/50 hover:bg-muted/40 transition-colors p-2.5 disabled:opacity-60"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-xs" dir="ltr">{r.case_number}</span>
+                          {isActive && <Loader2 className="h-3 w-3 animate-spin" />}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                          {(lang === "ar" ? r.status_headline_ar : r.status_headline_en) || ""}
+                        </p>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {r.next_hearing_date && (
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 gap-1 border-gold/40 text-gold">
+                              <CalendarIcon className="h-2.5 w-2.5" />
+                              {r.next_hearing_date}
+                            </Badge>
+                          )}
+                          {r.deadline_date && (
+                            <Badge variant="destructive" className="text-[10px] h-4 px-1.5 gap-1">
+                              <Clock className="h-2.5 w-2.5" />
+                              {r.deadline_days}{tt("d", "ي")}
+                            </Badge>
+                          )}
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 }
