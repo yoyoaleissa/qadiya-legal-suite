@@ -56,10 +56,15 @@ function statusTone(status: string) {
 function ClientsPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+  const { clientId } = Route.useSearch();
   const [q, setQ] = useState("");
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(clientId ?? null);
   const [chatClient, setChatClient] = useState<{ id: string; name: string } | null>(null);
   const [showCreateClient, setShowCreateClient] = useState(false);
+
+  useEffect(() => {
+    if (clientId) setOpenId(clientId);
+  }, [clientId]);
 
   const runList = useServerFn(listClients);
   const { data: clients, isLoading } = useQuery({
