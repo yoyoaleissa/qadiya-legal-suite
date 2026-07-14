@@ -1,23 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Calendar as CalendarIcon,
   Bell,
   CheckSquare,
   RefreshCw,
-  UserPlus,
   MessageSquare,
   Users,
   FileDown,
   StickyNote,
-  ExternalLink,
   Search,
   Loader2,
   FileText,
   Scale,
+  History,
+  Clock,
 } from "lucide-react";
 import { generateCaseReport } from "@/lib/report.functions";
+import {
+  saveCaseReport,
+  listRecentReports,
+  getCaseReport,
+  type RecentReportRow,
+} from "@/lib/case-reports.functions";
 import type { CaseReport } from "@/lib/report-types";
 import { useApp } from "@/lib/app-context";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
@@ -27,7 +33,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ReportView } from "@/components/report/ReportView";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   component: CaseReportsPage,
@@ -38,6 +43,27 @@ export const Route = createFileRoute("/_authenticated/reports")({
     ],
   }),
 });
+
+const RECENT_CACHE_KEY = "qadiya:recent-reports:v1";
+
+function readCachedRecent(): RecentReportRow[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_CACHE_KEY);
+    return raw ? (JSON.parse(raw) as RecentReportRow[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCachedRecent(rows: RecentReportRow[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(RECENT_CACHE_KEY, JSON.stringify(rows.slice(0, 20)));
+  } catch {
+    // ignore quota errors
+  }
+}
 
 function CaseReportsPage() {
   const { t, lang } = useApp();
