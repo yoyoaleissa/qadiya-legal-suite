@@ -440,16 +440,19 @@ function DailyBriefingCard({
             {badges.map((b, i) => {
               const Icon = b.icon;
               return (
-                <span
+                <button
                   key={i}
+                  type="button"
+                  onClick={b.onClick}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border bg-white/95 px-3 py-1.5 text-xs font-medium",
+                    "inline-flex items-center gap-1.5 rounded-full border bg-white/95 px-3 py-1.5 text-xs font-medium transition-all hover:scale-105 hover:shadow-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
                     toneClass(b.tone),
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />
                   <span className={lang === "ar" ? "font-arabic" : ""}>{t(b.en, b.ar)}</span>
-                </span>
+                </button>
+
               );
             })}
             {outstanding !== null && (
