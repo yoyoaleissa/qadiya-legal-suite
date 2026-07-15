@@ -426,31 +426,39 @@ function CalendarPage() {
             </Card>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
-              {selectedEvents.map((e) => (
+              {selectedEvents.map((e) => {
+                const isDone = e.status === "completed" || e.status === "done";
+                return (
                 <div
                   key={e.id}
                   className={cn(
                     "rounded-lg border bg-card p-4 border-s-4",
-                    e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
+                    isDone
+                      ? "border-s-success opacity-70"
+                      : e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
                   )}
                 >
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                        e.type === "hearing"
-                          ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                          : "bg-destructive/10 text-destructive",
+                        isDone
+                          ? "bg-success/15 text-success"
+                          : e.type === "hearing"
+                            ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                            : "bg-destructive/10 text-destructive",
                       )}
                     >
-                      {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                      {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
+                      {isDone ? <CheckCircle2 className="h-3 w-3" /> : e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                      {isDone
+                        ? tt("Completed", "تم الإنجاز")
+                        : e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
                     </span>
                     {e.case_number && (
                       <span className="text-xs text-muted-foreground">#{e.case_number}</span>
                     )}
                   </div>
-                  <div className="font-medium">
+                  <div className={cn("font-medium", isDone && "line-through")}>
                     <span className={lang === "ar" ? "font-arabic" : ""}>
                       {lang === "ar" ? e.title_ar : e.title}
                     </span>
@@ -460,21 +468,37 @@ function CalendarPage() {
                       {lang === "ar" ? e.sub_ar : e.sub}
                     </div>
                   )}
-                  <a
-                    href={buildGoogleCalendarUrl({
-                      title: `${e.type === "hearing" ? "⚖️" : "⏰"} ${lang === "ar" ? e.title_ar : e.title}${e.case_number ? ` #${e.case_number}` : ""}`,
-                      date: e.date,
-                      description: `${e.type === "hearing" ? "Court Hearing" : "Deadline"}${e.case_number ? ` — Case #${e.case_number}` : ""}\n${(lang === "ar" ? e.sub_ar : e.sub) ?? ""}`,
-                    })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    {tt("Add to Google Calendar", "إضافة إلى تقويم Google")}
-                  </a>
+                  <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
+                    <a
+                      href={buildGoogleCalendarUrl({
+                        title: `${e.type === "hearing" ? "⚖️" : "⏰"} ${lang === "ar" ? e.title_ar : e.title}${e.case_number ? ` #${e.case_number}` : ""}`,
+                        date: e.date,
+                        description: `${e.type === "hearing" ? "Court Hearing" : "Deadline"}${e.case_number ? ` — Case #${e.case_number}` : ""}\n${(lang === "ar" ? e.sub_ar : e.sub) ?? ""}`,
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {tt("Add to Google Calendar", "إضافة إلى تقويم Google")}
+                    </a>
+                    {!isDone && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5 border-success/50 text-success hover:bg-success/10"
+                        disabled={markDone.isPending}
+                        onClick={() => markDone.mutate(e)}
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        {tt("Mark done", "تم الإنجاز")}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              ))}
+                );
+              })}
+
             </div>
           )}
         </div>
