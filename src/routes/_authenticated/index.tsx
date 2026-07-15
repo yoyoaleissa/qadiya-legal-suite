@@ -395,7 +395,7 @@ function DailyBriefingCard({
     icon: typeof Scale;
     en: string;
     ar: string;
-    tone: "navy" | "warn" | "danger" | "gold";
+    tone: "navy" | "warn" | "danger" | "gold" | "good";
     onClick: () => void;
   };
   const badges: Badge[] = briefing
