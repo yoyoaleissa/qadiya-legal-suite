@@ -62,10 +62,26 @@ function CalendarPage() {
   }, [date]);
 
   const runEvents = useServerFn(listCalendarEvents);
+  const runHearingStatus = useServerFn(updateHearingStatus);
+  const runTaskStatus = useServerFn(updateTaskStatus);
+  const queryClient = useQueryClient();
   const { data: events, isLoading } = useQuery({
     queryKey: ["calendar-events"],
     queryFn: () => runEvents(),
   });
+
+  const markDone = useMutation({
+    mutationFn: async (e: CalendarEvent) => {
+      const [kind, id] = e.id.split(/-(.+)/);
+      if (kind === "hearing") return runHearingStatus({ data: { id, status: "completed" } });
+      if (kind === "task") return runTaskStatus({ data: { id, status: "done" } });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["calendar-events"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+
 
   const byDate = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>();
