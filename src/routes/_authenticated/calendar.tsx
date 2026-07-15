@@ -224,19 +224,41 @@ function CalendarPage() {
                   >
                     {day}
                   </span>
-                  {dayEvents.length > 0 && (
-                    <span className="flex flex-wrap justify-center gap-1 mt-auto">
-                      {dayEvents.slice(0, 3).map((e, i) => (
-                        <span
-                          key={i}
-                          className={cn(
-                            "h-2 w-2 rounded-full",
-                            e.type === "hearing" ? "bg-navy dark:bg-gold" : "bg-destructive",
-                          )}
-                        />
-                      ))}
-                    </span>
-                  )}
+                  {dayEvents.length > 0 && (() => {
+                    const allDone = dayEvents.every(
+                      (e) => e.status === "completed" || e.status === "done",
+                    );
+                    if (allDone) {
+                      return (
+                        <span className="mt-auto flex items-center justify-center">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full bg-success ring-2 ring-success/30"
+                            title={tt("All completed", "تم الإنجاز")}
+                          />
+                        </span>
+                      );
+                    }
+                    return (
+                      <span className="flex flex-wrap justify-center gap-1 mt-auto">
+                        {dayEvents.slice(0, 3).map((e, i) => {
+                          const done = e.status === "completed" || e.status === "done";
+                          return (
+                            <span
+                              key={i}
+                              className={cn(
+                                "h-2 w-2 rounded-full",
+                                done
+                                  ? "bg-success"
+                                  : e.type === "hearing"
+                                    ? "bg-navy dark:bg-gold"
+                                    : "bg-destructive",
+                              )}
+                            />
+                          );
+                        })}
+                      </span>
+                    );
+                  })()}
                 </button>
               );
             })}
@@ -248,6 +270,7 @@ function CalendarPage() {
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-destructive" /> {tt("Deadline", "ميعاد نهائي")}
+
             </span>
           </div>
         </CardContent>
