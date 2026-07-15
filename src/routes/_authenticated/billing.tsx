@@ -44,10 +44,13 @@ function statusLabelFn(s: string, tt: (en: string, ar: string) => string) {
   }
 }
 
+type FilterKey = "all" | "collected" | "overdue";
+
 function BillingPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [showCreate, setShowCreate] = useState(false);
+  const [filter, setFilter] = useState<FilterKey>("all");
   const queryClient = useQueryClient();
   const { isAdmin, isLoading: rolesLoading } = useIsAdmin();
 
@@ -56,6 +59,16 @@ function BillingPage() {
     queryKey: ["invoices"],
     queryFn: () => runInvoices(),
     enabled: isAdmin,
+  });
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isOverdue = (i: InvoiceItem) =>
+    i.status === "overdue" ||
+    ((i.status === "sent" || i.status === "draft") && !!i.due_date && i.due_date < today && !i.paid_date);
+  const filtered = (invoices ?? []).filter((i) => {
+    if (filter === "collected") return i.status === "paid";
+    if (filter === "overdue") return isOverdue(i);
+    return true;
   });
 
   if (rolesLoading) {
@@ -89,7 +102,13 @@ function BillingPage() {
 
   const totalOutstanding = (invoices ?? []).filter((i) => i.status === "sent" || i.status === "overdue").reduce((s, i) => s + i.amount, 0);
   const totalPaid = (invoices ?? []).filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
-  const overdueCount = (invoices ?? []).filter((i) => i.status === "overdue").length;
+  const overdueCount = (invoices ?? []).filter(isOverdue).length;
+
+  const filterTabs: { key: FilterKey; label: string; count: number }[] = [
+    { key: "all", label: tt("All", "الكل"), count: (invoices ?? []).length },
+    { key: "collected", label: tt("Collected", "محصّلة"), count: (invoices ?? []).filter((i) => i.status === "paid").length },
+    { key: "overdue", label: tt("Overdue", "متأخرة"), count: overdueCount },
+  ];
 
   return (
     <div className="space-y-6">
@@ -156,6 +175,29 @@ function BillingPage() {
             </Card>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label={tt("Invoice filters", "تصفية الفواتير")}>
+            {filterTabs.map((t) => {
+              const active = filter === t.key;
+              return (
+                <button
+                  key={t.key}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setFilter(t.key)}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-sm font-medium transition-colors border",
+                    active
+                      ? "bg-navy text-white border-navy dark:bg-gold dark:text-navy dark:border-gold"
+                      : "bg-transparent text-muted-foreground border-border hover:bg-accent/40",
+                  )}
+                >
+                  {t.label}
+                  <span className={cn("ms-2 rounded-full px-1.5 py-0.5 text-xs", active ? "bg-white/20 dark:bg-navy/15" : "bg-muted")}>{t.count}</span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* Invoice List */}
           <div className="rounded-lg border overflow-hidden">
             <div className="overflow-x-auto">
@@ -167,12 +209,15 @@ function BillingPage() {
                     <th className="px-4 py-3 text-start">{tt("Amount", "المبلغ")}</th>
                     <th className="px-4 py-3 text-start">{tt("Status", "الحالة")}</th>
                     <th className="px-4 py-3 text-start">{tt("Issue Date", "تاريخ الإصدار")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Due Date", "تاريخ الاستحقاق")}</th>
                     <th className="px-4 py-3 text-start">{tt("Actions", "إجراءات")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {(invoices ?? []).map((inv) => (
-                    <InvoiceRow key={inv.id} inv={inv} tt={tt} lang={lang} onUpdate={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
+                  {filtered.length === 0 ? (
+                    <tr><td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">{tt("No invoices match this filter.", "لا توجد فواتير مطابقة لهذا التصفية.")}</td></tr>
+                  ) : filtered.map((inv) => (
+                    <InvoiceRow key={inv.id} inv={inv} tt={tt} lang={lang} isOverdue={isOverdue(inv)} onUpdate={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
                   ))}
                 </tbody>
               </table>
@@ -186,7 +231,7 @@ function BillingPage() {
   );
 }
 
-function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: string, ar: string) => string; lang: string; onUpdate: () => void }) {
+function InvoiceRow({ inv, tt, lang, isOverdue, onUpdate }: { inv: InvoiceItem; tt: (en: string, ar: string) => string; lang: string; isOverdue: boolean; onUpdate: () => void }) {
   const runUpdateStatus = useServerFn(updateInvoiceStatus);
   const [loading, setLoading] = useState(false);
 
@@ -198,6 +243,8 @@ function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: st
     } finally { setLoading(false); }
   };
 
+  const displayStatus = isOverdue && inv.status !== "paid" && inv.status !== "cancelled" ? "overdue" : inv.status;
+
   return (
     <tr className="hover:bg-accent/30 transition-colors">
       <td className="px-4 py-3 font-medium">{inv.invoice_number}</td>
@@ -206,13 +253,20 @@ function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: st
         {inv.case_number && <span className="block text-xs text-muted-foreground">#{inv.case_number}</span>}
       </td>
       <td className="px-4 py-3 font-medium">{inv.amount.toFixed(3)} <span className="text-xs text-muted-foreground">{inv.currency}</span></td>
-      <td className="px-4 py-3"><span className={cn("rounded-full px-2.5 py-0.5 text-xs font-medium", statusColor(inv.status))}>{statusLabelFn(inv.status, tt)}</span></td>
+      <td className="px-4 py-3">
+        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium", statusColor(displayStatus))}>
+          {displayStatus === "paid" && <CheckCircle2 className="h-3 w-3" />}
+          {displayStatus === "overdue" && <AlertTriangle className="h-3 w-3" />}
+          {statusLabelFn(displayStatus, tt)}
+        </span>
+      </td>
       <td className="px-4 py-3 text-muted-foreground">{inv.issue_date}</td>
+      <td className={cn("px-4 py-3", isOverdue ? "text-destructive font-medium" : "text-muted-foreground")}>{inv.due_date ?? "—"}</td>
       <td className="px-4 py-3">
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
           <div className="flex gap-1">
             {inv.status === "draft" && <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => markAs("sent")}>{tt("Send", "إرسال")}</Button>}
-            {(inv.status === "sent" || inv.status === "overdue") && <Button size="sm" variant="ghost" className="h-7 text-xs text-success" onClick={() => markAs("paid")}>{tt("Mark Paid", "تم الدفع")}</Button>}
+            {(inv.status === "sent" || inv.status === "overdue" || isOverdue) && inv.status !== "paid" && <Button size="sm" variant="ghost" className="h-7 text-xs text-success" onClick={() => markAs("paid")}>{tt("Mark Paid", "تم الدفع")}</Button>}
             {inv.status !== "cancelled" && inv.status !== "paid" && <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => markAs("cancelled")}>{tt("Cancel", "إلغاء")}</Button>}
           </div>
         )}
