@@ -165,7 +165,9 @@ function Dashboard() {
         outstanding={isAdmin ? outstanding : null}
         t={t}
         lang={lang}
+        todayStr={todayStr}
       />
+
 
       {/* Urgent Alert Banner */}
       {(urgentDeadlines.length > 0 || overdueTasks > 0) && (
