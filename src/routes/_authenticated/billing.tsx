@@ -61,13 +61,10 @@ function BillingPage() {
     enabled: isAdmin,
   });
 
-  const today = new Date().toISOString().slice(0, 10);
-  const isOverdue = (i: InvoiceItem) =>
-    i.status === "overdue" ||
-    ((i.status === "sent" || i.status === "draft") && !!i.due_date && i.due_date < today && !i.paid_date);
+  const isOverdue = (i: InvoiceItem) => i.status === "overdue";
   const filtered = (invoices ?? []).filter((i) => {
     if (filter === "collected") return i.status === "paid";
-    if (filter === "overdue") return isOverdue(i);
+    if (filter === "overdue") return i.status === "overdue";
     return true;
   });
 
