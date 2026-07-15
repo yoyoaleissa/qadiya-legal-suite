@@ -395,7 +395,7 @@ function DailyBriefingCard({
     icon: typeof Scale;
     en: string;
     ar: string;
-    tone: "navy" | "warn" | "danger" | "gold";
+    tone: "navy" | "warn" | "danger" | "gold" | "good";
     onClick: () => void;
   };
   const badges: Badge[] = briefing
@@ -404,11 +404,11 @@ function DailyBriefingCard({
           onClick: () => navigate({ to: "/calendar", search: { date: todayStr } }) },
         { icon: Calendar, en: `${briefing.hearingsTomorrow} Tomorrow`, ar: `${briefing.hearingsTomorrow} غداً`, tone: "navy",
           onClick: () => navigate({ to: "/calendar", search: { date: tomorrowStr } }) },
-        { icon: AlertTriangle, en: `${briefing.tasksOverdue} Overdue Tasks`, ar: `${briefing.tasksOverdue} مهام متأخرة`, tone: "danger",
+        { icon: AlertTriangle, en: `${briefing.tasksOverdue} Overdue Tasks`, ar: `${briefing.tasksOverdue} مهام متأخرة`, tone: briefing.tasksOverdue > 0 ? "danger" : "good",
           onClick: () => navigate({ to: "/tasks", search: { filter: "overdue" } }) },
-        { icon: CheckSquare, en: `${briefing.tasksDueToday} Due Today`, ar: `${briefing.tasksDueToday} مستحقة اليوم`, tone: "warn",
+        { icon: CheckSquare, en: `${briefing.tasksDueToday} Due Today`, ar: `${briefing.tasksDueToday} مستحقة اليوم`, tone: briefing.tasksDueToday > 0 ? "warn" : "good",
           onClick: () => navigate({ to: "/tasks", search: { filter: "today" } }) },
-        { icon: Clock, en: `${briefing.appealWindow} In Appeal Window`, ar: `${briefing.appealWindow} في ميعاد الطعن`, tone: "gold",
+        { icon: Clock, en: `${briefing.appealWindow} In Appeal Window`, ar: `${briefing.appealWindow} في ميعاد الطعن`, tone: briefing.appealWindow > 0 ? "gold" : "good",
           onClick: () => navigate({ to: "/reports" }) },
       ]
     : [];
@@ -418,9 +418,11 @@ function DailyBriefingCard({
       case "danger": return "bg-destructive/10 text-destructive border-destructive/30";
       case "warn": return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
       case "gold": return "bg-gold/15 text-gold border-gold/40";
+      case "good": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
       default: return "bg-navy/10 text-navy dark:bg-gold/10 dark:text-gold border-navy/20 dark:border-gold/20";
     }
   };
+
 
 
   return (
