@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
@@ -27,6 +28,11 @@ import { Route as AuthenticatedAiAssistantRouteImport } from './routes/_authenti
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -98,6 +104,7 @@ const AuthenticatedAiAssistantRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/billing': typeof AuthenticatedBillingRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/billing': typeof AuthenticatedBillingRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/portal'
     | '/sitemap.xml'
     | '/ai-assistant'
     | '/billing'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
+    | '/portal'
     | '/sitemap.xml'
     | '/ai-assistant'
     | '/billing'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/login'
+    | '/portal'
     | '/sitemap.xml'
     | '/_authenticated/ai-assistant'
     | '/_authenticated/billing'
@@ -194,6 +206,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PortalRoute: typeof PortalRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
 }
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -333,9 +353,20 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  PortalRoute: PortalRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
