@@ -1,16 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange, Download, ExternalLink } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange, Download, ExternalLink, CheckCircle2, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
-import { listCalendarEvents, type CalendarEvent } from "@/lib/calendar.functions";
+import { listCalendarEvents, updateHearingStatus, type CalendarEvent } from "@/lib/calendar.functions";
+import { updateTaskStatus } from "@/lib/tasks.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 import { EmptyState } from "@/components/EmptyState";
+
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
