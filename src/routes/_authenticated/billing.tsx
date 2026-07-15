@@ -181,17 +181,50 @@ function BillingPage() {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                   <tr>
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label={tt("Invoice filters", "تصفية الفواتير")}>
+            {filterTabs.map((t) => {
+              const active = filter === t.key;
+              return (
+                <button
+                  key={t.key}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setFilter(t.key)}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-sm font-medium transition-colors border",
+                    active
+                      ? "bg-navy text-white border-navy dark:bg-gold dark:text-navy dark:border-gold"
+                      : "bg-transparent text-muted-foreground border-border hover:bg-accent/40",
+                  )}
+                >
+                  {t.label}
+                  <span className={cn("ms-2 rounded-full px-1.5 py-0.5 text-xs", active ? "bg-white/20 dark:bg-navy/15" : "bg-muted")}>{t.count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Invoice List */}
+          <div className="rounded-lg border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                  <tr>
                     <th className="px-4 py-3 text-start">{tt("Invoice", "الفاتورة")}</th>
                     <th className="px-4 py-3 text-start">{tt("Client", "العميل")}</th>
                     <th className="px-4 py-3 text-start">{tt("Amount", "المبلغ")}</th>
                     <th className="px-4 py-3 text-start">{tt("Status", "الحالة")}</th>
                     <th className="px-4 py-3 text-start">{tt("Issue Date", "تاريخ الإصدار")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Due Date", "تاريخ الاستحقاق")}</th>
                     <th className="px-4 py-3 text-start">{tt("Actions", "إجراءات")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {(invoices ?? []).map((inv) => (
-                    <InvoiceRow key={inv.id} inv={inv} tt={tt} lang={lang} onUpdate={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
+                  {filtered.length === 0 ? (
+                    <tr><td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">{tt("No invoices match this filter.", "لا توجد فواتير مطابقة لهذا التصفية.")}</td></tr>
+                  ) : filtered.map((inv) => (
+                    <InvoiceRow key={inv.id} inv={inv} tt={tt} lang={lang} isOverdue={isOverdue(inv)} onUpdate={() => queryClient.invalidateQueries({ queryKey: ["invoices"] })} />
                   ))}
                 </tbody>
               </table>
