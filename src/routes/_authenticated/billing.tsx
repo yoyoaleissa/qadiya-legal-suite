@@ -175,13 +175,6 @@ function BillingPage() {
             </Card>
           </div>
 
-          {/* Invoice List */}
-          <div className="rounded-lg border overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
-                  <tr>
-          {/* Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label={tt("Invoice filters", "تصفية الفواتير")}>
             {filterTabs.map((t) => {
               const active = filter === t.key;
