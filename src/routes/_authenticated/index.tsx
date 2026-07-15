@@ -378,19 +378,38 @@ function DailyBriefingCard({
   outstanding,
   t,
   lang,
+  todayStr,
 }: {
   briefing: DailyBriefing | undefined;
   outstanding: number | null;
   t: (en: string, ar: string) => string;
   lang: "en" | "ar";
+  todayStr: string;
 }) {
-  const badges: { icon: typeof Scale; en: string; ar: string; tone: "navy" | "warn" | "danger" | "gold" }[] = briefing
+  const navigate = useNavigate();
+  const tomorrow = new Date(todayStr);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+
+  type Badge = {
+    icon: typeof Scale;
+    en: string;
+    ar: string;
+    tone: "navy" | "warn" | "danger" | "gold";
+    onClick: () => void;
+  };
+  const badges: Badge[] = briefing
     ? [
-        { icon: Scale, en: `${briefing.hearingsToday} Hearings Today`, ar: `${briefing.hearingsToday} جلسات اليوم`, tone: "navy" },
-        { icon: Calendar, en: `${briefing.hearingsTomorrow} Tomorrow`, ar: `${briefing.hearingsTomorrow} غداً`, tone: "navy" },
-        { icon: AlertTriangle, en: `${briefing.tasksOverdue} Overdue Tasks`, ar: `${briefing.tasksOverdue} مهام متأخرة`, tone: "danger" },
-        { icon: CheckSquare, en: `${briefing.tasksDueToday} Due Today`, ar: `${briefing.tasksDueToday} مستحقة اليوم`, tone: "warn" },
-        { icon: Clock, en: `${briefing.appealWindow} In Appeal Window`, ar: `${briefing.appealWindow} في ميعاد الطعن`, tone: "gold" },
+        { icon: Scale, en: `${briefing.hearingsToday} Hearings Today`, ar: `${briefing.hearingsToday} جلسات اليوم`, tone: "navy",
+          onClick: () => navigate({ to: "/calendar", search: { date: todayStr } }) },
+        { icon: Calendar, en: `${briefing.hearingsTomorrow} Tomorrow`, ar: `${briefing.hearingsTomorrow} غداً`, tone: "navy",
+          onClick: () => navigate({ to: "/calendar", search: { date: tomorrowStr } }) },
+        { icon: AlertTriangle, en: `${briefing.tasksOverdue} Overdue Tasks`, ar: `${briefing.tasksOverdue} مهام متأخرة`, tone: "danger",
+          onClick: () => navigate({ to: "/tasks", search: { filter: "overdue" } }) },
+        { icon: CheckSquare, en: `${briefing.tasksDueToday} Due Today`, ar: `${briefing.tasksDueToday} مستحقة اليوم`, tone: "warn",
+          onClick: () => navigate({ to: "/tasks", search: { filter: "today" } }) },
+        { icon: Clock, en: `${briefing.appealWindow} In Appeal Window`, ar: `${briefing.appealWindow} في ميعاد الطعن`, tone: "gold",
+          onClick: () => navigate({ to: "/reports" }) },
       ]
     : [];
 
@@ -402,6 +421,7 @@ function DailyBriefingCard({
       default: return "bg-navy/10 text-navy dark:bg-gold/10 dark:text-gold border-navy/20 dark:border-gold/20";
     }
   };
+
 
   return (
     <Card className="border-gold/40 bg-gradient-to-br from-navy to-navy/85 text-white overflow-hidden">
