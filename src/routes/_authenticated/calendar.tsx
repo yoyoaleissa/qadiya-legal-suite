@@ -512,16 +512,27 @@ function CalendarPage() {
                       <ExternalLink className="h-3 w-3" />
                       {tt("Add to Google Calendar", "إضافة إلى تقويم Google")}
                     </a>
-                    {!isDone && (
+                    {!isDone ? (
                       <Button
                         size="sm"
                         variant="outline"
                         className="gap-1.5 border-success/50 text-success hover:bg-success/10"
-                        disabled={markDone.isPending}
-                        onClick={() => markDone.mutate(e)}
+                        disabled={toggleStatus.isPending}
+                        onClick={() => toggleStatus.mutate({ e, action: "done" })}
                       >
                         <Check className="h-3.5 w-3.5" />
                         {tt("Mark done", "تم الإنجاز")}
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5"
+                        disabled={toggleStatus.isPending}
+                        onClick={() => toggleStatus.mutate({ e, action: "undo" })}
+                      >
+                        <Undo2 className="h-3.5 w-3.5" />
+                        {tt("Undo", "تراجع")}
                       </Button>
                     )}
                   </div>
