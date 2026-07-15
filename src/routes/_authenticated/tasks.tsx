@@ -16,9 +16,15 @@ import { cn } from "@/lib/utils";
 import { listTasks, createTask, updateTaskStatus, listWorkflowTemplates, createTasksFromWorkflow, type TaskItem } from "@/lib/tasks.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 
+const FILTER_VALUES = ["all", "open", "in_progress", "done", "overdue", "today"] as const;
+type FilterStatus = (typeof FILTER_VALUES)[number];
+
 export const Route = createFileRoute("/_authenticated/tasks")({
-  validateSearch: (search: Record<string, unknown>): { taskId?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { taskId?: string; filter?: FilterStatus } => ({
     taskId: typeof search.taskId === "string" ? search.taskId : undefined,
+    filter: FILTER_VALUES.includes(search.filter as FilterStatus)
+      ? (search.filter as FilterStatus)
+      : undefined,
   }),
   head: () => ({
     meta: [
@@ -28,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/tasks")({
   }),
   component: TasksPage,
 });
+
 
 function priorityTone(p: string) {
   switch (p) {
