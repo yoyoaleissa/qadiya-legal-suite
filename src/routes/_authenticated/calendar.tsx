@@ -70,11 +70,15 @@ function CalendarPage() {
     queryFn: () => runEvents(),
   });
 
-  const markDone = useMutation({
-    mutationFn: async (e: CalendarEvent) => {
+  const toggleStatus = useMutation({
+    mutationFn: async ({ e, action }: { e: CalendarEvent; action: "done" | "undo" }) => {
       const [kind, id] = e.id.split(/-(.+)/);
-      if (kind === "hearing") return runHearingStatus({ data: { id, status: "completed" } });
-      if (kind === "task") return runTaskStatus({ data: { id, status: "done" } });
+      if (kind === "hearing") {
+        return runHearingStatus({ data: { id, status: action === "done" ? "completed" : "scheduled" } });
+      }
+      if (kind === "task") {
+        return runTaskStatus({ data: { id, status: action === "done" ? "done" : "open" } });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["calendar-events"] });
