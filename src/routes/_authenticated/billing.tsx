@@ -231,7 +231,7 @@ function BillingPage() {
   );
 }
 
-function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: string, ar: string) => string; lang: string; onUpdate: () => void }) {
+function InvoiceRow({ inv, tt, lang, isOverdue, onUpdate }: { inv: InvoiceItem; tt: (en: string, ar: string) => string; lang: string; isOverdue: boolean; onUpdate: () => void }) {
   const runUpdateStatus = useServerFn(updateInvoiceStatus);
   const [loading, setLoading] = useState(false);
 
@@ -243,6 +243,8 @@ function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: st
     } finally { setLoading(false); }
   };
 
+  const displayStatus = isOverdue && inv.status !== "paid" && inv.status !== "cancelled" ? "overdue" : inv.status;
+
   return (
     <tr className="hover:bg-accent/30 transition-colors">
       <td className="px-4 py-3 font-medium">{inv.invoice_number}</td>
@@ -251,13 +253,20 @@ function InvoiceRow({ inv, tt, lang, onUpdate }: { inv: InvoiceItem; tt: (en: st
         {inv.case_number && <span className="block text-xs text-muted-foreground">#{inv.case_number}</span>}
       </td>
       <td className="px-4 py-3 font-medium">{inv.amount.toFixed(3)} <span className="text-xs text-muted-foreground">{inv.currency}</span></td>
-      <td className="px-4 py-3"><span className={cn("rounded-full px-2.5 py-0.5 text-xs font-medium", statusColor(inv.status))}>{statusLabelFn(inv.status, tt)}</span></td>
+      <td className="px-4 py-3">
+        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium", statusColor(displayStatus))}>
+          {displayStatus === "paid" && <CheckCircle2 className="h-3 w-3" />}
+          {displayStatus === "overdue" && <AlertTriangle className="h-3 w-3" />}
+          {statusLabelFn(displayStatus, tt)}
+        </span>
+      </td>
       <td className="px-4 py-3 text-muted-foreground">{inv.issue_date}</td>
+      <td className={cn("px-4 py-3", isOverdue ? "text-destructive font-medium" : "text-muted-foreground")}>{inv.due_date ?? "—"}</td>
       <td className="px-4 py-3">
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
           <div className="flex gap-1">
             {inv.status === "draft" && <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => markAs("sent")}>{tt("Send", "إرسال")}</Button>}
-            {(inv.status === "sent" || inv.status === "overdue") && <Button size="sm" variant="ghost" className="h-7 text-xs text-success" onClick={() => markAs("paid")}>{tt("Mark Paid", "تم الدفع")}</Button>}
+            {(inv.status === "sent" || inv.status === "overdue" || isOverdue) && inv.status !== "paid" && <Button size="sm" variant="ghost" className="h-7 text-xs text-success" onClick={() => markAs("paid")}>{tt("Mark Paid", "تم الدفع")}</Button>}
             {inv.status !== "cancelled" && inv.status !== "paid" && <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => markAs("cancelled")}>{tt("Cancel", "إلغاء")}</Button>}
           </div>
         )}
