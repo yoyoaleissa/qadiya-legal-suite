@@ -207,6 +207,50 @@ function BillingPage() {
   );
 }
 
+function FilterCard({ active, onClick, accent, icon, iconBg, label, value, ariaLabel }: {
+  active: boolean;
+  onClick: () => void;
+  accent: "gold" | "success" | "destructive";
+  icon: React.ReactNode;
+  iconBg: string;
+  label: string;
+  value: React.ReactNode;
+  ariaLabel: string;
+}) {
+  const ring =
+    accent === "gold" ? "ring-gold border-gold"
+    : accent === "success" ? "ring-success border-success"
+    : "ring-destructive border-destructive";
+  const activeBg =
+    accent === "gold" ? "bg-gold/5"
+    : accent === "success" ? "bg-success/5"
+    : "bg-destructive/5";
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      aria-label={ariaLabel}
+      onClick={onClick}
+      className={cn(
+        "text-start rounded-xl border bg-card transition-all outline-none",
+        "hover:border-foreground/20 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring",
+        active ? cn("ring-2 shadow-sm", ring, activeBg) : "border-border",
+      )}
+    >
+      <div className="flex items-center gap-3 px-4 py-4">
+        <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", iconBg)}>{icon}</div>
+        <div>
+          <div className="text-xs text-muted-foreground">{label}</div>
+          <div className="text-xl font-display">{value}</div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+
+
 function InvoiceRow({ inv, tt, lang, isOverdue, onUpdate }: { inv: InvoiceItem; tt: (en: string, ar: string) => string; lang: string; isOverdue: boolean; onUpdate: () => void }) {
   const runUpdateStatus = useServerFn(updateInvoiceStatus);
   const [loading, setLoading] = useState(false);
