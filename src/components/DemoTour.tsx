@@ -116,11 +116,11 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     title: "Billing & Invoicing",
-    titleAr: "الفوترة والمحاسبة",
+    titleAr: "الفاتورة والمحاسبة",
     description:
       "Create invoices, track payments, manage billing status. Admin-only access. Summary cards show outstanding, collected, and overdue amounts in KWD.",
     descriptionAr:
-      "أنشئ فواتير، تتبّع المدفوعات، أدِر حالة الفوترة. وصول للمدراء فقط. بطاقات ملخّصة تعرض المبالغ المستحقة والمحصّلة والمتأخرة بالدينار.",
+      "أنشئ فواتير، تتبّع المدفوعات، أدِر حالة الفاتورة. وصول للمدراء فقط. بطاقات ملخّصة تعرض المبالغ المستحقة والمحصّلة والمتأخرة بالدينار.",
     icon: <Receipt className="h-8 w-8 text-[hsl(var(--navy))]" />,
     route: "/billing",
   },
