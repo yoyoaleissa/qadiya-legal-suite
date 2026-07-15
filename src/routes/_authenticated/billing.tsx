@@ -139,59 +139,40 @@ function BillingPage() {
         </Card>
       ) : (
         <>
-          {/* Summary Cards */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Card>
-              <CardContent className="flex items-center gap-3 pt-5 pb-4">
-                <div className="h-10 w-10 rounded-lg bg-gold/15 flex items-center justify-center"><DollarSign className="h-5 w-5 text-gold" /></div>
-                <div>
-                  <div className="text-xs text-muted-foreground">{tt("Outstanding", "مستحقة")}</div>
-                  <div className="text-xl font-display">{totalOutstanding.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="flex items-center gap-3 pt-5 pb-4">
-                <div className="h-10 w-10 rounded-lg bg-success/15 flex items-center justify-center"><CheckCircle2 className="h-5 w-5 text-success" /></div>
-                <div>
-                  <div className="text-xs text-muted-foreground">{tt("Collected", "محصّلة")}</div>
-                  <div className="text-xl font-display">{totalPaid.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="flex items-center gap-3 pt-5 pb-4">
-                <div className="h-10 w-10 rounded-lg bg-destructive/15 flex items-center justify-center"><AlertTriangle className="h-5 w-5 text-destructive" /></div>
-                <div>
-                  <div className="text-xs text-muted-foreground">{tt("Overdue", "متأخرة")}</div>
-                  <div className="text-xl font-display">{overdueCount} <span className="text-xs text-muted-foreground">{tt("invoices", "فواتير")}</span></div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Summary Cards — click to filter */}
+          <div className="grid gap-4 sm:grid-cols-3" role="tablist" aria-label={tt("Invoice filters", "تصفية الفواتير")}>
+            <FilterCard
+              active={activeFilter === "outstanding"}
+              onClick={() => toggleFilter("outstanding")}
+              accent="gold"
+              icon={<DollarSign className="h-5 w-5 text-gold" />}
+              iconBg="bg-gold/15"
+              label={tt("Outstanding", "مستحقة")}
+              value={<>{totalOutstanding.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></>}
+              ariaLabel={tt("Filter by outstanding invoices", "تصفية الفواتير المستحقة")}
+            />
+            <FilterCard
+              active={activeFilter === "collected"}
+              onClick={() => toggleFilter("collected")}
+              accent="success"
+              icon={<CheckCircle2 className="h-5 w-5 text-success" />}
+              iconBg="bg-success/15"
+              label={tt("Collected", "محصّلة")}
+              value={<>{totalPaid.toFixed(3)} <span className="text-xs text-muted-foreground">KWD</span></>}
+              ariaLabel={tt("Filter by collected invoices", "تصفية الفواتير المحصّلة")}
+            />
+            <FilterCard
+              active={activeFilter === "overdue"}
+              onClick={() => toggleFilter("overdue")}
+              accent="destructive"
+              icon={<AlertTriangle className="h-5 w-5 text-destructive" />}
+              iconBg="bg-destructive/15"
+              label={tt("Overdue", "متأخرة")}
+              value={<>{overdueCount} <span className="text-xs text-muted-foreground">{tt("invoices", "فواتير")}</span></>}
+              ariaLabel={tt("Filter by overdue invoices", "تصفية الفواتير المتأخرة")}
+            />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label={tt("Invoice filters", "تصفية الفواتير")}>
-            {filterTabs.map((t) => {
-              const active = filter === t.key;
-              return (
-                <button
-                  key={t.key}
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setFilter(t.key)}
-                  className={cn(
-                    "rounded-full px-4 py-1.5 text-sm font-medium transition-colors border",
-                    active
-                      ? "bg-navy text-white border-navy dark:bg-gold dark:text-navy dark:border-gold"
-                      : "bg-transparent text-muted-foreground border-border hover:bg-accent/40",
-                  )}
-                >
-                  {t.label}
-                  <span className={cn("ms-2 rounded-full px-1.5 py-0.5 text-xs", active ? "bg-white/20 dark:bg-navy/15" : "bg-muted")}>{t.count}</span>
-                </button>
-              );
-            })}
-          </div>
 
           {/* Invoice List */}
           <div className="rounded-lg border overflow-hidden">
