@@ -190,8 +190,9 @@ function TasksPage() {
                       </span>
                     )}
                   </div>
-                </div>
-              </button>
+                </button>
+              </div>
+
             ))}
           </div>
 
