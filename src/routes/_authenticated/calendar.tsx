@@ -270,8 +270,11 @@ function CalendarPage() {
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-destructive" /> {tt("Deadline", "ميعاد نهائي")}
-
             </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-success" /> {tt("Completed", "تم الإنجاز")}
+            </span>
+
           </div>
         </CardContent>
       </Card>
