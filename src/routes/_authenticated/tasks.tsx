@@ -16,9 +16,15 @@ import { cn } from "@/lib/utils";
 import { listTasks, createTask, updateTaskStatus, listWorkflowTemplates, createTasksFromWorkflow, type TaskItem } from "@/lib/tasks.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 
+const FILTER_VALUES = ["all", "open", "in_progress", "done", "overdue", "today"] as const;
+type FilterStatus = (typeof FILTER_VALUES)[number];
+
 export const Route = createFileRoute("/_authenticated/tasks")({
-  validateSearch: (search: Record<string, unknown>): { taskId?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { taskId?: string; filter?: FilterStatus } => ({
     taskId: typeof search.taskId === "string" ? search.taskId : undefined,
+    filter: FILTER_VALUES.includes(search.filter as FilterStatus)
+      ? (search.filter as FilterStatus)
+      : undefined,
   }),
   head: () => ({
     meta: [
@@ -28,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/tasks")({
   }),
   component: TasksPage,
 });
+
 
 function priorityTone(p: string) {
   switch (p) {
@@ -45,14 +52,12 @@ function statusTone(s: string) {
   }
 }
 
-type FilterStatus = "all" | "open" | "in_progress" | "done";
-
 function TasksPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
-  const { taskId } = Route.useSearch();
+  const { taskId, filter: filterParam } = Route.useSearch();
   const [selectedId, setSelectedId] = useState<string | null>(taskId ?? null);
-  const [filter, setFilter] = useState<FilterStatus>("all");
+  const [filter, setFilter] = useState<FilterStatus>(filterParam ?? "all");
   const [showCreate, setShowCreate] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
   const queryClient = useQueryClient();
@@ -60,6 +65,10 @@ function TasksPage() {
   useEffect(() => {
     if (taskId) setSelectedId(taskId);
   }, [taskId]);
+
+  useEffect(() => {
+    if (filterParam) setFilter(filterParam);
+  }, [filterParam]);
 
   const runTasks = useServerFn(listTasks);
   const runUpdateStatus = useServerFn(updateTaskStatus);
@@ -79,14 +88,29 @@ function TasksPage() {
     tt(p === "high" ? "High" : p === "low" ? "Low" : "Medium", p === "high" ? "عالية" : p === "low" ? "منخفضة" : "متوسطة");
   const statusLabel = (s: string) =>
     tt(s === "done" ? "Done" : s === "in_progress" ? "In progress" : "Open", s === "done" ? "مكتملة" : s === "in_progress" ? "قيد التنفيذ" : "مفتوحة");
+  const filterLabel = (f: FilterStatus) => {
+    if (f === "all") return tt("All", "الكل");
+    if (f === "overdue") return tt("Overdue", "متأخرة");
+    if (f === "today") return tt("Due today", "مستحقة اليوم");
+    return statusLabel(f);
+  };
 
-  const filtered = (tasks ?? []).filter((t) => filter === "all" || t.status === filter);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const matchesFilter = (t: TaskItem, f: FilterStatus) => {
+    if (f === "all") return true;
+    if (f === "overdue") return t.status !== "done" && !!t.due_date && t.due_date < todayStr;
+    if (f === "today") return t.status !== "done" && t.due_date === todayStr;
+    return t.status === f;
+  };
+  const filtered = (tasks ?? []).filter((t) => matchesFilter(t, filter));
   const selected = (tasks ?? []).find((t) => t.id === selectedId) ?? null;
-  const counts = {
+  const counts: Record<FilterStatus, number> = {
     all: (tasks ?? []).length,
     open: (tasks ?? []).filter((t) => t.status === "open").length,
     in_progress: (tasks ?? []).filter((t) => t.status === "in_progress").length,
     done: (tasks ?? []).filter((t) => t.status === "done").length,
+    overdue: (tasks ?? []).filter((t) => matchesFilter(t, "overdue")).length,
+    today: (tasks ?? []).filter((t) => matchesFilter(t, "today")).length,
   };
 
   return (
@@ -113,19 +137,24 @@ function TasksPage() {
 
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2">
-        {(["all", "open", "in_progress", "done"] as FilterStatus[]).map((f) => (
+        {(["all", "open", "in_progress", "done", "today", "overdue"] as FilterStatus[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={cn(
               "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-              filter === f ? "bg-navy text-white dark:bg-gold dark:text-navy" : "bg-muted text-muted-foreground hover:bg-accent",
+              filter === f
+                ? f === "overdue"
+                  ? "bg-destructive text-white"
+                  : "bg-navy text-white dark:bg-gold dark:text-navy"
+                : "bg-muted text-muted-foreground hover:bg-accent",
             )}
           >
-            {f === "all" ? tt("All", "الكل") : statusLabel(f)}
+            {filterLabel(f)}
             <span className="ms-1.5 opacity-70">{counts[f]}</span>
           </button>
         ))}
+
       </div>
 
       {isLoading ? (
