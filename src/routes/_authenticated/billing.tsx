@@ -105,6 +105,10 @@ function BillingPage() {
   const totalPaid = (invoices ?? []).filter((i) => i.status === "paid").reduce((s, i) => s + i.amount, 0);
   const overdueCount = (invoices ?? []).filter(isOverdue).length;
 
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Finance", "المالية")}</div>
           <h1 className="font-display text-3xl">{tt("Billing", "الفوترة")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{tt("Invoices, payments, and outstanding balances.", "الفواتير والمدفوعات والأرصدة المستحقة.")}</p>
