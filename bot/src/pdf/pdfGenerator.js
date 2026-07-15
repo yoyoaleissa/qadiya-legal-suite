@@ -33,11 +33,11 @@ async function generateCasePDF(caseResult) {
 
     const html = buildPremiumDossierHTML(caseResult, aiSummary, qrDataUrl);
 
-    browser = await puppeteer.launch({
+        browser = await puppeteer.launch({
       headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     });
-
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 15000 });
 
