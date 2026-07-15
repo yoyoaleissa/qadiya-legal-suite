@@ -62,10 +62,18 @@ function TasksPage() {
   }, [taskId]);
 
   const runTasks = useServerFn(listTasks);
+  const runUpdateStatus = useServerFn(updateTaskStatus);
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["tasks"],
     queryFn: () => runTasks(),
   });
+
+  const toggleDone = useMutation({
+    mutationFn: (t: TaskItem) =>
+      runUpdateStatus({ data: { id: t.id, status: t.status === "done" ? "open" : "done" } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
 
   const priorityLabel = (p: string) =>
     tt(p === "high" ? "High" : p === "low" ? "Low" : "Medium", p === "high" ? "عالية" : p === "low" ? "منخفضة" : "متوسطة");
