@@ -211,10 +211,10 @@ function FilterCard({ active, onClick, accent, icon, iconBg, label, value, ariaL
   active: boolean;
   onClick: () => void;
   accent: "gold" | "success" | "destructive";
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBg: string;
   label: string;
-  value: React.ReactNode;
+  value: ReactNode;
   ariaLabel: string;
 }) {
   const ring =
