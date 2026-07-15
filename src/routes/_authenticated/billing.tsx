@@ -44,13 +44,13 @@ function statusLabelFn(s: string, tt: (en: string, ar: string) => string) {
   }
 }
 
-type FilterKey = "all" | "collected" | "overdue";
+type FilterKey = "all" | "outstanding" | "collected" | "overdue";
 
 function BillingPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [showCreate, setShowCreate] = useState(false);
-  const [filter, setFilter] = useState<FilterKey>("all");
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const queryClient = useQueryClient();
   const { isAdmin, isLoading: rolesLoading } = useIsAdmin();
 
@@ -63,10 +63,14 @@ function BillingPage() {
 
   const isOverdue = (i: InvoiceItem) => i.status === "overdue";
   const filtered = (invoices ?? []).filter((i) => {
-    if (filter === "collected") return i.status === "paid";
-    if (filter === "overdue") return i.status === "overdue";
+    if (activeFilter === "outstanding") return i.status === "sent" || i.status === "overdue";
+    if (activeFilter === "collected") return i.status === "paid";
+    if (activeFilter === "overdue") return i.status === "overdue";
     return true;
   });
+
+  const toggleFilter = (key: Exclude<FilterKey, "all">) =>
+    setActiveFilter((prev) => (prev === key ? "all" : key));
 
   if (rolesLoading) {
     return (
