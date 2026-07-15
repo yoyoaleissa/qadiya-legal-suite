@@ -92,7 +92,7 @@ function BillingPage() {
             title={tt("Admins only", "للمسؤولين فقط")}
             desc={tt(
               "Billing and financial data are restricted to firm administrators.",
-              "الفوترة والبيانات المالية مقصورة على مسؤولي المكتب.",
+              "الفاتورة والبيانات المالية مقصورة على مسؤولي المكتب.",
             )}
           />
         </CardContent>
@@ -110,7 +110,7 @@ function BillingPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Finance", "المالية")}</div>
-          <h1 className="font-display text-3xl">{tt("Billing", "الفوترة")}</h1>
+          <h1 className="font-display text-3xl">{tt("Billing", "الفاتورة")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{tt("Invoices, payments, and outstanding balances.", "الفواتير والمدفوعات والأرصدة المستحقة.")}</p>
         </div>
         <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90" onClick={() => setShowCreate(true)}>

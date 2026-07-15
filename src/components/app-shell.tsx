@@ -51,7 +51,7 @@ const NAV: NavItem[] = [
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "الموكّلون والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
-  { to: "/billing", labelEn: "Billing", labelAr: "الفوترة", icon: Receipt, adminOnly: true },
+  { to: "/billing", labelEn: "Billing", labelAr: "الفاتورة", icon: Receipt, adminOnly: true },
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
 ];
