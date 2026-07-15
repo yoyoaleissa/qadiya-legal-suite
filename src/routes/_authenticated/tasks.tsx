@@ -170,7 +170,6 @@ function TasksPage() {
                 </button>
                 <button type="button" onClick={() => setSelectedId(task.id)} className="min-w-0 flex-1 text-start">
 
-                <div className="min-w-0 flex-1">
                   <div className={cn("font-medium truncate", task.status === "done" && "line-through text-muted-foreground")}>
                     <span className={lang === "ar" ? "font-arabic" : ""}>{lang === "ar" ? task.title_ar ?? task.title : task.title}</span>
                   </div>
