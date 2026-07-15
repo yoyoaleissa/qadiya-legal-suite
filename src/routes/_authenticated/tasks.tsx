@@ -149,17 +149,27 @@ function TasksPage() {
         <div className="grid gap-4 lg:grid-cols-5">
           <div className="lg:col-span-3 space-y-3">
             {filtered.map((task) => (
-              <button
+              <div
                 key={task.id}
-                onClick={() => setSelectedId(task.id)}
                 className={cn(
                   "group flex w-full items-start gap-3 rounded-lg border bg-card px-4 py-3 text-start transition-colors",
                   selectedId === task.id ? "border-gold bg-gold/5" : "hover:border-gold/50 hover:bg-accent/40",
+                  task.status === "done" && "opacity-60",
                 )}
               >
-                <div className={cn("mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center", task.status === "done" && "bg-success/20 border-success")}>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); toggleDone.mutate(task); }}
+                  aria-label={tt(task.status === "done" ? "Mark as open" : "Mark as done", task.status === "done" ? "إعادة فتح" : "تم الإنجاز")}
+                  className={cn(
+                    "mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-colors hover:border-success",
+                    task.status === "done" && "bg-success/20 border-success",
+                  )}
+                >
                   {task.status === "done" && <CheckSquare className="h-3 w-3 text-success" />}
-                </div>
+                </button>
+                <button type="button" onClick={() => setSelectedId(task.id)} className="min-w-0 flex-1 text-start">
+
                 <div className="min-w-0 flex-1">
                   <div className={cn("font-medium truncate", task.status === "done" && "line-through text-muted-foreground")}>
                     <span className={lang === "ar" ? "font-arabic" : ""}>{lang === "ar" ? task.title_ar ?? task.title : task.title}</span>
