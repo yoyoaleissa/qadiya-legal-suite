@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckSquare, User, Flag, CalendarClock, FileText, Loader2, X, Plus, PlayCircle, ExternalLink } from "lucide-react";
+import { CheckSquare, User, Flag, CalendarClock, FileText, Loader2, X, Plus, PlayCircle, ExternalLink, Undo2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -219,7 +219,19 @@ function TasksPage() {
                     )}
                   </div>
                 </button>
+                {task.status === "done" && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggleDone.mutate(task); }}
+                    className="mt-0.5 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:border-gold transition-colors"
+                    aria-label={tt("Undo completion", "تراجع عن الإنجاز")}
+                  >
+                    <Undo2 className="h-3 w-3" />
+                    {tt("Undo", "تراجع")}
+                  </button>
+                )}
               </div>
+
 
             ))}
           </div>
