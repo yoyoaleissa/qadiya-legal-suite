@@ -44,10 +44,13 @@ function statusLabelFn(s: string, tt: (en: string, ar: string) => string) {
   }
 }
 
+type FilterKey = "all" | "collected" | "overdue";
+
 function BillingPage() {
   const { lang } = useApp();
   const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
   const [showCreate, setShowCreate] = useState(false);
+  const [filter, setFilter] = useState<FilterKey>("all");
   const queryClient = useQueryClient();
   const { isAdmin, isLoading: rolesLoading } = useIsAdmin();
 
@@ -56,6 +59,16 @@ function BillingPage() {
     queryKey: ["invoices"],
     queryFn: () => runInvoices(),
     enabled: isAdmin,
+  });
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isOverdue = (i: InvoiceItem) =>
+    i.status === "overdue" ||
+    ((i.status === "sent" || i.status === "draft") && !!i.due_date && i.due_date < today && !i.paid_date);
+  const filtered = (invoices ?? []).filter((i) => {
+    if (filter === "collected") return i.status === "paid";
+    if (filter === "overdue") return isOverdue(i);
+    return true;
   });
 
   if (rolesLoading) {
