@@ -65,7 +65,7 @@ export const listNotifications = createServerFn({ method: "GET" })
         .limit(25),
       supabase
         .from("judgments")
-        .select("id, case_id, judgment_date, judgment_summary, judgment_summary_ar")
+        .select("id, case_id, judgment_date, ruling_text")
         .gte("judgment_date", windowStartStr)
         .lte("judgment_date", todayStr)
         .order("judgment_date", { ascending: false })
