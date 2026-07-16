@@ -31,7 +31,7 @@ export type Database = {
           actor_email?: string | null
           actor_id?: string | null
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           metadata?: Json | null
           resource_id?: string | null
@@ -82,7 +82,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           file_name: string
-          firm_id: string
+          firm_id?: string
           id?: string
           is_client_visible?: boolean
           mime_type?: string | null
@@ -147,7 +147,7 @@ export type Database = {
           body: string
           case_id: string
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           is_internal?: boolean
           updated_at?: string
@@ -192,7 +192,7 @@ export type Database = {
         Insert: {
           case_number: string
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           json_data: Json
           updated_at?: string
@@ -239,7 +239,7 @@ export type Database = {
           description_ar?: string | null
           event_date?: string | null
           event_type?: string | null
-          firm_id: string
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           sort_order?: number
@@ -297,7 +297,7 @@ export type Database = {
           case_type_ar?: string | null
           client_id?: string | null
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           overall_status?: string
           title?: string | null
@@ -348,7 +348,7 @@ export type Database = {
           body: string
           client_id: string
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           sender?: string
           updated_at?: string
@@ -395,7 +395,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email?: string | null
-          firm_id: string
+          firm_id?: string
           id?: string
           name: string
           name_ar?: string | null
@@ -445,7 +445,7 @@ export type Database = {
           case_ref?: string | null
           court_name?: string | null
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           level: Database["public"]["Enums"]["court_level"]
           registered_date?: string | null
@@ -499,7 +499,7 @@ export type Database = {
           case_id: string
           created_at?: string
           file_number?: string | null
-          firm_id: string
+          firm_id?: string
           id?: string
           jurisdiction?: string | null
           notes?: string | null
@@ -549,7 +549,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           execution_id: string
-          firm_id: string
+          firm_id?: string
           id?: string
           receipt_date?: string | null
         }
@@ -659,7 +659,7 @@ export type Database = {
           created_at?: string
           default_currency?: string
           email?: string | null
-          firm_id: string
+          firm_id?: string
           firm_name?: string
           firm_name_ar?: string
           holidays?: Json
@@ -751,7 +751,7 @@ export type Database = {
         Insert: {
           case_id: string
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           report_data?: Json | null
           status_headline?: string | null
@@ -796,7 +796,7 @@ export type Database = {
         Insert: {
           case_id: string
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           notes?: string | null
@@ -859,7 +859,7 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           due_date?: string | null
-          firm_id: string
+          firm_id?: string
           id?: string
           invoice_number: string
           issue_date?: string
@@ -926,7 +926,7 @@ export type Database = {
           amount?: number | null
           case_id: string
           created_at?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           judgment_date?: string | null
           judgment_type?: string | null
@@ -1059,7 +1059,7 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           due_date?: string | null
-          firm_id: string
+          firm_id?: string
           id?: string
           priority?: string
           sort_order?: number
@@ -1120,7 +1120,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number
           entry_date?: string
-          firm_id: string
+          firm_id?: string
           id?: string
           updated_at?: string
           user_id: string
@@ -1180,7 +1180,7 @@ export type Database = {
           description_ar?: string | null
           entry_date?: string
           entry_type: string
-          firm_id: string
+          firm_id?: string
           id?: string
           recorded_by?: string | null
           reference_number?: string | null
@@ -1259,7 +1259,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           description_ar?: string | null
-          firm_id: string
+          firm_id?: string
           id?: string
           name: string
           name_ar?: string | null
