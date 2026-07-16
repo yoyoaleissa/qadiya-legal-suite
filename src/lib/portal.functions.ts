@@ -112,11 +112,13 @@ export const listActivityFeed = createServerFn({ method: "GET" })
     const supabase = context.supabase;
     const { data: rows, error } = await supabase
       .from("audit_log")
-      .select("id, actor_id, action, entity_type, entity_id, metadata, created_at")
+      .select("id, actor_id, actor_email, action, resource_type, resource_id, metadata, created_at")
       .order("created_at", { ascending: false })
       .limit(data.limit);
     if (error) throw new Error(error.message);
-    const actorIds = Array.from(new Set((rows ?? []).map((r) => r.actor_id).filter(Boolean) as string[]));
+    const actorIds = Array.from(
+      new Set((rows ?? []).map((r) => r.actor_id).filter(Boolean) as string[]),
+    );
     const { data: profiles } = actorIds.length
       ? await supabase.from("profiles").select("id, full_name, full_name_ar").in("id", actorIds)
       : { data: [] as { id: string; full_name: string | null; full_name_ar: string | null }[] };
