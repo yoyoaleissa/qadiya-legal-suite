@@ -397,6 +397,28 @@ function CalendarPage() {
                 )}
                 {tt("Export PDF", "تصدير PDF")}
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                disabled={isLoading || monthEvents.length === 0}
+                onClick={() => {
+                  const ics = buildIcs(
+                    `Qadiya · ${monthName} ${view.year}`,
+                    monthEvents.map((e) => ({
+                      uid: `${e.type}-${e.id}`,
+                      date: e.date,
+                      title: (lang === "ar" ? e.title_ar : e.title) || (lang === "ar" ? e.title : e.title_ar) || "",
+                      description: lang === "ar" ? e.sub_ar : e.sub,
+                      location: e.case_number ?? null,
+                    })),
+                  );
+                  downloadIcs(`qadiya-calendar-${monthName.replace(/\s+/g, "-")}-${view.year}.ics`, ics);
+                }}
+              >
+                <CalendarDays className="h-4 w-4" />
+                {tt("Export .ics", "تصدير .ics")}
+              </Button>
             </div>
           </div>
 
