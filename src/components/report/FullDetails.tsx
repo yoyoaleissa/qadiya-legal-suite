@@ -47,7 +47,9 @@ export function FullDetails({ report }: { report: CaseReport }) {
                   {report.court_levels.map((l, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-medium">{levelLabel(l.level)}</TableCell>
-                      <TableCell>{l.court_name ?? "—"}</TableCell>
+                      <TableCell>
+                        {l.court_name ? <CourtMapLink courtName={l.court_name} /> : "—"}
+                      </TableCell>
                       <TableCell dir="ltr">{l.case_ref ?? "—"}</TableCell>
                       <TableCell>{formatDate(l.registered_date, lang)}</TableCell>
                       <TableCell>{l.status ?? "—"}</TableCell>
