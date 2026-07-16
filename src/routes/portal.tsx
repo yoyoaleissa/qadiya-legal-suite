@@ -1,12 +1,34 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { Scale, FileText, Calendar, Clock, MapPin, MessageCircle, LogOut } from "lucide-react";
+import type { Session } from "@supabase/supabase-js";
+import {
+  Scale,
+  FileText,
+  Calendar,
+  MessageCircle,
+  LogOut,
+  Receipt,
+  Send,
+  Search,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { CourtMapLink } from "@/components/CourtMapLink";
+import {
+  getPortalProfile,
+  listPortalCases,
+  listPortalInvoices,
+  listPortalMessages,
+  sendPortalMessage,
+} from "@/lib/portal.functions";
 
 export const Route = createFileRoute("/portal")({
   head: () => ({
@@ -15,89 +37,36 @@ export const Route = createFileRoute("/portal")({
       {
         name: "description",
         content:
-          "Track your Kuwait legal case status, next hearing dates, and shared documents from your lawyer.",
+          "Track your Kuwait legal case status, hearing dates, invoices, and messages from your lawyer.",
       },
-      {
-        property: "og:title",
-        content: "بوابة الموكل — Qadiya OS Client Portal",
-      },
+      { property: "og:title", content: "بوابة الموكل — Qadiya OS Client Portal" },
       {
         property: "og:description",
         content:
-          "Track your Kuwait legal case status, next hearing dates, and shared documents from your lawyer.",
+          "Secure client portal for Kuwait law firm clients — cases, invoices, and secure messaging.",
       },
       { property: "og:url", content: "https://qadiya.lovable.app/portal" },
       { property: "og:type", content: "website" },
-      {
-        property: "og:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
-      },
     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/portal" }],
   }),
   component: ClientPortal,
 });
 
-/**
- * Client Portal — A simplified, read-only interface for law firm clients.
- * Clients can:
- * - View their active cases and status
- * - See next hearing dates with court map links
- * - Download shared documents
- * - Chat with the AI assistant about their case
- *
- * Authentication: Uses Supabase Auth with role="client" in profiles table.
- * If not logged in, shows a case lookup by number (public, no auth needed).
- */
 function ClientPortal() {
-  const navigate = useNavigate();
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [caseNumber, setCaseNumber] = useState("");
-  const [lookupResult, setLookupResult] = useState<any>(null);
-  const [lookupLoading, setLookupLoading] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      setLoading(false);
+      setReady(true);
     });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const handleCaseLookup = async () => {
-    if (!caseNumber.trim()) return;
-    setLookupLoading(true);
-    setLookupResult(null);
-
-    try {
-      // Check if we have a cached report for this case
-      const { data } = await supabase
-        .from("case_reports")
-        .select("*")
-        .eq("case_number", caseNumber.trim())
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (data) {
-        setLookupResult(data);
-      } else {
-        setLookupResult({ notFound: true });
-      }
-    } catch {
-      setLookupResult({ notFound: true });
-    } finally {
-      setLookupLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Scale className="h-8 w-8 animate-pulse text-primary" />
@@ -107,7 +76,6 @@ function ClientPortal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30" dir="rtl">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -121,9 +89,8 @@ function ClientPortal() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                supabase.auth.signOut();
-                setSession(null);
+              onClick={async () => {
+                await supabase.auth.signOut();
               }}
             >
               <LogOut className="h-4 w-4 ml-1" />
@@ -133,144 +100,359 @@ function ClientPortal() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Hero Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">متابعة قضيتك</h1>
-          <p className="text-muted-foreground">أدخل الرقم الآلي للقضية لمعرفة آخر المستجدات</p>
-        </div>
-
-        {/* Case Lookup */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex gap-2">
-              <Input
-                placeholder="الرقم الآلي (مثال: 222486500)"
-                value={caseNumber}
-                onChange={(e) => setCaseNumber(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCaseLookup()}
-                className="text-lg text-center"
-                dir="ltr"
-              />
-              <Button onClick={handleCaseLookup} disabled={lookupLoading}>
-                {lookupLoading ? <Clock className="h-4 w-4 animate-spin" /> : "بحث"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        {lookupResult && !lookupResult.notFound && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  تقرير القضية {caseNumber}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {lookupResult.json_data && (
-                  <>
-                    {/* Status */}
-                    <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <span className="text-sm font-medium">الحالة</span>
-                      <Badge
-                        variant={
-                          lookupResult.json_data.status === "مغلقة" ? "secondary" : "default"
-                        }
-                      >
-                        {lookupResult.json_data.status || "نشطة"}
-                      </Badge>
-                    </div>
-
-                    {/* Court */}
-                    {lookupResult.json_data.court && (
-                      <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                        <span className="text-sm font-medium">المحكمة</span>
-                        <CourtMapLink courtName={lookupResult.json_data.court} />
-                      </div>
-                    )}
-
-                    {/* Hearings */}
-                    {lookupResult.json_data.hearings?.length > 0 && (
-                      <div className="p-3 bg-muted rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Calendar className="h-4 w-4" />
-                          <span className="text-sm font-medium">الجلسات</span>
-                        </div>
-                        <div className="space-y-1">
-                          {lookupResult.json_data.hearings.slice(-3).map((h: any, i: number) => (
-                            <div
-                              key={i}
-                              className="text-sm text-muted-foreground flex justify-between"
-                            >
-                              <span>{h.date}</span>
-                              <span>{h.decision || h.type || ""}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Judgments */}
-                    {lookupResult.json_data.judgments?.length > 0 && (
-                      <div className="p-3 bg-muted rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Scale className="h-4 w-4" />
-                          <span className="text-sm font-medium">الأحكام</span>
-                        </div>
-                        <div className="space-y-1">
-                          {lookupResult.json_data.judgments.map((j: any, i: number) => (
-                            <div key={i} className="text-sm text-muted-foreground">
-                              {j.decision || j.text || `حكم ${i + 1}`}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* Last Updated */}
-                <p className="text-xs text-muted-foreground text-center pt-2">
-                  آخر تحديث: {new Date(lookupResult.updated_at).toLocaleDateString("ar-KW")}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Telegram Bot CTA */}
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-6 text-center">
-                <MessageCircle className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm font-medium mb-2">احصل على تقرير PDF مفصّل عبر تيليجرام</p>
-                <Button asChild variant="outline" size="sm">
-                  <a href="https://t.me/Qadiya_bot" target="_blank" rel="noopener noreferrer">
-                    فتح بوت قضية
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {lookupResult?.notFound && (
-          <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800">
-            <CardContent className="pt-6 text-center">
-              <p className="text-sm">
-                لم يتم العثور على تقرير لهذه القضية. جرّب الرقم الآلي (9 أرقام) أو تواصل مع مكتب
-                المحاماة.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Footer */}
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        {session ? <PortalHome /> : <PortalGuest />}
         <footer className="text-center mt-12 text-xs text-muted-foreground">
-          <p>Powered by Qadiya AI 🤖</p>
+          <p>Powered by Qadiya AI</p>
           <p className="mt-1">هذه البوابة للاطلاع فقط ولا تُغني عن الاستشارة القانونية</p>
         </footer>
       </main>
     </div>
+  );
+}
+
+/* ----------------- Guest (not signed in) view ----------------- */
+
+function PortalGuest() {
+  const [email, setEmail] = useState("");
+  const [caseNumber, setCaseNumber] = useState("");
+  const [sending, setSending] = useState(false);
+  const [lookup, setLookup] = useState<
+    | { notFound: true }
+    | { notFound?: false; case_number: string; json_data: Record<string, unknown> | null; updated_at: string }
+    | null
+  >(null);
+  const [lookupLoading, setLookupLoading] = useState(false);
+
+  const sendMagic = async () => {
+    if (!email.trim()) return;
+    setSending(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: `${window.location.origin}/portal` },
+      });
+      if (error) throw error;
+      toast.success("تم إرسال رابط تسجيل الدخول إلى بريدك");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "تعذّر الإرسال");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const doLookup = async () => {
+    if (!caseNumber.trim()) return;
+    setLookupLoading(true);
+    setLookup(null);
+    try {
+      const { data } = await supabase
+        .from("case_reports")
+        .select("case_number, json_data, updated_at")
+        .eq("case_number", caseNumber.trim())
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        setLookup({
+          case_number: data.case_number,
+          json_data: (data.json_data as Record<string, unknown> | null) ?? null,
+          updated_at: data.updated_at,
+        });
+      } else setLookup({ notFound: true });
+    } catch {
+      setLookup({ notFound: true });
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-2">متابعة قضيتك</h1>
+        <p className="text-muted-foreground">
+          سجّل الدخول برابط سحري لعرض قضاياك وفواتيرك، أو ابحث عن قضية بالرقم الآلي
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">تسجيل الدخول</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMagic()}
+              dir="ltr"
+            />
+            <Button onClick={sendMagic} disabled={sending}>
+              {sending ? "…" : "أرسل الرابط"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            سيصلك رابط دخول آمن. يجب أن يكون بريدك مسجّلاً لدى مكتب المحاماة.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            بحث سريع عن قضية
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              placeholder="الرقم الآلي (مثال: 222486500)"
+              value={caseNumber}
+              onChange={(e) => setCaseNumber(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && doLookup()}
+              dir="ltr"
+            />
+            <Button variant="outline" onClick={doLookup} disabled={lookupLoading}>
+              بحث
+            </Button>
+          </div>
+          {lookup && !("notFound" in lookup && lookup.notFound) && "case_number" in lookup && (
+            <div className="mt-4 p-3 bg-muted rounded-lg text-sm space-y-1">
+              <div className="font-medium">قضية {lookup.case_number}</div>
+              <div className="text-xs text-muted-foreground">
+                آخر تحديث: {new Date(lookup.updated_at).toLocaleDateString("ar-KW")}
+              </div>
+            </div>
+          )}
+          {lookup && "notFound" in lookup && lookup.notFound && (
+            <p className="text-xs mt-3 text-muted-foreground">لم يتم العثور على تقرير لهذه القضية.</p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ----------------- Signed-in client view ----------------- */
+
+function PortalHome() {
+  const fetchProfile = useServerFn(getPortalProfile);
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["portal-profile"],
+    queryFn: () => fetchProfile(),
+  });
+
+  if (isLoading) {
+    return <p className="text-center text-sm text-muted-foreground">جاري التحميل…</p>;
+  }
+
+  if (!profile?.client) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-center space-y-2">
+          <p className="text-sm">
+            بريدك الإلكتروني ({profile?.email}) غير مرتبط بأي ملف موكل في المكتب.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            تواصل مع مكتب المحاماة لربط بريدك بملفك.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">أهلاً {profile.client.name_ar || profile.client.name}</h1>
+        <p className="text-sm text-muted-foreground">هذه لوحتك الخاصة كموكل في المكتب.</p>
+      </div>
+
+      <Tabs defaultValue="cases">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="cases">
+            <FileText className="h-4 w-4 ml-1" />
+            قضاياي
+          </TabsTrigger>
+          <TabsTrigger value="invoices">
+            <Receipt className="h-4 w-4 ml-1" />
+            الفواتير
+          </TabsTrigger>
+          <TabsTrigger value="messages">
+            <MessageCircle className="h-4 w-4 ml-1" />
+            رسائل
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="cases" className="mt-4">
+          <PortalCases />
+        </TabsContent>
+        <TabsContent value="invoices" className="mt-4">
+          <PortalInvoices />
+        </TabsContent>
+        <TabsContent value="messages" className="mt-4">
+          <PortalMessages />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function PortalCases() {
+  const fn = useServerFn(listPortalCases);
+  const { data, isLoading } = useQuery({ queryKey: ["portal-cases"], queryFn: () => fn() });
+  if (isLoading) return <p className="text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (!data?.length)
+    return (
+      <Card>
+        <CardContent className="pt-6 text-sm text-center text-muted-foreground">
+          لا توجد قضايا مرتبطة بحسابك بعد.
+        </CardContent>
+      </Card>
+    );
+  return (
+    <div className="space-y-3">
+      {data.map((c) => (
+        <Card key={c.id}>
+          <CardContent className="pt-5 space-y-2">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="font-semibold">{c.title_ar || c.title || `قضية ${c.case_number}`}</div>
+                <div className="text-xs text-muted-foreground" dir="ltr">
+                  {c.case_number}
+                </div>
+              </div>
+              <Badge variant={c.overall_status === "closed" ? "secondary" : "default"}>
+                {c.overall_status}
+              </Badge>
+            </div>
+            {(c.case_type_ar || c.case_type) && (
+              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {c.case_type_ar || c.case_type}
+              </div>
+            )}
+            <div className="pt-1">
+              <CourtMapLink courtName={c.case_type_ar || c.case_type || ""} />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function PortalInvoices() {
+  const fn = useServerFn(listPortalInvoices);
+  const { data, isLoading } = useQuery({ queryKey: ["portal-invoices"], queryFn: () => fn() });
+  if (isLoading) return <p className="text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (!data?.length)
+    return (
+      <Card>
+        <CardContent className="pt-6 text-sm text-center text-muted-foreground">
+          لا توجد فواتير بعد.
+        </CardContent>
+      </Card>
+    );
+  return (
+    <div className="space-y-2">
+      {data.map((inv) => (
+        <Card key={inv.id}>
+          <CardContent className="pt-4 flex items-center justify-between">
+            <div className="min-w-0">
+              <div className="font-medium">
+                {inv.description_ar || inv.description || inv.invoice_number}
+              </div>
+              <div className="text-xs text-muted-foreground" dir="ltr">
+                {inv.invoice_number} · {inv.issue_date}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="font-semibold">
+                {Number(inv.amount).toFixed(3)} {inv.currency}
+              </div>
+              <Badge
+                variant={
+                  inv.status === "paid" ? "secondary" : inv.status === "overdue" ? "destructive" : "default"
+                }
+              >
+                {inv.status}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function PortalMessages() {
+  const qc = useQueryClient();
+  const listFn = useServerFn(listPortalMessages);
+  const sendFn = useServerFn(sendPortalMessage);
+  const { data, isLoading } = useQuery({
+    queryKey: ["portal-messages"],
+    queryFn: () => listFn(),
+    refetchInterval: 15_000,
+  });
+  const [text, setText] = useState("");
+  const send = useMutation({
+    mutationFn: async () => sendFn({ data: { body: text.trim() } }),
+    onSuccess: () => {
+      setText("");
+      qc.invalidateQueries({ queryKey: ["portal-messages"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardContent className="pt-4 space-y-3">
+        <div className="h-72 overflow-y-auto border rounded-md p-3 bg-muted/30 space-y-2">
+          {isLoading && <p className="text-xs text-muted-foreground">جاري التحميل…</p>}
+          {!isLoading && (!data || data.length === 0) && (
+            <p className="text-xs text-muted-foreground text-center">
+              ابدأ محادثتك مع مكتب المحاماة.
+            </p>
+          )}
+          {data?.map((m) => (
+            <div
+              key={m.id}
+              className={`flex ${m.sender === "client" ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+                  m.sender === "client"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background border"
+                }`}
+              >
+                <div>{m.body}</div>
+                <div className="text-[10px] opacity-70 mt-1">
+                  {new Date(m.created_at).toLocaleString("ar-KW")}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <Textarea
+            rows={2}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="اكتب رسالتك…"
+          />
+          <Button
+            onClick={() => text.trim() && send.mutate()}
+            disabled={!text.trim() || send.isPending}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
