@@ -10,11 +10,13 @@ import {
   Moon,
   Receipt,
   Search,
+  Settings,
   Sun,
   Users,
   Languages,
   CheckSquare,
   LogOut,
+  Wallet,
   X,
   MoreHorizontal,
 } from "lucide-react";
