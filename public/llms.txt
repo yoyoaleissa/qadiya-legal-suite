@@ -1,0 +1,14 @@
+# Qadiya OS
+
+> Qadiya OS is a bilingual (Arabic RTL + English) legal practice management suite for Kuwait law firms. It combines AI-drafted case reports, deadline intelligence, court calendaring, billing, and a client portal — powered by live Kuwait Ministry of Justice data.
+
+Qadiya OS is a private, staff-facing app. Most surfaces (dashboard, cases, billing, tasks, documents, AI assistant) require sign-in and are not indexable. The pages below are the only public entry points.
+
+## Pages
+
+- [Client Portal](/portal): Clients look up their Kuwait legal case by number to see status, next hearing, judgments, and shared documents.
+- [Sign in](/login): Staff sign-in for lawyers, partners, associates, and paralegals.
+
+## Optional
+
+- [Homepage](/): Redirects authenticated users to their firm dashboard; unauthenticated users are sent to sign-in.
