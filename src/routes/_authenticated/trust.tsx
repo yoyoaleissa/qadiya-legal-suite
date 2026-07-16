@@ -15,6 +15,8 @@ import { useIsAdmin } from "@/hooks/use-roles";
 import { toast } from "sonner";
 import { listTrustEntries, addTrustEntry, deleteTrustEntry } from "@/lib/trust.functions";
 import { listClients } from "@/lib/clients.functions";
+import { getMyFirm } from "@/lib/firms.functions";
+import { exportTrustReconciliationPdf, type TrustLine } from "@/lib/trust-reconciliation-pdf";
 
 export const Route = createFileRoute("/_authenticated/trust")({
   head: () => ({
