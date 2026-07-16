@@ -19,6 +19,8 @@ import {
   Wallet,
   X,
   MoreHorizontal,
+  StickyNote,
+  ShieldCheck,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -64,7 +66,9 @@ const NAV: NavItem[] = [
   { to: "/billing", labelEn: "Billing", labelAr: "الفاتورة", icon: Receipt, adminOnly: true },
   { to: "/trust", labelEn: "Trust Account", labelAr: "حساب الأمانة", icon: Wallet, adminOnly: true },
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
+  { to: "/notes", labelEn: "Case Notes", labelAr: "الملاحظات", icon: StickyNote },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
+  { to: "/audit", labelEn: "Audit Log", labelAr: "سجل التدقيق", icon: ShieldCheck, adminOnly: true },
   { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
 

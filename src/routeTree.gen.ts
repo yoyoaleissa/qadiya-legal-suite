@@ -21,10 +21,12 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedReportBotRouteImport } from './routes/_authenticated/report-bot'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
+import { Route as AuthenticatedNotesRouteImport } from './routes/_authenticated/notes'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
+import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedAiAssistantRouteImport } from './routes/_authenticated/ai-assistant'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -86,6 +88,11 @@ const AuthenticatedReportRoute = AuthenticatedReportRouteImport.update({
   path: '/report',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotesRoute = AuthenticatedNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
@@ -106,6 +113,11 @@ const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAiAssistantRoute =
   AuthenticatedAiAssistantRouteImport.update({
     id: '/ai-assistant',
@@ -119,10 +131,12 @@ export interface FileRoutesByFullPath {
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
+  '/audit': typeof AuthenticatedAuditRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/documents': typeof AuthenticatedDocumentsRoute
+  '/notes': typeof AuthenticatedNotesRoute
   '/report': typeof AuthenticatedReportRoute
   '/report-bot': typeof AuthenticatedReportBotRoute
   '/reports': typeof AuthenticatedReportsRoute
@@ -136,10 +150,12 @@ export interface FileRoutesByTo {
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
+  '/audit': typeof AuthenticatedAuditRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/documents': typeof AuthenticatedDocumentsRoute
+  '/notes': typeof AuthenticatedNotesRoute
   '/report': typeof AuthenticatedReportRoute
   '/report-bot': typeof AuthenticatedReportBotRoute
   '/reports': typeof AuthenticatedReportsRoute
@@ -156,10 +172,12 @@ export interface FileRoutesById {
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/ai-assistant': typeof AuthenticatedAiAssistantRoute
+  '/_authenticated/audit': typeof AuthenticatedAuditRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
+  '/_authenticated/notes': typeof AuthenticatedNotesRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/report-bot': typeof AuthenticatedReportBotRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
@@ -177,10 +195,12 @@ export interface FileRouteTypes {
     | '/portal'
     | '/sitemap.xml'
     | '/ai-assistant'
+    | '/audit'
     | '/billing'
     | '/calendar'
     | '/clients'
     | '/documents'
+    | '/notes'
     | '/report'
     | '/report-bot'
     | '/reports'
@@ -194,10 +214,12 @@ export interface FileRouteTypes {
     | '/portal'
     | '/sitemap.xml'
     | '/ai-assistant'
+    | '/audit'
     | '/billing'
     | '/calendar'
     | '/clients'
     | '/documents'
+    | '/notes'
     | '/report'
     | '/report-bot'
     | '/reports'
@@ -213,10 +235,12 @@ export interface FileRouteTypes {
     | '/portal'
     | '/sitemap.xml'
     | '/_authenticated/ai-assistant'
+    | '/_authenticated/audit'
     | '/_authenticated/billing'
     | '/_authenticated/calendar'
     | '/_authenticated/clients'
     | '/_authenticated/documents'
+    | '/_authenticated/notes'
     | '/_authenticated/report'
     | '/_authenticated/report-bot'
     | '/_authenticated/reports'
@@ -321,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notes': {
+      id: '/_authenticated/notes'
+      path: '/notes'
+      fullPath: '/notes'
+      preLoaderRoute: typeof AuthenticatedNotesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/documents': {
       id: '/_authenticated/documents'
       path: '/documents'
@@ -349,6 +380,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBillingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/audit': {
+      id: '/_authenticated/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuthenticatedAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ai-assistant': {
       id: '/_authenticated/ai-assistant'
       path: '/ai-assistant'
@@ -361,10 +399,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAiAssistantRoute: typeof AuthenticatedAiAssistantRoute
+  AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
   AuthenticatedBillingRoute: typeof AuthenticatedBillingRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
+  AuthenticatedNotesRoute: typeof AuthenticatedNotesRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedReportBotRoute: typeof AuthenticatedReportBotRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
@@ -376,10 +416,12 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAiAssistantRoute: AuthenticatedAiAssistantRoute,
+  AuthenticatedAuditRoute: AuthenticatedAuditRoute,
   AuthenticatedBillingRoute: AuthenticatedBillingRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
+  AuthenticatedNotesRoute: AuthenticatedNotesRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedReportBotRoute: AuthenticatedReportBotRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,

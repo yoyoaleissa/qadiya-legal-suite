@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { EmptyState } from "@/components/EmptyState";
+import { AgedReceivables } from "@/components/AgedReceivables";
 import { cn } from "@/lib/utils";
 import {
   listInvoices,
@@ -163,6 +164,8 @@ function BillingPage() {
           {tt("New Invoice", "فاتورة جديدة")}
         </Button>
       </div>
+
+      <AgedReceivables />
 
       {isLoading ? (
         <Card>
