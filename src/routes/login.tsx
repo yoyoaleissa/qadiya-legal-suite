@@ -286,6 +286,17 @@ function LoginPage() {
               </span>
             </button>
           </div>
+
+          <div className="mt-4 border-t border-border pt-4 text-center">
+            <a
+              href="/portal"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-gold transition-colors"
+            >
+              <span className={isAr ? "font-arabic" : ""}>
+                {t("Client? Track your case here →", "موكل؟ تابع قضيتك من هنا ←")}
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
