@@ -38,6 +38,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 
 type NavItem = {
   to: string;
