@@ -64,8 +64,35 @@ async function generateCasePDF(caseResult) {
 /**
  * Build Google Calendar link for a hearing date
  */
+// Escape any string that will be interpolated into the PDF HTML template.
+// Scraped MOJ fields and LLM-generated summaries are untrusted and must never
+// be rendered as live HTML inside the Puppeteer renderer.
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Recursively HTML-escape all string values inside an object/array so any
+// downstream template interpolation is inert.
+function deepEscape(input) {
+  if (input === null || input === undefined) return input;
+  if (typeof input === 'string') return escapeHtml(input);
+  if (Array.isArray(input)) return input.map(deepEscape);
+  if (typeof input === 'object') {
+    const out = {};
+    for (const k of Object.keys(input)) out[k] = deepEscape(input[k]);
+    return out;
+  }
+  return input;
+}
+
 function buildCalendarLink(date, caseNumber, court, decision) {
-  const startDate = date.replace(/-/g, '');
+  const startDate = String(date || '').replace(/-/g, '');
   const endDate = startDate; // Same day
   const title = encodeURIComponent(`جلسة قضية ${caseNumber}`);
   const details = encodeURIComponent(`${court}\nالقرار: ${decision}\nرقم القضية: ${caseNumber}`);
@@ -77,6 +104,10 @@ function buildCalendarLink(date, caseNumber, court, decision) {
  * Build the premium HTML for PDF generation
  */
 function buildPremiumDossierHTML(data, aiSummary, qrDataUrl) {
+  // Sanitize ALL scraped and AI-generated content before templating.
+  // qrDataUrl is generated locally from a fixed URL so it is safe as-is.
+  data = deepEscape(data);
+  aiSummary = deepEscape(aiSummary);
   const { caseNumber, firstInstance, appeal, execution, police, events, hearings, judgments } = data;
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
