@@ -166,6 +166,9 @@ function Dashboard() {
         </Link>
       </div>
 
+      {/* Focus Today — highest-priority actionable items */}
+      <FocusToday />
+
       {/* Daily Briefing */}
       <DailyBriefingCard
         briefing={briefing}
