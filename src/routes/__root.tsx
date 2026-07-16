@@ -101,8 +101,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-title", content: "قضية" },
       { name: "twitter:title", content: "Qadiya OS — Kuwait Legal Practice Management" },
       { name: "twitter:description", content: "AI-drafted case reports, deadline intelligence, and a full practice command center for Kuwaiti law firms. Bilingual Arabic & English." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42" },
+      // og:image intentionally omitted from __root — leaf routes set their own share previews.
+
     ],
     links: [
       { rel: "stylesheet", href: appCss },

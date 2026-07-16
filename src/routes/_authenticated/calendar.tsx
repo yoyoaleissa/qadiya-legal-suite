@@ -225,7 +225,12 @@ function CalendarPage() {
               {lang === "ar" ? MONTHS_AR[view.month] : MONTHS_EN[view.month]} {view.year}
             </h2>
             <div className="flex items-center gap-1">
-              <Button variant="outline" size="icon" onClick={() => shiftMonth(-1)}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => shiftMonth(-1)}
+                aria-label={tt("Previous month", "الشهر السابق")}
+              >
                 <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
               </Button>
               <Button
@@ -238,7 +243,12 @@ function CalendarPage() {
               >
                 {tt("Today", "اليوم")}
               </Button>
-              <Button variant="outline" size="icon" onClick={() => shiftMonth(1)}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => shiftMonth(1)}
+                aria-label={tt("Next month", "الشهر التالي")}
+              >
                 <ChevronRight className="h-4 w-4 rtl:rotate-180" />
               </Button>
             </div>

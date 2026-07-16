@@ -268,6 +268,7 @@ function CaseReportsPage() {
           {/* Report Found — Show Actions + Report */}
           {report && report.found && (
             <div className="space-y-4">
+              <h2 className="sr-only">{tt("Case Report", "تقرير القضية")}</h2>
               {/* ACTION BUTTONS */}
               <Card className="border-gold/20">
                 <CardContent className="py-4">

@@ -11,9 +11,35 @@ import { CourtMapLink } from "@/components/CourtMapLink";
 export const Route = createFileRoute("/portal")({
   head: () => ({
     meta: [
-      { title: "بوابة الموكل — Qadiya" },
-      { name: "description", content: "Client portal for tracking your legal cases" },
+      { title: "بوابة الموكل — Qadiya OS Client Portal" },
+      {
+        name: "description",
+        content:
+          "Track your Kuwait legal case status, next hearing dates, and shared documents from your lawyer.",
+      },
+      {
+        property: "og:title",
+        content: "بوابة الموكل — Qadiya OS Client Portal",
+      },
+      {
+        property: "og:description",
+        content:
+          "Track your Kuwait legal case status, next hearing dates, and shared documents from your lawyer.",
+      },
+      { property: "og:url", content: "https://qadiya.lovable.app/portal" },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://qadiya.lovable.app/portal" }],
   }),
   component: ClientPortal,
 });
