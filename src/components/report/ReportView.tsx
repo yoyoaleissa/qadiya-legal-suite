@@ -35,9 +35,31 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
         <p className="text-sm text-muted-foreground">
           {t("case_number")}: <span dir="ltr" className="font-semibold text-foreground">{report.case_number}</span>
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={onNew} className="gap-1.5">
             <RotateCcw className="h-4 w-4" /> {t("new_lookup")}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => {
+              const nextHearing = report.hearings
+                .filter((h) => h.session_date && h.session_date >= new Date().toISOString().slice(0, 10))
+                .sort((a, b) => (a.session_date ?? "").localeCompare(b.session_date ?? ""))[0];
+              const court =
+                (nextHearing?.level && report.court_levels.find((l) => l.level === nextHearing.level)?.court_name) ??
+                report.court_levels[0]?.court_name ?? "—";
+              const statusText = lang === "ar" ? report.status_headline_ar : report.status_headline_en;
+              const msg =
+                `📋 تحديث قضية ${report.case_number}\n` +
+                `المحكمة: ${court}\n` +
+                `الجلسة القادمة: ${nextHearing?.session_date ?? "—"}\n` +
+                `الحالة: ${statusText}\n\n— Qadiya AI`;
+              window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+            }}
+          >
+            <Share2 className="h-4 w-4" /> {lang === "ar" ? "📤 مشاركة واتساب" : "Share on WhatsApp"}
           </Button>
           <Button size="sm" onClick={handleDownload} disabled={exporting} className="gap-1.5">
             {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} {t("download_pdf")}
