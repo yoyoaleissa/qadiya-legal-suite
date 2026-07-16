@@ -29,6 +29,7 @@ import {
 import { updateTaskStatus } from "@/lib/tasks.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
+import { buildIcs, downloadIcs } from "@/lib/ics-export";
 import { EmptyState } from "@/components/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
