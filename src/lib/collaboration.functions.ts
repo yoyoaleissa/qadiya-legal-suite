@@ -121,7 +121,7 @@ export interface AuditEntry {
   action: string;
   resource_type: string;
   resource_id: string | null;
-  metadata: Record<string, unknown> | null;
+  metadata_json: string | null;
   created_at: string;
 }
 
@@ -138,7 +138,15 @@ export const listAuditLog = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(data.limit);
     if (error) throw new Error(error.message);
-    return (rows ?? []) as AuditEntry[];
+    return (rows ?? []).map((r) => ({
+      id: r.id,
+      actor_email: r.actor_email,
+      action: r.action,
+      resource_type: r.resource_type,
+      resource_id: r.resource_id,
+      metadata_json: r.metadata ? JSON.stringify(r.metadata) : null,
+      created_at: r.created_at,
+    }));
   });
 
 // ============ Aged Receivables + Reminder ============

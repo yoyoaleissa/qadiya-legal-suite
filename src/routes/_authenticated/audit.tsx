@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/audit")({
 
 function AuditPage() {
   const { t, lang } = useApp();
-  const { isAdmin, loading } = useIsAdmin();
+  const { isAdmin, isLoading: loading } = useIsAdmin();
   const fetchLog = useServerFn(listAuditLog);
   const { data, isLoading } = useQuery({
     queryKey: ["audit-log"],
@@ -83,9 +83,9 @@ function AuditPage() {
                         <span className="text-muted-foreground"> · {row.resource_id.slice(0, 8)}</span>
                       ) : null}
                     </div>
-                    {row.metadata ? (
+                    {row.metadata_json ? (
                       <pre className="text-[10px] text-muted-foreground/70 mt-1 font-mono truncate">
-                        {JSON.stringify(row.metadata)}
+                        {row.metadata_json}
                       </pre>
                     ) : null}
                   </div>
