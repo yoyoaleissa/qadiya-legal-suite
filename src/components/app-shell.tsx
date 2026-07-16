@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   StickyNote,
   ShieldCheck,
+  Activity,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
