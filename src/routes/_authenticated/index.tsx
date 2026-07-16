@@ -182,6 +182,11 @@ function Dashboard() {
         <CaseFreshness />
       </div>
 
+      {/* Team activity feed */}
+      <ActivityFeed limit={12} />
+
+
+
 
       {/* Daily Briefing */}
       <DailyBriefingCard
