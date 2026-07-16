@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "";
+const BASE_URL = "https://qadiya.lovable.app";
 
 interface SitemapEntry {
   path: string;
@@ -13,12 +13,11 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // Qadiya OS is an auth-gated staff app; only truly public routes go here.
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/reports", changefreq: "weekly", priority: "0.9" },
-          { path: "/documents", changefreq: "monthly", priority: "0.6" },
-          { path: "/clients", changefreq: "monthly", priority: "0.5" },
-          { path: "/calendar", changefreq: "monthly", priority: "0.5" },
+          { path: "/login", changefreq: "monthly", priority: "0.6" },
+          { path: "/portal", changefreq: "monthly", priority: "0.7" },
         ];
 
         const urls = entries.map((e) =>

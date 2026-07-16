@@ -13,9 +13,29 @@ export const Route = createFileRoute("/login")({
       { title: "Sign in — Qadiya OS" },
       {
         name: "description",
-        content: "Secure staff sign-in for Qadiya OS, the Kuwait legal practice management suite.",
+        content:
+          "Secure staff sign-in for Qadiya OS, the Kuwait legal practice management suite.",
+      },
+      { property: "og:title", content: "Sign in — Qadiya OS" },
+      {
+        property: "og:description",
+        content:
+          "Secure staff sign-in for Qadiya OS, the Kuwait legal practice management suite.",
+      },
+      { property: "og:url", content: "https://qadiya.lovable.app/login" },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
       },
     ],
+    links: [{ rel: "canonical", href: "https://qadiya.lovable.app/login" }],
   }),
   component: LoginPage,
 });
