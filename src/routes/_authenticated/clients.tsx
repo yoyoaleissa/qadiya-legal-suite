@@ -38,6 +38,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
 import { createClient, addTimelineEvent } from "@/lib/cases.functions";
+import { checkConflict, type ConflictMatch } from "@/lib/insights.functions";
+import { AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/clients")({
   validateSearch: (search: Record<string, unknown>): { clientId?: string } => ({
@@ -222,13 +224,42 @@ function ClientsPage() {
     const [nameAr, setNameAr] = useState("");
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
+    const [nationalId, setNationalId] = useState("");
     const [notes, setNotes] = useState("");
     const [loading, setLoading] = useState(false);
+    const [conflicts, setConflicts] = useState<ConflictMatch[] | null>(null);
+    const [ackConflict, setAckConflict] = useState(false);
+    const [checking, setChecking] = useState(false);
     const runCreate = useServerFn(createClient);
+    const runCheck = useServerFn(checkConflict);
     const qc = useQueryClient();
+
+    const runConflictCheck = async () => {
+      if (!name.trim() && !nameAr.trim() && !nationalId.trim()) return;
+      setChecking(true);
+      try {
+        const matches = await runCheck({
+          data: {
+            name: name.trim() || nameAr.trim(),
+            name_ar: nameAr.trim() || undefined,
+            national_id: nationalId.trim() || undefined,
+          },
+        });
+        setConflicts(matches);
+        setAckConflict(false);
+      } finally {
+        setChecking(false);
+      }
+    };
 
     const handleSubmit = async () => {
       if (!name.trim()) return;
+      // Require a conflict check before creating
+      if (conflicts === null) {
+        await runConflictCheck();
+        return;
+      }
+      if (conflicts.length > 0 && !ackConflict) return;
       setLoading(true);
       try {
         await runCreate({
@@ -237,6 +268,7 @@ function ClientsPage() {
             name_ar: nameAr || undefined,
             phone: phone || undefined,
             email: email || undefined,
+            national_id: nationalId || undefined,
             notes: notes || undefined,
           },
         });
@@ -246,7 +278,10 @@ function ClientsPage() {
         setNameAr("");
         setPhone("");
         setEmail("");
+        setNationalId("");
         setNotes("");
+        setConflicts(null);
+        setAckConflict(false);
       } finally {
         setLoading(false);
       }
