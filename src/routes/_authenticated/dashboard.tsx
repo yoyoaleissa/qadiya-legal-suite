@@ -56,6 +56,12 @@ import { CaseFreshness } from "@/components/CaseFreshness";
 import { ActivityFeed } from "@/components/ActivityFeed";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => ({
+    meta: [
+      { title: "Dashboard — Qadiya OS" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: Dashboard,
 });
 
