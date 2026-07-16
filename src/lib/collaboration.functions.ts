@@ -9,7 +9,7 @@ export interface CaseNote {
   case_id: string;
   case_number: string | null;
   author_id: string;
-  author_email: string | null;
+  author_name: string | null;
   body: string;
   is_internal: boolean;
   created_at: string;
@@ -42,7 +42,7 @@ export const listMyCaseNotes = createServerFn({ method: "GET" })
       case_id: n.case_id,
       case_number: caseMap.get(n.case_id) ?? null,
       author_id: n.author_id,
-      author_email: profMap.get(n.author_id) ?? null,
+      author_name: profMap.get(n.author_id) ?? null,
       body: n.body,
       is_internal: n.is_internal,
       created_at: n.created_at,
@@ -70,7 +70,7 @@ export const listCaseNotes = createServerFn({ method: "GET" })
       case_id: n.case_id,
       case_number: null,
       author_id: n.author_id,
-      author_email: profMap.get(n.author_id) ?? null,
+      author_name: profMap.get(n.author_id) ?? null,
       body: n.body,
       is_internal: n.is_internal,
       created_at: n.created_at,

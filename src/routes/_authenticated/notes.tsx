@@ -143,7 +143,7 @@ function NotesPage() {
                       </span>
                     )}
                     <span className="ms-auto">
-                      {n.author_email ?? "—"} ·{" "}
+                      {n.author_name ?? "—"} ·{" "}
                       {new Date(n.created_at).toLocaleString(lang === "ar" ? "ar-KW" : "en-GB")}
                     </span>
                   </div>
