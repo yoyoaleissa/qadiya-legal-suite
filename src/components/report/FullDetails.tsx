@@ -91,6 +91,23 @@ export function FullDetails({ report }: { report: CaseReport }) {
                 </TableBody>
               </Table>
             </div>
+            {(() => {
+              const latest = [...report.judgments]
+                .filter((j) => j.judgment_date)
+                .sort((a, b) => (b.judgment_date ?? "").localeCompare(a.judgment_date ?? ""))[0];
+              if (!latest?.judgment_date) return null;
+              return (
+                <div className="mt-4">
+                  <h5 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {lang === "ar" ? "المواعيد المحسوبة من تاريخ الحكم" : "Deadlines from judgment date"}
+                  </h5>
+                  <AllDeadlines
+                    judgmentDate={new Date(latest.judgment_date)}
+                    caseTitle={report.case_number}
+                  />
+                </div>
+              );
+            })()}
           </section>
 
           {/* Hearings */}
