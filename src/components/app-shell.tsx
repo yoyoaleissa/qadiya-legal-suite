@@ -62,8 +62,10 @@ const NAV: NavItem[] = [
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
   { to: "/billing", labelEn: "Billing", labelAr: "الفاتورة", icon: Receipt, adminOnly: true },
+  { to: "/trust", labelEn: "Trust Account", labelAr: "حساب الأمانة", icon: Wallet, adminOnly: true },
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
+  { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
 
 // Core icons for the mobile bottom navigation bar.
