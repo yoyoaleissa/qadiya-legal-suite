@@ -15,6 +15,8 @@ import {
 import type { CaseReport } from "@/lib/report-types";
 import { COURT_LEVEL_LABELS, useApp } from "@/lib/app-context";
 import { formatDate, formatKwd } from "./format";
+import { CourtMapLink } from "@/components/CourtMapLink";
+import { AllDeadlines } from "@/components/DeadlineAlert";
 
 export function FullDetails({ report }: { report: CaseReport }) {
   const { lang, t } = useApp();
