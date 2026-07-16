@@ -299,6 +299,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </nav>
 
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      <KeyboardShortcuts />
       <DemoTour />
     </div>
   );
