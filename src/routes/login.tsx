@@ -61,7 +61,7 @@ function LoginPage() {
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       if (data.session) {
-        navigate({ to: "/", replace: true });
+        navigate({ to: "/dashboard", replace: true });
       } else {
         setChecking(false);
       }
@@ -82,7 +82,7 @@ function LoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
         await router.invalidate();
-        navigate({ to: "/", replace: true });
+        navigate({ to: "/dashboard", replace: true });
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -95,7 +95,7 @@ function LoginPage() {
         if (error) throw error;
         if (data.session) {
           await router.invalidate();
-          navigate({ to: "/", replace: true });
+          navigate({ to: "/dashboard", replace: true });
         } else {
           setNotice(
             t(
