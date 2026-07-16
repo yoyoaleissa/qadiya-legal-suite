@@ -134,8 +134,8 @@ export const listNotifications = createServerFn({ method: "GET" })
         severity: daysLeft <= 7 ? "danger" : "info",
         title_en: `Appeal window: ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`,
         title_ar: `نافذة الاستئناف: ${daysLeft} يوماً متبقياً`,
-        subtitle_en: j.judgment_summary ?? undefined,
-        subtitle_ar: j.judgment_summary_ar ?? undefined,
+        subtitle_en: j.ruling_text ?? undefined,
+        subtitle_ar: j.ruling_text ?? undefined,
         href: "/reports",
         date: j.judgment_date ?? undefined,
       });
