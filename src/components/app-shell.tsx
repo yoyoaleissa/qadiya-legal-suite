@@ -95,6 +95,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const runClaimAdmin = useServerFn(claimFirstAdmin);
+  const runGetFirm = useServerFn(getMyFirm);
+  const { data: firm, isFetched: firmFetched } = useQuery({
+    queryKey: ["my-firm"],
+    queryFn: () => runGetFirm(),
+    staleTime: 30_000,
+  });
 
   // Global Cmd/Ctrl+K opens the search palette.
   useEffect(() => {
@@ -117,6 +123,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Redirect to onboarding if the user has no firm yet.
+  useEffect(() => {
+    if (!firmFetched) return;
+    if (!firm && pathname !== "/onboarding") {
+      navigate({ to: "/onboarding", replace: true });
+    }
+  }, [firm, firmFetched, pathname, navigate]);
 
   const nav = NAV.filter((n) => !n.adminOnly || isAdmin);
 
