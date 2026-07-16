@@ -23,9 +23,7 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineInfo | null }) {
     <div
       className={cn(
         "rounded-xl border p-4",
-        urgent
-          ? "border-destructive/40 bg-destructive/10"
-          : "border-accent/40 bg-accent/10",
+        urgent ? "border-destructive/40 bg-destructive/10" : "border-accent/40 bg-accent/10",
       )}
     >
       <div className="flex items-center justify-between gap-3">

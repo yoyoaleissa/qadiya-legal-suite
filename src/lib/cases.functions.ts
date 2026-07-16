@@ -5,14 +5,16 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export const createClient = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      name: z.string().min(1),
-      name_ar: z.string().optional(),
-      email: z.string().email().optional().or(z.literal("")),
-      phone: z.string().optional(),
-      national_id: z.string().optional(),
-      notes: z.string().optional(),
-    }).parse(data)
+    z
+      .object({
+        name: z.string().min(1),
+        name_ar: z.string().optional(),
+        email: z.string().email().optional().or(z.literal("")),
+        phone: z.string().optional(),
+        national_id: z.string().optional(),
+        notes: z.string().optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -35,17 +37,19 @@ export const createClient = createServerFn({ method: "POST" })
 export const createCase = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      case_number: z.string().min(1),
-      title: z.string().min(1),
-      title_ar: z.string().optional(),
-      client_id: z.string().uuid().optional(),
-      case_type: z.string().optional(),
-      case_type_ar: z.string().optional(),
-      court: z.string().optional(),
-      overall_status: z.enum(["open", "active", "appeal", "execution", "closed"]).default("open"),
-      filed_date: z.string().optional(),
-    }).parse(data)
+    z
+      .object({
+        case_number: z.string().min(1),
+        title: z.string().min(1),
+        title_ar: z.string().optional(),
+        client_id: z.string().uuid().optional(),
+        case_type: z.string().optional(),
+        case_type_ar: z.string().optional(),
+        court: z.string().optional(),
+        overall_status: z.enum(["open", "active", "appeal", "execution", "closed"]).default("open"),
+        filed_date: z.string().optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -90,9 +94,7 @@ export const addTimelineEvent = createServerFn({ method: "POST" })
         description_ar: z.string().optional(),
         event_date: z.string().optional(),
         event_type: z.string().optional(),
-        new_status: z
-          .enum(["open", "active", "appeal", "execution", "closed"])
-          .optional(),
+        new_status: z.enum(["open", "active", "appeal", "execution", "closed"]).optional(),
       })
       .parse(data),
   )
@@ -130,4 +132,3 @@ export const addTimelineEvent = createServerFn({ method: "POST" })
 
     return { success: true };
   });
-

@@ -47,7 +47,13 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
-  { to: "/reports", labelEn: "Case Reports", labelAr: "تقارير القضايا", icon: FileText, highlight: true },
+  {
+    to: "/reports",
+    labelEn: "Case Reports",
+    labelAr: "تقارير القضايا",
+    icon: FileText,
+    highlight: true,
+  },
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "الموكّلون والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
@@ -115,10 +121,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div>
             <div className="font-display text-xl leading-none">
-              <span className={lang === "ar" ? "font-arabic" : ""}>{t("Qadiya OS", "قضية OS")}</span>
+              <span className={lang === "ar" ? "font-arabic" : ""}>
+                {t("Qadiya OS", "قضية OS")}
+              </span>
             </div>
             <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/60 mt-1">
-              <span className={lang === "ar" ? "font-arabic" : ""}>{t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}</span>
+              <span className={lang === "ar" ? "font-arabic" : ""}>
+                {t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}
+              </span>
             </div>
           </div>
         </div>
@@ -148,7 +158,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </nav>
       <div className="p-4 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
         <div>
-          <span className={lang === "ar" ? "font-arabic" : ""}>{t("Live backend — Lovable Cloud", "خادم مباشر — لوفابل كلاود")}</span>
+          <span className={lang === "ar" ? "font-arabic" : ""}>
+            {t("Live backend — Lovable Cloud", "خادم مباشر — لوفابل كلاود")}
+          </span>
         </div>
         <div className="mt-1">v2.0 • {t("Kuwait", "الكويت")}</div>
       </div>
@@ -263,7 +275,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               >
                 <Icon className="h-5 w-5" />
-                <span className={lang === "ar" ? "font-arabic" : ""}>{t(n.labelEn, n.labelAr)}</span>
+                <span className={lang === "ar" ? "font-arabic" : ""}>
+                  {t(n.labelEn, n.labelAr)}
+                </span>
               </Link>
             );
           })}

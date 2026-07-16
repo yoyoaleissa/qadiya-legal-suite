@@ -4,12 +4,7 @@ import { FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useApp } from "@/lib/app-context";
 import { DOCUMENT_TEMPLATES, type DocFields, type DocTemplate } from "@/lib/document-templates";
 
@@ -44,14 +39,25 @@ function DocumentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-xs uppercase tracking-widest text-muted-foreground">{t("Automation", "الأتمتة")}</div>
+        <div className="text-xs uppercase tracking-widest text-muted-foreground">
+          {t("Automation", "الأتمتة")}
+        </div>
         <h1 className="font-display text-3xl">{t("Document Generation", "توليد المستندات")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("Auto-fill any template with client and matter data.", "تعبئة تلقائية لأي قالب ببيانات الموكّل والقضية.")}</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          {t(
+            "Auto-fill any template with client and matter data.",
+            "تعبئة تلقائية لأي قالب ببيانات الموكّل والقضية.",
+          )}
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {DOCUMENT_TEMPLATES.map((tpl) => (
-          <Card key={tpl.id} className="hover:border-gold/60 hover:shadow-md transition-all cursor-pointer" onClick={() => setOpenTpl(tpl)}>
+          <Card
+            key={tpl.id}
+            className="hover:border-gold/60 hover:shadow-md transition-all cursor-pointer"
+            onClick={() => setOpenTpl(tpl)}
+          >
             <CardContent className="pt-5">
               <div className="flex items-start justify-between">
                 <div className="h-10 w-10 rounded-md bg-navy text-white dark:bg-gold dark:text-navy flex items-center justify-center">
@@ -60,13 +66,19 @@ function DocumentsPage() {
                 <Badge variant="outline">{templateCategory(tpl.id, lang)}</Badge>
               </div>
               <div className="mt-3 font-display text-lg">{tpl.name[lang]}</div>
-              <div className="text-xs text-muted-foreground mt-1">5 {t("merge fields", "حقل دمج")}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                5 {t("merge fields", "حقل دمج")}
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <PreviewDialog openTpl={openTpl} onOpenChange={(open) => !open && setOpenTpl(null)} fields={fields} />
+      <PreviewDialog
+        openTpl={openTpl}
+        onOpenChange={(open) => !open && setOpenTpl(null)}
+        fields={fields}
+      />
     </div>
   );
 }
@@ -104,18 +116,25 @@ function PreviewDialog({
             >
               <div className="text-center font-display text-lg">{doc.title}</div>
               <div className="text-center text-xs text-slate-500 mb-4">
-                {lang === "ar" ? "مكتب العدالة للمحاماة · دولة الكويت" : "Al-Adala Chambers · State of Kuwait"}
+                {lang === "ar"
+                  ? "مكتب العدالة للمحاماة · دولة الكويت"
+                  : "Al-Adala Chambers · State of Kuwait"}
               </div>
 
               <div className={lang === "ar" ? "text-right font-arabic" : "text-left"}>
                 {doc.blocks.map((block, i) => {
                   if (block.kind === "heading") {
-                    return <h3 key={i} className="mt-4 font-semibold">{block.text}</h3>;
+                    return (
+                      <h3 key={i} className="mt-4 font-semibold">
+                        {block.text}
+                      </h3>
+                    );
                   }
                   if (block.kind === "clause") {
                     return (
                       <p key={i} className="mt-3">
-                        <span className="bg-gold/30 px-1 rounded">{block.index}</span> — {block.text}
+                        <span className="bg-gold/30 px-1 rounded">{block.index}</span> —{" "}
+                        {block.text}
                       </p>
                     );
                   }
@@ -127,13 +146,21 @@ function PreviewDialog({
                       </div>
                     );
                   }
-                  return <p key={i} className={i === 0 ? "" : "mt-3"}>{block.text}</p>;
+                  return (
+                    <p key={i} className={i === 0 ? "" : "mt-3"}>
+                      {block.text}
+                    </p>
+                  );
                 })}
               </div>
             </div>
             <div className="flex justify-end gap-2 no-print">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>{t("Close", "إغلاق")}</Button>
-              <Button onClick={() => window.print()}>{t("Generate document", "توليد المستند")}</Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                {t("Close", "إغلاق")}
+              </Button>
+              <Button onClick={() => window.print()}>
+                {t("Generate document", "توليد المستند")}
+              </Button>
             </div>
           </div>
         )}

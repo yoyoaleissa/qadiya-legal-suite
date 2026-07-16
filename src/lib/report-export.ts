@@ -47,10 +47,8 @@ export async function exportCaseReportPdf(report: CaseReport, lang: Lang): Promi
   const headline = isAr ? report.status_headline_ar : report.status_headline_en;
   const summary = isAr ? report.summary_ar : report.summary_en;
   const recommendation = isAr ? report.recommendation_ar : report.recommendation_en;
-  const stageLabel = report.current_stage
-    ? COURT_LEVEL_LABELS[report.current_stage]?.[lang]
-    : null;
-  const caseType = isAr ? report.case_type_ar ?? report.case_type : report.case_type;
+  const stageLabel = report.current_stage ? COURT_LEVEL_LABELS[report.current_stage]?.[lang] : null;
+  const caseType = isAr ? (report.case_type_ar ?? report.case_type) : report.case_type;
 
   const section = (title: string, body: string) => `
     <div style="margin-top:18px;">
@@ -59,8 +57,12 @@ export async function exportCaseReportPdf(report: CaseReport, lang: Lang): Promi
     </div>`;
 
   const chips = [
-    stageLabel ? `<span style="display:inline-block;font-size:11px;font-weight:600;color:#fff;background:${COLORS.navy};border-radius:999px;padding:3px 12px;">${t("Level", "الدرجة")}: ${esc(stageLabel)}</span>` : "",
-    caseType ? `<span style="display:inline-block;font-size:11px;font-weight:600;color:${COLORS.navy};background:${COLORS.soft};border:1px solid ${COLORS.border};border-radius:999px;padding:3px 12px;">${esc(caseType)}</span>` : "",
+    stageLabel
+      ? `<span style="display:inline-block;font-size:11px;font-weight:600;color:#fff;background:${COLORS.navy};border-radius:999px;padding:3px 12px;">${t("Level", "الدرجة")}: ${esc(stageLabel)}</span>`
+      : "",
+    caseType
+      ? `<span style="display:inline-block;font-size:11px;font-weight:600;color:${COLORS.navy};background:${COLORS.soft};border:1px solid ${COLORS.border};border-radius:999px;padding:3px 12px;">${esc(caseType)}</span>`
+      : "",
   ].join(" ");
 
   const deadlineBlock = report.deadline
@@ -72,8 +74,8 @@ export async function exportCaseReportPdf(report: CaseReport, lang: Lang): Promi
 
   const timelineRows = (report.timeline || [])
     .map((e) => {
-      const ttl = isAr ? e.title_ar ?? e.title : e.title;
-      const desc = isAr ? e.description_ar ?? e.description : e.description;
+      const ttl = isAr ? (e.title_ar ?? e.title) : e.title;
+      const desc = isAr ? (e.description_ar ?? e.description) : e.description;
       const lvl = e.level ? COURT_LEVEL_LABELS[e.level]?.[lang] : null;
       return `
         <tr>

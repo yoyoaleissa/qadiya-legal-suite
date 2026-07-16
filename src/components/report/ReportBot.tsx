@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  AlertCircle,
-  ArrowUp,
-  CheckCircle2,
-  Gavel,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
+import { AlertCircle, ArrowUp, CheckCircle2, Gavel, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { generateCaseReport } from "@/lib/report.functions";
 import type { CaseReport } from "@/lib/report-types";
@@ -67,8 +60,10 @@ export function ReportBot() {
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "AI_ERROR";
-      if (msg === "RATE_LIMIT") toast.error(t("Service busy — please retry shortly.", "الخدمة مشغولة، حاول بعد قليل."));
-      else if (msg === "NO_CREDITS") toast.error(t("AI credits exhausted.", "نفدت أرصدة الذكاء الاصطناعي."));
+      if (msg === "RATE_LIMIT")
+        toast.error(t("Service busy — please retry shortly.", "الخدمة مشغولة، حاول بعد قليل."));
+      else if (msg === "NO_CREDITS")
+        toast.error(t("AI credits exhausted.", "نفدت أرصدة الذكاء الاصطناعي."));
       else toast.error(t("Couldn't generate the report.", "تعذّر إعداد التقرير."));
       setMessages((m) => [
         ...m.slice(0, -1),
@@ -116,7 +111,10 @@ export function ReportBot() {
           </Badge>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-4 bg-muted/30">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-4 bg-muted/30"
+        >
           {messages.map((m, i) => (
             <MessageBubble key={i} msg={m} onNew={reset} onTry={() => submit("222486500")} />
           ))}
@@ -142,7 +140,11 @@ export function ReportBot() {
               className="flex-1"
             />
             <Button type="submit" disabled={busy || !input.trim()} className="gap-1">
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+              {busy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ArrowUp className="h-4 w-4" />
+              )}
               {t("Send", "إرسال")}
             </Button>
           </form>
@@ -165,10 +167,27 @@ export function ReportBot() {
               {t("How it works", "كيف يعمل")}
             </div>
             <ol className="text-sm text-muted-foreground space-y-2 list-decimal ps-5">
-              <li>{t("Client sends a case number in Telegram / WhatsApp.", "يرسل الموكّل رقم القضية عبر تلغرام / واتساب.")}</li>
-              <li>{t("Bot fetches the latest MOJ extract.", "يجلب البوت آخر بيانات وزارة العدل.")}</li>
-              <li>{t("AI produces a bilingual, plain-language brief.", "يُولّد الذكاء الاصطناعي ملخصاً واضحاً بالعربية والإنجليزية.")}</li>
-              <li>{t("Client downloads a branded PDF report.", "يحمّل الموكّل تقريراً بصيغة PDF بهوية المكتب.")}</li>
+              <li>
+                {t(
+                  "Client sends a case number in Telegram / WhatsApp.",
+                  "يرسل الموكّل رقم القضية عبر تلغرام / واتساب.",
+                )}
+              </li>
+              <li>
+                {t("Bot fetches the latest MOJ extract.", "يجلب البوت آخر بيانات وزارة العدل.")}
+              </li>
+              <li>
+                {t(
+                  "AI produces a bilingual, plain-language brief.",
+                  "يُولّد الذكاء الاصطناعي ملخصاً واضحاً بالعربية والإنجليزية.",
+                )}
+              </li>
+              <li>
+                {t(
+                  "Client downloads a branded PDF report.",
+                  "يحمّل الموكّل تقريراً بصيغة PDF بهوية المكتب.",
+                )}
+              </li>
             </ol>
           </CardContent>
         </Card>
@@ -176,9 +195,24 @@ export function ReportBot() {
           <CardContent className="pt-6 space-y-3 text-sm">
             <div className="font-medium">{t("Why partners love it", "لماذا يفضّله الشركاء")}</div>
             <ul className="space-y-2 text-muted-foreground">
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" /> {t("Cuts 8+ status calls per associate per day.", "يقلل 8+ مكالمات استفسار يومياً لكل محامٍ.")}</li>
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" /> {t("Never gives verdicts — only procedural facts.", "لا يُصدر أحكاماً — يعرض الوقائع الإجرائية فقط.")}</li>
-              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" /> {t("Full Arabic + English out of the box.", "يدعم العربية والإنجليزية بالكامل.")}</li>
+              <li className="flex gap-2">
+                <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" />{" "}
+                {t(
+                  "Cuts 8+ status calls per associate per day.",
+                  "يقلل 8+ مكالمات استفسار يومياً لكل محامٍ.",
+                )}
+              </li>
+              <li className="flex gap-2">
+                <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" />{" "}
+                {t(
+                  "Never gives verdicts — only procedural facts.",
+                  "لا يُصدر أحكاماً — يعرض الوقائع الإجرائية فقط.",
+                )}
+              </li>
+              <li className="flex gap-2">
+                <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" />{" "}
+                {t("Full Arabic + English out of the box.", "يدعم العربية والإنجليزية بالكامل.")}
+              </li>
             </ul>
           </CardContent>
         </Card>
@@ -192,7 +226,10 @@ function MessageBubble({ msg, onNew, onTry }: { msg: Msg; onNew: () => void; onT
   if (msg.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[70%] rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2 text-sm shadow-sm" dir="ltr">
+        <div
+          className="max-w-[70%] rounded-2xl rounded-tr-sm bg-navy text-white px-4 py-2 text-sm shadow-sm"
+          dir="ltr"
+        >
           {msg.text}
         </div>
       </div>
@@ -222,10 +259,16 @@ function MessageBubble({ msg, onNew, onTry }: { msg: Msg; onNew: () => void; onT
           <AlertCircle className="h-4 w-4 mt-0.5 text-danger" />
           <div>
             <div className="font-medium">
-              {t(`No case found for ${msg.caseNumber}`, `لم يتم العثور على قضية للرقم ${msg.caseNumber}`)}
+              {t(
+                `No case found for ${msg.caseNumber}`,
+                `لم يتم العثور على قضية للرقم ${msg.caseNumber}`,
+              )}
             </div>
             <div className="text-muted-foreground mt-1">
-              {t("Try 222486500 for the live seeded case.", "جرّب 222486500 للقضية المضافة في النظام.")}
+              {t(
+                "Try 222486500 for the live seeded case.",
+                "جرّب 222486500 للقضية المضافة في النظام.",
+              )}
             </div>
             <Button variant="outline" size="sm" onClick={onTry} className="mt-2">
               222486500

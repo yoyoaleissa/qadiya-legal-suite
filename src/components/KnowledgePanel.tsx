@@ -62,12 +62,16 @@ export function KnowledgePanel({
         text = await file.text();
       }
       if (!text.trim()) {
-        toast.error(tt("No readable text found in that file.", "لم يُعثر على نص قابل للقراءة في الملف."));
+        toast.error(
+          tt("No readable text found in that file.", "لم يُعثر على نص قابل للقراءة في الملف."),
+        );
         return;
       }
       setContent(text);
       if (!title.trim()) setTitle(file.name.replace(/\.[^.]+$/, ""));
-      toast.success(tt("Document loaded — review and upload.", "تم تحميل المستند — راجعه ثم ارفعه."));
+      toast.success(
+        tt("Document loaded — review and upload.", "تم تحميل المستند — راجعه ثم ارفعه."),
+      );
     } catch {
       toast.error(tt("Could not read that file.", "تعذّرت قراءة الملف."));
     } finally {
@@ -80,16 +84,16 @@ export function KnowledgePanel({
     setIngesting(true);
     try {
       const res = await runIngest({ data: { title: title.trim(), content } });
-      toast.success(
-        tt(`Indexed ${res.chunks} passage(s).`, `تمت فهرسة ${res.chunks} مقطع.`),
-      );
+      toast.success(tt(`Indexed ${res.chunks} passage(s).`, `تمت فهرسة ${res.chunks} مقطع.`));
       setTitle("");
       setContent("");
       qc.invalidateQueries({ queryKey: ["knowledge"] });
     } catch (err) {
       const msg = (err as Error).message;
-      if (msg === "RATE_LIMIT") toast.error(tt("Too many requests — try again shortly.", "طلبات كثيرة — حاول بعد قليل."));
-      else if (msg === "NO_CREDITS") toast.error(tt("AI credits exhausted.", "انتهى رصيد الذكاء الاصطناعي."));
+      if (msg === "RATE_LIMIT")
+        toast.error(tt("Too many requests — try again shortly.", "طلبات كثيرة — حاول بعد قليل."));
+      else if (msg === "NO_CREDITS")
+        toast.error(tt("AI credits exhausted.", "انتهى رصيد الذكاء الاصطناعي."));
       else toast.error(tt("Upload failed. Please try again.", "فشل الرفع. حاول مرة أخرى."));
     } finally {
       setIngesting(false);
@@ -123,7 +127,9 @@ export function KnowledgePanel({
           </p>
 
           <div>
-            <label className="text-xs text-muted-foreground">{tt("Title / Source", "العنوان / المصدر")}</label>
+            <label className="text-xs text-muted-foreground">
+              {tt("Title / Source", "العنوان / المصدر")}
+            </label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -133,12 +139,19 @@ export function KnowledgePanel({
           </div>
 
           <div>
-            <label className="text-xs text-muted-foreground">{tt("Or upload a file (PDF, TXT, MD)", "أو ارفع ملفاً (PDF، TXT، MD)")}</label>
+            <label className="text-xs text-muted-foreground">
+              {tt("Or upload a file (PDF, TXT, MD)", "أو ارفع ملفاً (PDF، TXT، MD)")}
+            </label>
             <label className="mt-1 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed py-6 text-sm text-muted-foreground hover:border-gold/50 hover:bg-accent/30 transition-colors">
               {parsing ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> {tt("Reading file…", "جارٍ قراءة الملف…")}</>
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />{" "}
+                  {tt("Reading file…", "جارٍ قراءة الملف…")}
+                </>
               ) : (
-                <><Upload className="h-4 w-4" /> {tt("Choose file", "اختر ملفاً")}</>
+                <>
+                  <Upload className="h-4 w-4" /> {tt("Choose file", "اختر ملفاً")}
+                </>
               )}
               <input
                 type="file"
@@ -157,7 +170,10 @@ export function KnowledgePanel({
               onChange={(e) => setContent(e.target.value)}
               rows={10}
               dir={lang === "ar" ? "rtl" : "ltr"}
-              placeholder={tt("Paste or edit the document text here…", "الصق نص المستند أو حرّره هنا…")}
+              placeholder={tt(
+                "Paste or edit the document text here…",
+                "الصق نص المستند أو حرّره هنا…",
+              )}
               className={lang === "ar" ? "font-arabic" : ""}
             />
             <div className="mt-1 text-[11px] text-muted-foreground">
@@ -170,8 +186,14 @@ export function KnowledgePanel({
             disabled={!title.trim() || !content.trim() || ingesting || parsing}
             className="w-full gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy"
           >
-            {ingesting ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
-            {ingesting ? tt("Indexing…", "جارٍ الفهرسة…") : tt("Add to Knowledge Base", "أضف إلى قاعدة المعرفة")}
+            {ingesting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <UploadCloud className="h-4 w-4" />
+            )}
+            {ingesting
+              ? tt("Indexing…", "جارٍ الفهرسة…")
+              : tt("Add to Knowledge Base", "أضف إلى قاعدة المعرفة")}
           </Button>
         </CardContent>
       </Card>
@@ -192,12 +214,18 @@ export function KnowledgePanel({
             <EmptyState
               icon={BookOpen}
               title={tt("No documents yet", "لا توجد مستندات بعد")}
-              desc={tt("Upload your first legal document to ground the assistant.", "ارفع أول مستند قانوني لإسناد المساعد.")}
+              desc={tt(
+                "Upload your first legal document to ground the assistant.",
+                "ارفع أول مستند قانوني لإسناد المساعد.",
+              )}
             />
           ) : (
             <div className="space-y-2">
               {(sources ?? []).map((s) => (
-                <div key={s.title} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
+                <div
+                  key={s.title}
+                  className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3"
+                >
                   <div className="h-9 w-9 shrink-0 rounded-md bg-gold/15 text-gold flex items-center justify-center">
                     <FileText className="h-4 w-4" />
                   </div>
@@ -206,10 +234,16 @@ export function KnowledgePanel({
                       <span className={lang === "ar" ? "font-arabic" : ""}>{s.title}</span>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {s.chunks} {tt("passages", "مقطع")} · {new Date(s.created_at).toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB")}
+                      {s.chunks} {tt("passages", "مقطع")} ·{" "}
+                      {new Date(s.created_at).toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB")}
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(s.title)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={() => handleDelete(s.title)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

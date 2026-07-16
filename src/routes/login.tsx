@@ -96,17 +96,17 @@ function LoginPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background" dir={isAr ? "rtl" : "ltr"}>
+      <div
+        className="flex min-h-screen items-center justify-center bg-background"
+        dir={isAr ? "rtl" : "ltr"}
+      >
         <Loader2 className="h-6 w-6 animate-spin text-gold" />
       </div>
     );
   }
 
   return (
-    <div
-      dir={isAr ? "rtl" : "ltr"}
-      className="grid min-h-screen bg-background lg:grid-cols-2"
-    >
+    <div dir={isAr ? "rtl" : "ltr"} className="grid min-h-screen bg-background lg:grid-cols-2">
       {/* Brand panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-hero p-10 text-primary-foreground lg:flex">
         <div className="flex items-center gap-3">
@@ -178,7 +178,9 @@ function LoginPage() {
               <span className={isAr ? "font-arabic" : ""}>{t("Qadiya", "قضية")}</span>
             </div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              <span className={isAr ? "font-arabic" : ""}>{t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}</span>
+              <span className={isAr ? "font-arabic" : ""}>
+                {t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}
+              </span>
             </div>
           </div>
 
@@ -201,7 +203,9 @@ function LoginPage() {
             {mode === "signup" && (
               <div className="space-y-1.5">
                 <Label htmlFor="fullName">
-                  <span className={isAr ? "font-arabic" : ""}>{t("Full name", "الاسم الكامل")}</span>
+                  <span className={isAr ? "font-arabic" : ""}>
+                    {t("Full name", "الاسم الكامل")}
+                  </span>
                 </Label>
                 <Input
                   id="fullName"
@@ -261,7 +265,9 @@ function LoginPage() {
             <Button type="submit" className="w-full gap-1.5" disabled={loading}>
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               <span className={isAr ? "font-arabic" : ""}>
-                {mode === "signin" ? t("Sign in", "تسجيل الدخول") : t("Create account", "إنشاء حساب")}
+                {mode === "signin"
+                  ? t("Sign in", "تسجيل الدخول")
+                  : t("Create account", "إنشاء حساب")}
               </span>
             </Button>
           </form>
@@ -312,7 +318,9 @@ function translateAuthError(message: string, isAr: boolean): string {
     return isAr ? "هذا البريد مسجّل مسبقاً." : "This email is already registered.";
   }
   if (m.includes("password") && m.includes("6")) {
-    return isAr ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل." : "Password must be at least 6 characters.";
+    return isAr
+      ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل."
+      : "Password must be at least 6 characters.";
   }
   if (m.includes("pwned") || m.includes("compromised")) {
     return isAr

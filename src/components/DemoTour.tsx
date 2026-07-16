@@ -213,7 +213,9 @@ export function DemoTour() {
             </DialogTitle>
           </div>
         </DialogHeader>
-        <p className={`text-muted-foreground leading-relaxed ${lang === "ar" ? "font-arabic text-right" : ""}`}>
+        <p
+          className={`text-muted-foreground leading-relaxed ${lang === "ar" ? "font-arabic text-right" : ""}`}
+        >
           {lang === "ar" ? currentStep.descriptionAr : currentStep.description}
         </p>
         <div className="flex items-center justify-center gap-1 py-2">

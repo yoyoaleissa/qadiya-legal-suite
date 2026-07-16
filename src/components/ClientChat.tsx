@@ -37,8 +37,7 @@ export function ClientChat({ clientId, clientName, onClose }: ClientChatProps) {
   });
 
   const sendMutation = useMutation({
-    mutationFn: (body: string) =>
-      runSend({ data: { clientId: clientId!, body, sender: "firm" } }),
+    mutationFn: (body: string) => runSend({ data: { clientId: clientId!, body, sender: "firm" } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["client-messages", clientId] });
     },
@@ -78,7 +77,10 @@ export function ClientChat({ clientId, clientName, onClose }: ClientChatProps) {
             <div className="flex flex-col items-center justify-center gap-2 py-16 text-center text-muted-foreground">
               <MessagesSquare className="h-8 w-8 opacity-40" />
               <p className="text-sm">
-                {tt("No messages yet. Start the conversation below.", "لا توجد رسائل بعد. ابدأ المحادثة أدناه.")}
+                {tt(
+                  "No messages yet. Start the conversation below.",
+                  "لا توجد رسائل بعد. ابدأ المحادثة أدناه.",
+                )}
               </p>
             </div>
           ) : (

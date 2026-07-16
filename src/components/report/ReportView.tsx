@@ -14,9 +14,7 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
   const { lang, t } = useApp();
   const [exporting, setExporting] = useState(false);
   const headline = lang === "ar" ? report.status_headline_ar : report.status_headline_en;
-  const stageLabel = report.current_stage
-    ? COURT_LEVEL_LABELS[report.current_stage]?.[lang]
-    : null;
+  const stageLabel = report.current_stage ? COURT_LEVEL_LABELS[report.current_stage]?.[lang] : null;
 
   const handleDownload = async () => {
     if (exporting) return;
@@ -33,7 +31,10 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
       {/* action bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 no-print">
         <p className="text-sm text-muted-foreground">
-          {t("case_number")}: <span dir="ltr" className="font-semibold text-foreground">{report.case_number}</span>
+          {t("case_number")}:{" "}
+          <span dir="ltr" className="font-semibold text-foreground">
+            {report.case_number}
+          </span>
         </p>
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={onNew} className="gap-1.5">
@@ -45,24 +46,39 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
             className="gap-1.5"
             onClick={() => {
               const nextHearing = report.hearings
-                .filter((h) => h.session_date && h.session_date >= new Date().toISOString().slice(0, 10))
+                .filter(
+                  (h) => h.session_date && h.session_date >= new Date().toISOString().slice(0, 10),
+                )
                 .sort((a, b) => (a.session_date ?? "").localeCompare(b.session_date ?? ""))[0];
               const court =
-                (nextHearing?.level && report.court_levels.find((l) => l.level === nextHearing.level)?.court_name) ??
-                report.court_levels[0]?.court_name ?? "—";
-              const statusText = lang === "ar" ? report.status_headline_ar : report.status_headline_en;
+                (nextHearing?.level &&
+                  report.court_levels.find((l) => l.level === nextHearing.level)?.court_name) ??
+                report.court_levels[0]?.court_name ??
+                "—";
+              const statusText =
+                lang === "ar" ? report.status_headline_ar : report.status_headline_en;
               const msg =
                 `📋 تحديث قضية ${report.case_number}\n` +
                 `المحكمة: ${court}\n` +
                 `الجلسة القادمة: ${nextHearing?.session_date ?? "—"}\n` +
                 `الحالة: ${statusText}\n\n— Qadiya AI`;
-              window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+              window.open(
+                `https://wa.me/?text=${encodeURIComponent(msg)}`,
+                "_blank",
+                "noopener,noreferrer",
+              );
             }}
           >
-            <Share2 className="h-4 w-4" /> {lang === "ar" ? "📤 مشاركة واتساب" : "Share on WhatsApp"}
+            <Share2 className="h-4 w-4" />{" "}
+            {lang === "ar" ? "📤 مشاركة واتساب" : "Share on WhatsApp"}
           </Button>
           <Button size="sm" onClick={handleDownload} disabled={exporting} className="gap-1.5">
-            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} {t("download_pdf")}
+            {exporting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}{" "}
+            {t("download_pdf")}
           </Button>
         </div>
       </div>
@@ -71,7 +87,9 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
         {/* print-only letterhead */}
         <div className="mb-2 hidden items-center justify-between border-b border-border pb-4 print:flex">
           <BrandMark />
-          <span className="text-xs text-muted-foreground">{formatDate(new Date().toISOString().slice(0, 10), lang)}</span>
+          <span className="text-xs text-muted-foreground">
+            {formatDate(new Date().toISOString().slice(0, 10), lang)}
+          </span>
         </div>
 
         {/* a. Status headline */}
@@ -90,7 +108,7 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
             )}
             {report.case_type && (
               <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium">
-                {lang === "ar" ? report.case_type_ar ?? report.case_type : report.case_type}
+                {lang === "ar" ? (report.case_type_ar ?? report.case_type) : report.case_type}
               </span>
             )}
           </div>
@@ -101,14 +119,24 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
           <h3 className="mb-2 text-sm font-semibold text-foreground">{t("summary")}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <div dir="en" className="rounded-lg border border-border bg-muted/30 p-4">
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">English</p>
-              <p className="text-sm leading-relaxed text-foreground" style={{ fontFamily: "var(--font-sans)", direction: "ltr", textAlign: "start" }}>
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                English
+              </p>
+              <p
+                className="text-sm leading-relaxed text-foreground"
+                style={{ fontFamily: "var(--font-sans)", direction: "ltr", textAlign: "start" }}
+              >
                 {report.summary_en}
               </p>
             </div>
             <div className="rounded-lg border border-border bg-muted/30 p-4">
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">العربية</p>
-              <p className="text-sm leading-relaxed text-foreground" style={{ fontFamily: "var(--font-arabic)", direction: "rtl", textAlign: "start" }}>
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                العربية
+              </p>
+              <p
+                className="text-sm leading-relaxed text-foreground"
+                style={{ fontFamily: "var(--font-arabic)", direction: "rtl", textAlign: "start" }}
+              >
                 {report.summary_ar}
               </p>
             </div>

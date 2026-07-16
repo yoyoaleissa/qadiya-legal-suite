@@ -57,7 +57,9 @@ export async function exportMonthlyOverviewPdf(opts: MonthlyExportOptions): Prom
       const badgeColor = isHearing ? COLORS.navy : COLORS.deadline;
       const badgeText = isHearing ? t("Hearing", "جلسة") : t("Deadline", "ميعاد نهائي");
       const title = esc(e.title || "");
-      const sub = e.sub ? `<div style="font-size:12px;color:${COLORS.muted};margin-top:2px;">${esc(e.sub)}</div>` : "";
+      const sub = e.sub
+        ? `<div style="font-size:12px;color:${COLORS.muted};margin-top:2px;">${esc(e.sub)}</div>`
+        : "";
       const caseNo = e.case_number
         ? `<span style="font-size:11px;color:${COLORS.muted};">#${esc(e.case_number)}</span>`
         : "";

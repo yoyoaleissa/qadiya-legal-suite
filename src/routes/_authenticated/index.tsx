@@ -84,7 +84,10 @@ function Dashboard() {
   const { data: clients } = useQuery({ queryKey: ["clients"], queryFn: () => runClients() });
   const { data: tasks } = useQuery({ queryKey: ["tasks"], queryFn: () => runTasks() });
   const { data: events } = useQuery({ queryKey: ["calendar-events"], queryFn: () => runEvents() });
-  const { data: briefing } = useQuery({ queryKey: ["daily-briefing"], queryFn: () => runBriefing() });
+  const { data: briefing } = useQuery({
+    queryKey: ["daily-briefing"],
+    queryFn: () => runBriefing(),
+  });
   const { data: invoices } = useQuery({
     queryKey: ["invoices"],
     queryFn: () => runInvoices(),
@@ -105,7 +108,8 @@ function Dashboard() {
   const weekEndStr = weekEnd.toISOString().slice(0, 10);
 
   const hearingsThisWeek = events
-    ? events.filter((e) => e.type === "hearing" && e.date >= todayStr && e.date <= weekEndStr).length
+    ? events.filter((e) => e.type === "hearing" && e.date >= todayStr && e.date <= weekEndStr)
+        .length
     : null;
 
   const overdueTasks = (tasks ?? []).filter(
@@ -140,10 +144,7 @@ function Dashboard() {
             <span className="text-gold">{t(roleLabel(role, "en"), roleLabel(role, "ar"))}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {t(
-              "Here's what needs your attention today.",
-              "إليك أهم ما يحتاج انتباهك اليوم.",
-            )}
+            {t("Here's what needs your attention today.", "إليك أهم ما يحتاج انتباهك اليوم.")}
           </p>
         </div>
         <Link
@@ -152,7 +153,9 @@ function Dashboard() {
         >
           <Scale className="h-5 w-5" />
           <div>
-            <div className="text-xs opacity-80 uppercase tracking-wider">{t("Case Intelligence", "استعلام القضايا")}</div>
+            <div className="text-xs opacity-80 uppercase tracking-wider">
+              {t("Case Intelligence", "استعلام القضايا")}
+            </div>
             <div className="font-medium">{t("Case Reports", "تقارير القضايا")}</div>
           </div>
           <ArrowRight className="h-4 w-4 rtl:rotate-180" />
@@ -167,7 +170,6 @@ function Dashboard() {
         lang={lang}
         todayStr={todayStr}
       />
-
 
       {/* Urgent Alert Banner */}
       {(urgentDeadlines.length > 0 || overdueTasks > 0) && (
@@ -244,7 +246,11 @@ function Dashboard() {
               lang === "ar"
                 ? `📋 موجز اليوم — Qadiya\nجلسات اليوم: ${briefing?.hearingsToday ?? 0}\nمهام متأخرة: ${briefing?.tasksOverdue ?? 0}\nمستحقة اليوم: ${briefing?.tasksDueToday ?? 0}\n\n— Qadiya AI`
                 : `📋 Today's brief — Qadiya\nHearings today: ${briefing?.hearingsToday ?? 0}\nOverdue tasks: ${briefing?.tasksOverdue ?? 0}\nDue today: ${briefing?.tasksDueToday ?? 0}\n\n— Qadiya AI`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(summary)}`, "_blank", "noopener,noreferrer");
+            window.open(
+              `https://wa.me/?text=${encodeURIComponent(summary)}`,
+              "_blank",
+              "noopener,noreferrer",
+            );
           }}
           className="group rounded-xl border bg-card p-4 flex flex-col items-center gap-2 text-center hover:border-gold/50 hover:bg-accent/40 transition-colors"
         >
@@ -262,13 +268,44 @@ function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <StatLink to="/clients" icon={Users} label={t("Active clients", "الموكّلون النشطون")} value={activeClients} sub={t("View directory", "عرض السجل")} />
-        <StatLink to="/clients" icon={FileText} label={t("Open matters", "قضايا مفتوحة")} value={openMatters} sub={t("across firm", "على مستوى المكتب")} />
-        <StatLink to="/calendar" icon={Calendar} label={t("Hearings this week", "جلسات هذا الأسبوع")} value={hearingsThisWeek} sub={t("Court calendar", "التقويم القضائي")} accent />
+        <StatLink
+          to="/clients"
+          icon={Users}
+          label={t("Active clients", "الموكّلون النشطون")}
+          value={activeClients}
+          sub={t("View directory", "عرض السجل")}
+        />
+        <StatLink
+          to="/clients"
+          icon={FileText}
+          label={t("Open matters", "قضايا مفتوحة")}
+          value={openMatters}
+          sub={t("across firm", "على مستوى المكتب")}
+        />
+        <StatLink
+          to="/calendar"
+          icon={Calendar}
+          label={t("Hearings this week", "جلسات هذا الأسبوع")}
+          value={hearingsThisWeek}
+          sub={t("Court calendar", "التقويم القضائي")}
+          accent
+        />
         {isAdmin ? (
-          <StatLink to="/billing" icon={DollarSign} label={t("Outstanding", "مستحقة")} value={`${outstanding.toFixed(3)}`} sub={t("KWD receivable", "د.ك مستحقة")} />
+          <StatLink
+            to="/billing"
+            icon={DollarSign}
+            label={t("Outstanding", "مستحقة")}
+            value={`${outstanding.toFixed(3)}`}
+            sub={t("KWD receivable", "د.ك مستحقة")}
+          />
         ) : (
-          <StatLink to="/tasks" icon={CheckSquare} label={t("Open tasks", "مهام مفتوحة")} value={openTasks.length || null} sub={t("Your queue", "قائمتك")} />
+          <StatLink
+            to="/tasks"
+            icon={CheckSquare}
+            label={t("Open tasks", "مهام مفتوحة")}
+            value={openTasks.length || null}
+            sub={t("Your queue", "قائمتك")}
+          />
         )}
       </div>
 
@@ -279,10 +316,16 @@ function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">{t("Upcoming", "قادم")}</div>
-                <h2 className="font-display text-xl">{t("Hearings & deadlines", "الجلسات والمواعيد")}</h2>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                  {t("Upcoming", "قادم")}
+                </div>
+                <h2 className="font-display text-xl">
+                  {t("Hearings & deadlines", "الجلسات والمواعيد")}
+                </h2>
               </div>
-              <Link to="/calendar" className="text-xs text-gold hover:underline">{t("View calendar →", "عرض التقويم ←")}</Link>
+              <Link to="/calendar" className="text-xs text-gold hover:underline">
+                {t("View calendar →", "عرض التقويم ←")}
+              </Link>
             </div>
             {upcoming.length === 0 ? (
               <EmptyRow
@@ -314,7 +357,11 @@ function Dashboard() {
                             : "bg-destructive/10 text-destructive",
                         )}
                       >
-                        {e.type === "hearing" ? <Gavel className="h-4 w-4" /> : <CalendarClock className="h-4 w-4" />}
+                        {e.type === "hearing" ? (
+                          <Gavel className="h-4 w-4" />
+                        ) : (
+                          <CalendarClock className="h-4 w-4" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="font-medium truncate group-hover:text-gold transition-colors">
@@ -353,10 +400,14 @@ function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">{t("Your queue", "قائمتك")}</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                  {t("Your queue", "قائمتك")}
+                </div>
                 <h2 className="font-display text-xl">{t("Tasks", "المهام")}</h2>
               </div>
-              <Link to="/tasks" className="text-xs text-gold hover:underline">{t("View all →", "عرض الكل ←")}</Link>
+              <Link to="/tasks" className="text-xs text-gold hover:underline">
+                {t("View all →", "عرض الكل ←")}
+              </Link>
             </div>
             {openTasks.length === 0 ? (
               <EmptyRow
@@ -377,7 +428,7 @@ function Dashboard() {
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium truncate group-hover:text-gold transition-colors">
                         <span className={lang === "ar" ? "font-arabic" : ""}>
-                          {lang === "ar" ? task.title_ar ?? task.title : task.title}
+                          {lang === "ar" ? (task.title_ar ?? task.title) : task.title}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -385,7 +436,9 @@ function Dashboard() {
                           <span
                             className={cn(
                               "text-xs",
-                              task.due_date < todayStr ? "text-destructive font-medium" : "text-muted-foreground",
+                              task.due_date < todayStr
+                                ? "text-destructive font-medium"
+                                : "text-muted-foreground",
                             )}
                           >
                             {task.due_date < todayStr ? "⚠ " : ""}
@@ -393,7 +446,10 @@ function Dashboard() {
                           </span>
                         )}
                         {task.priority === "high" && (
-                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-destructive/50 text-destructive">
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] px-1.5 py-0 border-destructive/50 text-destructive"
+                          >
                             {t("High", "عالية")}
                           </Badge>
                         )}
@@ -407,7 +463,13 @@ function Dashboard() {
         </Card>
       </div>
 
-      <NewCaseDialog open={showNewCase} onClose={() => setShowNewCase(false)} clients={clients ?? []} t={t} lang={lang} />
+      <NewCaseDialog
+        open={showNewCase}
+        onClose={() => setShowNewCase(false)}
+        clients={clients ?? []}
+        t={t}
+        lang={lang}
+      />
     </div>
   );
 }
@@ -439,37 +501,67 @@ function DailyBriefingCard({
   };
   const badges: Badge[] = briefing
     ? [
-        { icon: Scale, en: `${briefing.hearingsToday} Hearings Today`, ar: `${briefing.hearingsToday} جلسات اليوم`, tone: "navy",
-          onClick: () => navigate({ to: "/calendar", search: { date: todayStr } }) },
-        { icon: Calendar, en: `${briefing.hearingsTomorrow} Tomorrow`, ar: `${briefing.hearingsTomorrow} غداً`, tone: "navy",
-          onClick: () => navigate({ to: "/calendar", search: { date: tomorrowStr } }) },
-        { icon: AlertTriangle, en: `${briefing.tasksOverdue} Overdue Tasks`, ar: `${briefing.tasksOverdue} مهام متأخرة`, tone: briefing.tasksOverdue > 0 ? "danger" : "good",
-          onClick: () => navigate({ to: "/tasks", search: { filter: "overdue" } }) },
-        { icon: CheckSquare, en: `${briefing.tasksDueToday} Due Today`, ar: `${briefing.tasksDueToday} مستحقة اليوم`, tone: briefing.tasksDueToday > 0 ? "warn" : "good",
-          onClick: () => navigate({ to: "/tasks", search: { filter: "today" } }) },
-        { icon: Clock, en: `${briefing.appealWindow} In Appeal Window`, ar: `${briefing.appealWindow} في ميعاد الطعن`, tone: briefing.appealWindow > 0 ? "gold" : "good",
-          onClick: () => navigate({ to: "/reports" }) },
+        {
+          icon: Scale,
+          en: `${briefing.hearingsToday} Hearings Today`,
+          ar: `${briefing.hearingsToday} جلسات اليوم`,
+          tone: "navy",
+          onClick: () => navigate({ to: "/calendar", search: { date: todayStr } }),
+        },
+        {
+          icon: Calendar,
+          en: `${briefing.hearingsTomorrow} Tomorrow`,
+          ar: `${briefing.hearingsTomorrow} غداً`,
+          tone: "navy",
+          onClick: () => navigate({ to: "/calendar", search: { date: tomorrowStr } }),
+        },
+        {
+          icon: AlertTriangle,
+          en: `${briefing.tasksOverdue} Overdue Tasks`,
+          ar: `${briefing.tasksOverdue} مهام متأخرة`,
+          tone: briefing.tasksOverdue > 0 ? "danger" : "good",
+          onClick: () => navigate({ to: "/tasks", search: { filter: "overdue" } }),
+        },
+        {
+          icon: CheckSquare,
+          en: `${briefing.tasksDueToday} Due Today`,
+          ar: `${briefing.tasksDueToday} مستحقة اليوم`,
+          tone: briefing.tasksDueToday > 0 ? "warn" : "good",
+          onClick: () => navigate({ to: "/tasks", search: { filter: "today" } }),
+        },
+        {
+          icon: Clock,
+          en: `${briefing.appealWindow} In Appeal Window`,
+          ar: `${briefing.appealWindow} في ميعاد الطعن`,
+          tone: briefing.appealWindow > 0 ? "gold" : "good",
+          onClick: () => navigate({ to: "/reports" }),
+        },
       ]
     : [];
 
   const toneClass = (tone: string) => {
     switch (tone) {
-      case "danger": return "bg-destructive/10 text-destructive border-destructive/30";
-      case "warn": return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
-      case "gold": return "bg-gold/15 text-gold border-gold/40";
-      case "good": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
-      default: return "bg-navy/10 text-navy dark:bg-gold/10 dark:text-gold border-navy/20 dark:border-gold/20";
+      case "danger":
+        return "bg-destructive/10 text-destructive border-destructive/30";
+      case "warn":
+        return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+      case "gold":
+        return "bg-gold/15 text-gold border-gold/40";
+      case "good":
+        return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
+      default:
+        return "bg-navy/10 text-navy dark:bg-gold/10 dark:text-gold border-navy/20 dark:border-gold/20";
     }
   };
-
-
 
   return (
     <Card className="border-gold/40 bg-gradient-to-br from-navy to-navy/85 text-white overflow-hidden">
       <CardContent className="pt-6">
         <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold mb-3">
           <Scale className="h-3.5 w-3.5" />
-          <span className={lang === "ar" ? "font-arabic" : ""}>{t("Daily Briefing", "الموجز اليومي")}</span>
+          <span className={lang === "ar" ? "font-arabic" : ""}>
+            {t("Daily Briefing", "الموجز اليومي")}
+          </span>
         </div>
         {!briefing ? (
           <div className="flex items-center gap-2 text-sm text-white/70">
@@ -493,14 +585,21 @@ function DailyBriefingCard({
                   <Icon className="h-3.5 w-3.5" />
                   <span className={lang === "ar" ? "font-arabic" : ""}>{t(b.en, b.ar)}</span>
                 </button>
-
               );
             })}
             {outstanding !== null && (
-              <span className={cn("inline-flex items-center gap-1.5 rounded-full border bg-white/95 px-3 py-1.5 text-xs font-medium", toneClass("gold"))}>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border bg-white/95 px-3 py-1.5 text-xs font-medium",
+                  toneClass("gold"),
+                )}
+              >
                 <DollarSign className="h-3.5 w-3.5" />
                 <span className={lang === "ar" ? "font-arabic" : ""}>
-                  {t(`${outstanding.toFixed(3)} KWD Outstanding`, `${outstanding.toFixed(3)} د.ك مستحقة`)}
+                  {t(
+                    `${outstanding.toFixed(3)} KWD Outstanding`,
+                    `${outstanding.toFixed(3)} د.ك مستحقة`,
+                  )}
                 </span>
               </span>
             )}
@@ -529,7 +628,9 @@ function NewCaseDialog({
   const [titleAr, setTitleAr] = useState("");
   const [clientId, setClientId] = useState<string>("");
   const [caseType, setCaseType] = useState("");
-  const [status, setStatus] = useState<"open" | "active" | "appeal" | "execution" | "closed">("open");
+  const [status, setStatus] = useState<"open" | "active" | "appeal" | "execution" | "closed">(
+    "open",
+  );
   const [loading, setLoading] = useState(false);
   const runCreate = useServerFn(createCase);
   const qc = useQueryClient();
@@ -551,7 +652,12 @@ function NewCaseDialog({
       qc.invalidateQueries({ queryKey: ["clients"] });
       qc.invalidateQueries({ queryKey: ["calendar-events"] });
       onClose();
-      setCaseNumber(""); setTitle(""); setTitleAr(""); setClientId(""); setCaseType(""); setStatus("open");
+      setCaseNumber("");
+      setTitle("");
+      setTitleAr("");
+      setClientId("");
+      setCaseType("");
+      setStatus("open");
     } finally {
       setLoading(false);
     }
@@ -560,19 +666,40 @@ function NewCaseDialog({
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader><DialogTitle>{t("New Case", "قضية جديدة")}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{t("New Case", "قضية جديدة")}</DialogTitle>
+        </DialogHeader>
         <div className="space-y-4 py-2">
           <div>
-            <label className="text-xs text-muted-foreground">{t("Case number", "رقم القضية")}</label>
-            <Input value={caseNumber} onChange={(e) => setCaseNumber(e.target.value)} placeholder="e.g. 2026/123" />
+            <label className="text-xs text-muted-foreground">
+              {t("Case number", "رقم القضية")}
+            </label>
+            <Input
+              value={caseNumber}
+              onChange={(e) => setCaseNumber(e.target.value)}
+              placeholder="e.g. 2026/123"
+            />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">{t("Title (English)", "العنوان (إنجليزي)")}</label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Contract dispute" />
+            <label className="text-xs text-muted-foreground">
+              {t("Title (English)", "العنوان (إنجليزي)")}
+            </label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Contract dispute"
+            />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">{t("Title (Arabic)", "العنوان (عربي)")}</label>
-            <Input value={titleAr} onChange={(e) => setTitleAr(e.target.value)} dir="rtl" placeholder="نزاع عقدي" />
+            <label className="text-xs text-muted-foreground">
+              {t("Title (Arabic)", "العنوان (عربي)")}
+            </label>
+            <Input
+              value={titleAr}
+              onChange={(e) => setTitleAr(e.target.value)}
+              dir="rtl"
+              placeholder="نزاع عقدي"
+            />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">{t("Client", "الموكّل")}</label>
@@ -583,7 +710,9 @@ function NewCaseDialog({
               <SelectContent>
                 {clients.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
-                    <span className={lang === "ar" ? "font-arabic" : ""}>{lang === "ar" ? c.name_ar ?? c.name : c.name}</span>
+                    <span className={lang === "ar" ? "font-arabic" : ""}>
+                      {lang === "ar" ? (c.name_ar ?? c.name) : c.name}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -591,13 +720,21 @@ function NewCaseDialog({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">{t("Case type", "نوع القضية")}</label>
-              <Input value={caseType} onChange={(e) => setCaseType(e.target.value)} placeholder={t("Civil", "مدني")} />
+              <label className="text-xs text-muted-foreground">
+                {t("Case type", "نوع القضية")}
+              </label>
+              <Input
+                value={caseType}
+                onChange={(e) => setCaseType(e.target.value)}
+                placeholder={t("Civil", "مدني")}
+              />
             </div>
             <div>
               <label className="text-xs text-muted-foreground">{t("Status", "الحالة")}</label>
               <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="open">{t("Open", "مفتوحة")}</SelectItem>
                   <SelectItem value="active">{t("Active", "نشطة")}</SelectItem>
@@ -610,9 +747,19 @@ function NewCaseDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>{t("Cancel", "إلغاء")}</Button>
-          <Button onClick={handleSubmit} disabled={!caseNumber.trim() || !title.trim() || loading} className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Create Case", "إنشاء القضية")}
+          <Button variant="outline" onClick={onClose}>
+            {t("Cancel", "إلغاء")}
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!caseNumber.trim() || !title.trim() || loading}
+            className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              t("Create Case", "إنشاء القضية")
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -637,7 +784,12 @@ function StatLink({
 }) {
   return (
     <Link to={to} className="block">
-      <Card className={cn("h-full transition-shadow hover:shadow-lg", accent && "border-gold/50 bg-gold/5")}>
+      <Card
+        className={cn(
+          "h-full transition-shadow hover:shadow-lg",
+          accent && "border-gold/50 bg-gold/5",
+        )}
+      >
         <CardContent className="pt-6">
           <div className="flex items-start justify-between">
             <div>
@@ -645,7 +797,12 @@ function StatLink({
               <div className="font-display text-2xl mt-1">{value ?? "—"}</div>
               <div className="text-xs text-muted-foreground mt-1">{sub}</div>
             </div>
-            <div className={cn("h-9 w-9 rounded-md flex items-center justify-center", accent ? "bg-gold text-navy" : "bg-muted text-muted-foreground")}>
+            <div
+              className={cn(
+                "h-9 w-9 rounded-md flex items-center justify-center",
+                accent ? "bg-gold text-navy" : "bg-muted text-muted-foreground",
+              )}
+            >
               <Icon className="h-4 w-4" />
             </div>
           </div>

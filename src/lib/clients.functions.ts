@@ -43,7 +43,6 @@ export const listClients = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<ClientListItem[]> => {
     const supabase = context.supabase;
 
-
     const { data: clients, error } = await supabase
       .from("clients")
       .select("id, name, name_ar, notes")
@@ -65,13 +64,11 @@ export const listClients = createServerFn({ method: "GET" })
     }));
   });
 
-
 export const getClientDetail = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => z.object({ clientId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }): Promise<ClientDetail | null> => {
     const supabase = context.supabase;
-
 
     const { data: client } = await supabase
       .from("clients")
@@ -146,7 +143,6 @@ export const listClientMessages = createServerFn({ method: "GET" })
 export const sendClientMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-
     z
       .object({
         clientId: z.string().uuid(),

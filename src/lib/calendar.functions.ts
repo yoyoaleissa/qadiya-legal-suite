@@ -16,7 +16,6 @@ export const updateHearingStatus = createServerFn({ method: "POST" })
     return { success: true };
   });
 
-
 export type CalendarEventType = "hearing" | "deadline";
 
 export interface CalendarEvent {
@@ -36,7 +35,6 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<CalendarEvent[]> => {
     const supabase = context.supabase;
 
-
     const [{ data: cases }, { data: hearings }, { data: tasks }] = await Promise.all([
       supabase.from("cases").select("id, case_number, title, title_ar"),
       supabase.from("hearings").select("id, case_id, session_date, notes, status, level"),
@@ -46,9 +44,7 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
         .not("due_date", "is", null),
     ]);
 
-    const caseMap = new Map(
-      (cases ?? []).map((c) => [c.id, c] as const),
-    );
+    const caseMap = new Map((cases ?? []).map((c) => [c.id, c] as const));
 
     const events: CalendarEvent[] = [];
 
@@ -86,4 +82,3 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
 
     return events;
   });
-

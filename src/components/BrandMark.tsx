@@ -17,7 +17,15 @@ export function BrandMark({
           invert && "bg-gradient-gold",
         )}
       >
-        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gold-foreground" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-5 w-5 text-gold-foreground"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.7}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M12 3v18" />
           <path d="M7 21h10" />
           <path d="M5 7h14" />

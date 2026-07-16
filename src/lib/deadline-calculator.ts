@@ -172,7 +172,7 @@ export function calculateDeadline(startDate: Date, type: DeadlineType): Deadline
   now.setHours(0, 0, 0, 0);
 
   const daysRemaining = Math.ceil(
-    (adjustedDeadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    (adjustedDeadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   const isExpired = daysRemaining < 0;
@@ -219,9 +219,7 @@ export function getMostUrgentDeadline(judgmentDate: Date): DeadlineResult | null
  * Generate a Google Calendar event URL for a deadline
  */
 export function getDeadlineCalendarUrl(deadline: DeadlineResult, caseTitle?: string): string {
-  const title = encodeURIComponent(
-    `⚠️ ${deadline.typeAr} - ${caseTitle || "قضية"}`
-  );
+  const title = encodeURIComponent(`⚠️ ${deadline.typeAr} - ${caseTitle || "قضية"}`);
   const details = encodeURIComponent(deadline.descriptionAr);
   const startStr = formatDate(deadline.adjustedDeadline).replace(/-/g, "");
   const endDate = addCalendarDays(deadline.adjustedDeadline, 1);

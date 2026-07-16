@@ -7,7 +7,6 @@ async function buildFirmContext(): Promise<string> {
   try {
     const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
-
     const [{ data: cases }, { data: clients }, { data: hearings }, { data: tasks }] =
       await Promise.all([
         supabase
@@ -57,9 +56,7 @@ async function retrieveKnowledge(query: string): Promise<string> {
       return "";
     }
 
-    const matches = (data ?? []).filter(
-      (m: { similarity: number }) => m.similarity >= 0.2,
-    );
+    const matches = (data ?? []).filter((m: { similarity: number }) => m.similarity >= 0.2);
     if (matches.length === 0) return "";
 
     return matches
@@ -79,7 +76,8 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         const apiKey = process.env.LOVABLE_API_KEY;
-        if (!apiKey) return new Response("LOVABLE_API_KEY is not configured on the server.", { status: 500 });
+        if (!apiKey)
+          return new Response("LOVABLE_API_KEY is not configured on the server.", { status: 500 });
 
         // Require an authenticated staff session — this endpoint exposes firm data to the AI.
         const authHeader = request.headers.get("authorization") ?? "";
@@ -99,12 +97,13 @@ export const Route = createFileRoute("/api/chat")({
           );
           const { data, error } = await authClient.auth.getClaims(token);
           if (error || !data?.claims?.sub) {
-            return new Response(`Invalid session: ${error?.message ?? "no claims"}`, { status: 401 });
+            return new Response(`Invalid session: ${error?.message ?? "no claims"}`, {
+              status: 401,
+            });
           }
         } catch (e) {
           return new Response(`Auth verification failed: ${(e as Error).message}`, { status: 401 });
         }
-
 
         let body: ChatBody;
         try {
@@ -117,7 +116,10 @@ export const Route = createFileRoute("/api/chat")({
         if (history.length === 0) return new Response("Messages are required", { status: 400 });
 
         const trimmed = history
-          .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+          .filter(
+            (m) =>
+              m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string",
+          )
           .slice(-16)
           .map((m) => ({ role: m.role, content: m.content.slice(0, 8000) }));
 

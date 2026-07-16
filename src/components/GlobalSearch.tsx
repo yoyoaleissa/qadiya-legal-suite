@@ -70,88 +70,96 @@ export function GlobalSearch({
             className={ar ? "font-arabic" : ""}
           />
           <CommandList>
-        {debounced.length < 1 ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            <span className={ar ? "font-arabic" : ""}>
-              {tt("Type to search across your firm.", "اكتب للبحث في مكتبك.")}
-            </span>
-          </div>
-        ) : isFetching && !hasResults ? (
-          <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {tt("Searching…", "جارٍ البحث…")}
-          </div>
-        ) : !hasResults ? (
-          <CommandEmpty>
-            <span className={ar ? "font-arabic" : ""}>{tt("No results found.", "لا توجد نتائج.")}</span>
-          </CommandEmpty>
-        ) : (
-          <>
-            {clients.length > 0 && (
-              <CommandGroup heading={tt("Clients", "الموكّلون")}>
-                {clients.map((c) => (
-                  <CommandItem
-                    key={c.id}
-                    value={`client-${c.id}`}
-                    onSelect={() => {
-                      close();
-                      navigate({ to: "/clients", search: { clientId: c.id } });
-                    }}
-                  >
-                    <Users className="text-muted-foreground" />
-                    <span className={ar ? "font-arabic" : ""}>
-                      {ar ? c.name_ar ?? c.name : c.name}
-                    </span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+            {debounced.length < 1 ? (
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                <span className={ar ? "font-arabic" : ""}>
+                  {tt("Type to search across your firm.", "اكتب للبحث في مكتبك.")}
+                </span>
+              </div>
+            ) : isFetching && !hasResults ? (
+              <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {tt("Searching…", "جارٍ البحث…")}
+              </div>
+            ) : !hasResults ? (
+              <CommandEmpty>
+                <span className={ar ? "font-arabic" : ""}>
+                  {tt("No results found.", "لا توجد نتائج.")}
+                </span>
+              </CommandEmpty>
+            ) : (
+              <>
+                {clients.length > 0 && (
+                  <CommandGroup heading={tt("Clients", "الموكّلون")}>
+                    {clients.map((c) => (
+                      <CommandItem
+                        key={c.id}
+                        value={`client-${c.id}`}
+                        onSelect={() => {
+                          close();
+                          navigate({ to: "/clients", search: { clientId: c.id } });
+                        }}
+                      >
+                        <Users className="text-muted-foreground" />
+                        <span className={ar ? "font-arabic" : ""}>
+                          {ar ? (c.name_ar ?? c.name) : c.name}
+                        </span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
 
-            {cases.length > 0 && (
-              <CommandGroup heading={tt("Cases", "القضايا")}>
-                {cases.map((cs) => (
-                  <CommandItem
-                    key={cs.id}
-                    value={`case-${cs.id}`}
-                    onSelect={() => {
-                      close();
-                      navigate({
-                        to: "/clients",
-                        search: cs.client_id ? { clientId: cs.client_id } : {},
-                      });
-                    }}
-                  >
-                    <FileText className="text-muted-foreground" />
-                    <span className="flex-1 truncate">
-                      <span className={ar ? "font-arabic" : ""}>
-                        {ar ? cs.title_ar ?? cs.title ?? cs.case_number : cs.title ?? cs.case_number}
-                      </span>
-                    </span>
-                    <span className="ms-auto text-xs text-muted-foreground">#{cs.case_number}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+                {cases.length > 0 && (
+                  <CommandGroup heading={tt("Cases", "القضايا")}>
+                    {cases.map((cs) => (
+                      <CommandItem
+                        key={cs.id}
+                        value={`case-${cs.id}`}
+                        onSelect={() => {
+                          close();
+                          navigate({
+                            to: "/clients",
+                            search: cs.client_id ? { clientId: cs.client_id } : {},
+                          });
+                        }}
+                      >
+                        <FileText className="text-muted-foreground" />
+                        <span className="flex-1 truncate">
+                          <span className={ar ? "font-arabic" : ""}>
+                            {ar
+                              ? (cs.title_ar ?? cs.title ?? cs.case_number)
+                              : (cs.title ?? cs.case_number)}
+                          </span>
+                        </span>
+                        <span className="ms-auto text-xs text-muted-foreground">
+                          #{cs.case_number}
+                        </span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
 
-            {tasks.length > 0 && (
-              <CommandGroup heading={tt("Tasks", "المهام")}>
-                {tasks.map((t) => (
-                  <CommandItem
-                    key={t.id}
-                    value={`task-${t.id}`}
-                    onSelect={() => {
-                      close();
-                      navigate({ to: "/tasks", search: { taskId: t.id } });
-                    }}
-                  >
-                    <CheckSquare className="text-muted-foreground" />
-                    <span className={ar ? "font-arabic" : ""}>{ar ? t.title_ar ?? t.title : t.title}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+                {tasks.length > 0 && (
+                  <CommandGroup heading={tt("Tasks", "المهام")}>
+                    {tasks.map((t) => (
+                      <CommandItem
+                        key={t.id}
+                        value={`task-${t.id}`}
+                        onSelect={() => {
+                          close();
+                          navigate({ to: "/tasks", search: { taskId: t.id } });
+                        }}
+                      >
+                        <CheckSquare className="text-muted-foreground" />
+                        <span className={ar ? "font-arabic" : ""}>
+                          {ar ? (t.title_ar ?? t.title) : t.title}
+                        </span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+              </>
             )}
-          </>
-        )}
           </CommandList>
         </Command>
       </DialogContent>

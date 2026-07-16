@@ -1,10 +1,6 @@
 // Shared report types used by both the server function and the client UI.
 export type CourtLevelKey =
-  | "police_prosecution"
-  | "first_instance"
-  | "appeal"
-  | "cassation"
-  | "execution";
+  "police_prosecution" | "first_instance" | "appeal" | "cassation" | "execution";
 
 export interface CourtLevelRow {
   level: CourtLevelKey;

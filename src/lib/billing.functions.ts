@@ -24,7 +24,9 @@ export const listInvoices = createServerFn({ method: "GET" })
     const supabase = context.supabase;
     const { data: invoices, error } = await supabase
       .from("invoices")
-      .select("id, invoice_number, amount, currency, status, issue_date, due_date, paid_date, description, description_ar, client_id, case_id")
+      .select(
+        "id, invoice_number, amount, currency, status, issue_date, due_date, paid_date, description, description_ar, client_id, case_id",
+      )
       .order("issue_date", { ascending: false });
     if (error) throw new Error(error.message);
 
@@ -60,15 +62,17 @@ export const listInvoices = createServerFn({ method: "GET" })
 export const createInvoice = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      client_id: z.string().uuid().optional(),
-      case_id: z.string().uuid().optional(),
-      amount: z.number().positive(),
-      currency: z.string().default("KWD"),
-      description: z.string().optional(),
-      description_ar: z.string().optional(),
-      due_date: z.string().optional(),
-    }).parse(data)
+    z
+      .object({
+        client_id: z.string().uuid().optional(),
+        case_id: z.string().uuid().optional(),
+        amount: z.number().positive(),
+        currency: z.string().default("KWD"),
+        description: z.string().optional(),
+        description_ar: z.string().optional(),
+        due_date: z.string().optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -100,10 +104,12 @@ export const createInvoice = createServerFn({ method: "POST" })
 export const updateInvoiceStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      id: z.string().uuid(),
-      status: z.enum(["draft", "sent", "paid", "overdue", "cancelled"]),
-    }).parse(data)
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["draft", "sent", "paid", "overdue", "cancelled"]),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -111,10 +117,7 @@ export const updateInvoiceStatus = createServerFn({ method: "POST" })
     if (data.status === "paid") {
       updates.paid_date = new Date().toISOString().slice(0, 10);
     }
-    const { error } = await supabase
-      .from("invoices")
-      .update(updates)
-      .eq("id", data.id);
+    const { error } = await supabase.from("invoices").update(updates).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { success: true };
   });

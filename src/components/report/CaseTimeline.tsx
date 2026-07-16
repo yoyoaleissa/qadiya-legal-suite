@@ -18,15 +18,14 @@ export function CaseTimeline({
       <span className="absolute inset-y-1 start-[7px] w-px bg-border" aria-hidden />
       {items.map((ev, i) => {
         const isCurrent = i === 0;
-        const highlight = isCurrent || (currentStage && ev.level === currentStage && ev.event_type === "judgment");
+        const highlight =
+          isCurrent || (currentStage && ev.level === currentStage && ev.event_type === "judgment");
         return (
           <li key={i} className="relative">
             <span
               className={cn(
                 "absolute -start-6 top-1 h-3.5 w-3.5 rounded-full border-2",
-                highlight
-                  ? "border-accent bg-accent shadow-gold"
-                  : "border-border bg-background",
+                highlight ? "border-accent bg-accent shadow-gold" : "border-border bg-background",
               )}
               aria-hidden
             />

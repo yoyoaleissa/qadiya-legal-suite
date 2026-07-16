@@ -1,12 +1,7 @@
 import { MapPin, Navigation } from "lucide-react";
 import { findCourt, getCourtMapsUrl, getCourtDirectionsUrl } from "@/lib/kuwait-courts";
 import { useApp } from "@/lib/app-context";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CourtMapLinkProps {
   courtName: string;

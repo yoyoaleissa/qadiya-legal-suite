@@ -103,7 +103,10 @@ const powerOfAttorney: DocTemplate = {
     return {
       title: "General Power of Attorney",
       blocks: [
-        { kind: "paragraph", text: `This instrument is made and entered into on ${date}, in the State of Kuwait.` },
+        {
+          kind: "paragraph",
+          text: `This instrument is made and entered into on ${date}, in the State of Kuwait.`,
+        },
         {
           kind: "paragraph",
           text: `I, the undersigned, ${f.clientName}, holder of Civil ID No. ${num(
@@ -192,7 +195,10 @@ const retainerAgreement: DocTemplate = {
       title: "Legal Retainer Agreement",
       blocks: [
         { kind: "paragraph", text: `This agreement is made on ${date} between:` },
-        { kind: "paragraph", text: `The First Party (the Firm): ${f.firmName} for Legal Practice & Consultation.` },
+        {
+          kind: "paragraph",
+          text: `The First Party (the Firm): ${f.firmName} for Legal Practice & Consultation.`,
+        },
         {
           kind: "paragraph",
           text: `The Second Party (the Client): ${f.clientName}, holder of Civil ID No. ${num(f.civilId)}.`,
@@ -245,7 +251,10 @@ const statementOfClaim: DocTemplate = {
               f.civilId,
             )}، وينوب عنه السادة/ ${f.firmName} للمحاماة.`,
           },
-          { kind: "paragraph", text: `المحرّرة بتاريخ ${date}، والمقيّدة برقم ${num(f.caseNumber)}.` },
+          {
+            kind: "paragraph",
+            text: `المحرّرة بتاريخ ${date}، والمقيّدة برقم ${num(f.caseNumber)}.`,
+          },
           { kind: "heading", text: "الوقائع" },
           {
             kind: "paragraph",
@@ -257,7 +266,11 @@ const statementOfClaim: DocTemplate = {
             index: 1,
             text: "قبول الدعوى شكلاً، وفي الموضوع إلزام المدّعى عليه بأداء المبالغ المستحقة.",
           },
-          { kind: "clause", index: 2, text: "إلزام المدّعى عليه بالمصروفات ومقابل أتعاب المحاماة." },
+          {
+            kind: "clause",
+            index: 2,
+            text: "إلزام المدّعى عليه بالمصروفات ومقابل أتعاب المحاماة.",
+          },
           {
             kind: "signatures",
             firm: `وكيل المدّعي: ${f.firmName}`,
@@ -276,7 +289,10 @@ const statementOfClaim: DocTemplate = {
             f.civilId,
           )}, represented by ${f.firmName} for Legal Practice.`,
         },
-        { kind: "paragraph", text: `Drafted on ${date}, registered under No. ${num(f.caseNumber)}.` },
+        {
+          kind: "paragraph",
+          text: `Drafted on ${date}, registered under No. ${num(f.caseNumber)}.`,
+        },
         { kind: "heading", text: "The Facts" },
         {
           kind: "paragraph",
@@ -288,7 +304,11 @@ const statementOfClaim: DocTemplate = {
           index: 1,
           text: "To accept the action in form, and on the merits to oblige the Defendant to pay the amounts due.",
         },
-        { kind: "clause", index: 2, text: "To oblige the Defendant to bear the costs and legal fees." },
+        {
+          kind: "clause",
+          index: 2,
+          text: "To oblige the Defendant to bear the costs and legal fees.",
+        },
         {
           kind: "signatures",
           firm: `Counsel for the Claimant: ${f.firmName}`,

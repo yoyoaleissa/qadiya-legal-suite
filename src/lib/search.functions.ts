@@ -32,9 +32,7 @@ export interface GlobalSearchResults {
 /** Search across clients, cases, and tasks for the global Cmd+K palette. */
 export const globalSearch = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
-    z.object({ q: z.string().trim().min(1).max(120) }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ q: z.string().trim().min(1).max(120) }).parse(data))
   .handler(async ({ context, data }): Promise<GlobalSearchResults> => {
     const supabase = context.supabase;
     // Sanitize for PostgREST or() filters — strip characters that break the syntax.

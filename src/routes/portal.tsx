@@ -87,7 +87,9 @@ function ClientPortal() {
           <div className="flex items-center gap-2">
             <Scale className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg">قضية</span>
-            <Badge variant="secondary" className="text-xs">بوابة الموكل</Badge>
+            <Badge variant="secondary" className="text-xs">
+              بوابة الموكل
+            </Badge>
           </div>
           {session && (
             <Button
@@ -109,9 +111,7 @@ function ClientPortal() {
         {/* Hero Section */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">متابعة قضيتك</h1>
-          <p className="text-muted-foreground">
-            أدخل الرقم الآلي للقضية لمعرفة آخر المستجدات
-          </p>
+          <p className="text-muted-foreground">أدخل الرقم الآلي للقضية لمعرفة آخر المستجدات</p>
         </div>
 
         {/* Case Lookup */}
@@ -127,11 +127,7 @@ function ClientPortal() {
                 dir="ltr"
               />
               <Button onClick={handleCaseLookup} disabled={lookupLoading}>
-                {lookupLoading ? (
-                  <Clock className="h-4 w-4 animate-spin" />
-                ) : (
-                  "بحث"
-                )}
+                {lookupLoading ? <Clock className="h-4 w-4 animate-spin" /> : "بحث"}
               </Button>
             </div>
           </CardContent>
@@ -155,9 +151,7 @@ function ClientPortal() {
                       <span className="text-sm font-medium">الحالة</span>
                       <Badge
                         variant={
-                          lookupResult.json_data.status === "مغلقة"
-                            ? "secondary"
-                            : "default"
+                          lookupResult.json_data.status === "مغلقة" ? "secondary" : "default"
                         }
                       >
                         {lookupResult.json_data.status || "نشطة"}
@@ -181,7 +175,10 @@ function ClientPortal() {
                         </div>
                         <div className="space-y-1">
                           {lookupResult.json_data.hearings.slice(-3).map((h: any, i: number) => (
-                            <div key={i} className="text-sm text-muted-foreground flex justify-between">
+                            <div
+                              key={i}
+                              className="text-sm text-muted-foreground flex justify-between"
+                            >
                               <span>{h.date}</span>
                               <span>{h.decision || h.type || ""}</span>
                             </div>
@@ -220,9 +217,7 @@ function ClientPortal() {
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="pt-6 text-center">
                 <MessageCircle className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm font-medium mb-2">
-                  احصل على تقرير PDF مفصّل عبر تيليجرام
-                </p>
+                <p className="text-sm font-medium mb-2">احصل على تقرير PDF مفصّل عبر تيليجرام</p>
                 <Button asChild variant="outline" size="sm">
                   <a href="https://t.me/Qadiya_bot" target="_blank" rel="noopener noreferrer">
                     فتح بوت قضية
@@ -237,7 +232,8 @@ function ClientPortal() {
           <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800">
             <CardContent className="pt-6 text-center">
               <p className="text-sm">
-                لم يتم العثور على تقرير لهذه القضية. جرّب الرقم الآلي (9 أرقام) أو تواصل مع مكتب المحاماة.
+                لم يتم العثور على تقرير لهذه القضية. جرّب الرقم الآلي (9 أرقام) أو تواصل مع مكتب
+                المحاماة.
               </p>
             </CardContent>
           </Card>

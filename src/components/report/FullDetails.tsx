@@ -99,7 +99,9 @@ export function FullDetails({ report }: { report: CaseReport }) {
               return (
                 <div className="mt-4">
                   <h5 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {lang === "ar" ? "المواعيد المحسوبة من تاريخ الحكم" : "Deadlines from judgment date"}
+                    {lang === "ar"
+                      ? "المواعيد المحسوبة من تاريخ الحكم"
+                      : "Deadlines from judgment date"}
                   </h5>
                   <AllDeadlines
                     judgmentDate={new Date(latest.judgment_date)}
@@ -151,7 +153,9 @@ export function FullDetails({ report }: { report: CaseReport }) {
                     <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
                       <span>
                         <span className="text-muted-foreground">{t("reference")}: </span>
-                        <span dir="ltr" className="font-medium">{ex.file_number ?? "—"}</span>
+                        <span dir="ltr" className="font-medium">
+                          {ex.file_number ?? "—"}
+                        </span>
                       </span>
                       <span>
                         <span className="text-muted-foreground">{t("court")}: </span>
@@ -168,10 +172,15 @@ export function FullDetails({ report }: { report: CaseReport }) {
                     </div>
                     {ex.receipts.length > 0 && (
                       <div className="mt-2">
-                        <p className="mb-1 text-xs font-medium text-muted-foreground">{t("receipts")}</p>
+                        <p className="mb-1 text-xs font-medium text-muted-foreground">
+                          {t("receipts")}
+                        </p>
                         <ul className="space-y-1">
                           {ex.receipts.map((r, ri) => (
-                            <li key={ri} className="flex justify-between rounded bg-muted/50 px-3 py-1.5 text-sm">
+                            <li
+                              key={ri}
+                              className="flex justify-between rounded bg-muted/50 px-3 py-1.5 text-sm"
+                            >
                               <span>{formatDate(r.receipt_date, lang)}</span>
                               <span className="font-semibold">{formatKwd(r.amount, lang)}</span>
                             </li>

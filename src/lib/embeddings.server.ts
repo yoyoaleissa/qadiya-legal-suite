@@ -58,7 +58,10 @@ export async function embedQuery(text: string): Promise<number[]> {
  * Splits on paragraph boundaries where possible, targeting ~1000 chars per chunk.
  */
 export function chunkText(text: string, target = 1000, overlap = 150): string[] {
-  const clean = text.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  const clean = text
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
   if (!clean) return [];
 
   const paragraphs = clean.split(/\n\n+/);

@@ -31,11 +31,13 @@ export const translations = {
     brand: "Qadiya OS",
     tagline: "Kuwait Legal Practice Management",
     hero_title: "Clarity in every case.",
-    hero_sub: "AI-drafted case reports, deadline intelligence, and a complete practice command center — built for Kuwaiti law firms.",
+    hero_sub:
+      "AI-drafted case reports, deadline intelligence, and a complete practice command center — built for Kuwaiti law firms.",
     open_report_bot: "Open the Report Bot",
     staff_portal: "Staff Portal",
     report_bot: "Report Bot",
-    report_bot_desc: "Clients enter a case number and receive an instant, plain-language status report in Arabic and English.",
+    report_bot_desc:
+      "Clients enter a case number and receive an instant, plain-language status report in Arabic and English.",
     enter_case: "Enter your case number",
     case_number: "Case number",
     generate_report: "Generate report",
@@ -69,10 +71,12 @@ export const translations = {
     try_example: "Try the demo case 222486500",
     dashboard: "Dashboard",
     coming_soon: "Coming soon",
-    disclaimer: "This report is procedural guidance generated from case records — it is not legal advice or a verdict.",
+    disclaimer:
+      "This report is procedural guidance generated from case records — it is not legal advice or a verdict.",
     powered: "Powered by Qadiya OS AI",
     documents: "Document Generation",
-    documents_desc: "Generate court-ready documents auto-filled from case and client data — in Arabic or English.",
+    documents_desc:
+      "Generate court-ready documents auto-filled from case and client data — in Arabic or English.",
     choose_template: "Choose a template",
     client_name: "Client name",
     civil_id: "Civil ID",
@@ -88,11 +92,13 @@ export const translations = {
     brand: "قضية OS",
     tagline: "منظومة إدارة الممارسة القانونية الكويتية",
     hero_title: "وضوحٌ في كل قضية.",
-    hero_sub: "تقارير قضايا مُعدّة بالذكاء الاصطناعي، وذكاء المواعيد، ومركز قيادة متكامل — مصمّم لمكاتب المحاماة الكويتية.",
+    hero_sub:
+      "تقارير قضايا مُعدّة بالذكاء الاصطناعي، وذكاء المواعيد، ومركز قيادة متكامل — مصمّم لمكاتب المحاماة الكويتية.",
     open_report_bot: "افتح روروبوت التقارير",
     staff_portal: "بوابة الموظفين",
     report_bot: "روروبوت التقارير",
-    report_bot_desc: "يُدخل الموكّل رقم القضية ليحصل فوراً على تقرير مبسّط بحالته بالعربية والإنجليزية.",
+    report_bot_desc:
+      "يُدخل الموكّل رقم القضية ليحصل فوراً على تقرير مبسّط بحالته بالعربية والإنجليزية.",
     enter_case: "أدخل رقم قضيتك",
     case_number: "رقم القضية",
     generate_report: "إصدار التقرير",
@@ -129,7 +135,8 @@ export const translations = {
     disclaimer: "هذا التقرير إرشاد إجرائي مُستخرج من سجلات القضية — وليس استشارة قانونية أو حكماً.",
     powered: "مدعوم بذكاء قضية OS",
     documents: "إنشاء المستندات",
-    documents_desc: "أنشئ مستندات جاهزة للمحكمة بتعبئة تلقائية من بيانات القضية والموكّل — بالعربية أو الإنجليزية.",
+    documents_desc:
+      "أنشئ مستندات جاهزة للمحكمة بتعبئة تلقائية من بيانات القضية والموكّل — بالعربية أو الإنجليزية.",
     choose_template: "اختر قالباً",
     client_name: "اسم الموكّل",
     civil_id: "الرقم المدني",
@@ -196,7 +203,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<AppState>(
-    () => ({ theme, lang, dir: lang === "ar" ? "rtl" : "ltr", role, setRole, toggleTheme, setLang, toggleLang, t }),
+    () => ({
+      theme,
+      lang,
+      dir: lang === "ar" ? "rtl" : "ltr",
+      role,
+      setRole,
+      toggleTheme,
+      setLang,
+      toggleLang,
+      t,
+    }),
     [theme, lang, role, setRole, toggleTheme, setLang, toggleLang, t],
   );
 

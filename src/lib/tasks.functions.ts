@@ -23,7 +23,6 @@ export const listTasks = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<TaskItem[]> => {
     const supabase = context.supabase;
 
-
     const [{ data: tasks, error }, { data: cases }] = await Promise.all([
       supabase
         .from("tasks")
@@ -60,18 +59,20 @@ export const listTasks = createServerFn({ method: "GET" })
 export const createTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      title: z.string().min(1),
-      title_ar: z.string().optional(),
-      description: z.string().optional(),
-      description_ar: z.string().optional(),
-      priority: z.enum(["high", "medium", "low"]).default("medium"),
-      status: z.enum(["open", "in_progress", "done"]).default("open"),
-      assignee: z.string().optional(),
-      assignee_ar: z.string().optional(),
-      due_date: z.string().optional(),
-      case_id: z.string().uuid().optional(),
-    }).parse(data)
+    z
+      .object({
+        title: z.string().min(1),
+        title_ar: z.string().optional(),
+        description: z.string().optional(),
+        description_ar: z.string().optional(),
+        priority: z.enum(["high", "medium", "low"]).default("medium"),
+        status: z.enum(["open", "in_progress", "done"]).default("open"),
+        assignee: z.string().optional(),
+        assignee_ar: z.string().optional(),
+        due_date: z.string().optional(),
+        case_id: z.string().uuid().optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -106,10 +107,12 @@ export const createTask = createServerFn({ method: "POST" })
 export const updateTaskStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      id: z.string().uuid(),
-      status: z.enum(["open", "in_progress", "done"]),
-    }).parse(data)
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["open", "in_progress", "done"]),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -124,12 +127,14 @@ export const updateTaskStatus = createServerFn({ method: "POST" })
 export const createTasksFromWorkflow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({
-      template_id: z.string().uuid(),
-      case_id: z.string().uuid().optional(),
-      assignee: z.string().optional(),
-      assignee_ar: z.string().optional(),
-    }).parse(data)
+    z
+      .object({
+        template_id: z.string().uuid(),
+        case_id: z.string().uuid().optional(),
+        assignee: z.string().optional(),
+        assignee_ar: z.string().optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }) => {
     const supabase = context.supabase;
@@ -140,7 +145,10 @@ export const createTasksFromWorkflow = createServerFn({ method: "POST" })
       .single();
     if (tErr || !template) throw new Error("Workflow template not found");
     const steps = template.steps as Array<{
-      title: string; title_ar: string; priority: string; days_offset: number;
+      title: string;
+      title_ar: string;
+      priority: string;
+      days_offset: number;
     }>;
     const { data: maxRow } = await supabase
       .from("tasks")
@@ -190,4 +198,3 @@ export const listWorkflowTemplates = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return (data ?? []) as WorkflowTemplate[];
   });
-

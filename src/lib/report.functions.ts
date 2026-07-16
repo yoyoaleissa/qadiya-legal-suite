@@ -26,10 +26,7 @@ function daysBetween(from: Date, to: Date): number {
   return Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function computeDeadline(
-  overallStatus: string,
-  judgments: JudgmentRow[],
-): DeadlineInfo | null {
+function computeDeadline(overallStatus: string, judgments: JudgmentRow[]): DeadlineInfo | null {
   if (overallStatus === "closed") return null;
   const dated = judgments
     .filter((j) => j.judgment_date && (j.level === "first_instance" || j.level === "appeal"))
@@ -135,7 +132,6 @@ export const generateCaseReport = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<CaseReport> => {
     const supabase = context.supabase;
 
-
     const caseNumber = data.caseNumber.trim();
 
     const { data: caseRow } = await supabase
@@ -169,11 +165,34 @@ export const generateCaseReport = createServerFn({ method: "POST" })
 
     const caseId = caseRow.id;
     const [levelsRes, judgmentsRes, hearingsRes, execRes, timelineRes] = await Promise.all([
-      supabase.from("court_levels").select("level, court_name, case_ref, registered_date, status, ruling_summary, sort_order").eq("case_id", caseId).order("sort_order"),
-      supabase.from("judgments").select("level, judgment_date, ruling_text, judgment_type, amount, payment_status, sort_order").eq("case_id", caseId).order("sort_order"),
-      supabase.from("hearings").select("level, session_date, notes, status, sort_order").eq("case_id", caseId).order("sort_order"),
-      supabase.from("execution_procedures").select("id, file_number, jurisdiction, opened_date, status, notes").eq("case_id", caseId),
-      supabase.from("case_timeline").select("event_date, level, event_type, title, title_ar, description, description_ar, sort_order").eq("case_id", caseId).order("sort_order"),
+      supabase
+        .from("court_levels")
+        .select("level, court_name, case_ref, registered_date, status, ruling_summary, sort_order")
+        .eq("case_id", caseId)
+        .order("sort_order"),
+      supabase
+        .from("judgments")
+        .select(
+          "level, judgment_date, ruling_text, judgment_type, amount, payment_status, sort_order",
+        )
+        .eq("case_id", caseId)
+        .order("sort_order"),
+      supabase
+        .from("hearings")
+        .select("level, session_date, notes, status, sort_order")
+        .eq("case_id", caseId)
+        .order("sort_order"),
+      supabase
+        .from("execution_procedures")
+        .select("id, file_number, jurisdiction, opened_date, status, notes")
+        .eq("case_id", caseId),
+      supabase
+        .from("case_timeline")
+        .select(
+          "event_date, level, event_type, title, title_ar, description, description_ar, sort_order",
+        )
+        .eq("case_id", caseId)
+        .order("sort_order"),
     ]);
 
     const court_levels = (levelsRes.data ?? []) as CourtLevelRow[];

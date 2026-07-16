@@ -2,17 +2,34 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, ChevronLeft, ChevronRight, Gavel, Clock, Loader2, ListChecks, CalendarRange, Download, ExternalLink, CheckCircle2, Check, Undo2 } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Gavel,
+  Clock,
+  Loader2,
+  ListChecks,
+  CalendarRange,
+  Download,
+  ExternalLink,
+  CheckCircle2,
+  Check,
+  Undo2,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
-import { listCalendarEvents, updateHearingStatus, type CalendarEvent } from "@/lib/calendar.functions";
+import {
+  listCalendarEvents,
+  updateHearingStatus,
+  type CalendarEvent,
+} from "@/lib/calendar.functions";
 import { updateTaskStatus } from "@/lib/tasks.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 import { EmptyState } from "@/components/EmptyState";
-
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
@@ -24,16 +41,45 @@ export const Route = createFileRoute("/_authenticated/calendar")({
   head: () => ({
     meta: [
       { title: "Court Calendar — Qadiya OS" },
-      { name: "description", content: "Hearings, deadlines, and limitation tracking for Kuwaiti court matters." },
+      {
+        name: "description",
+        content: "Hearings, deadlines, and limitation tracking for Kuwaiti court matters.",
+      },
     ],
   }),
   component: CalendarPage,
 });
 
-const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-const WEEK_EN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const WEEK_AR = ["أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"];
+const MONTHS_EN = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const MONTHS_AR = [
+  "يناير",
+  "فبراير",
+  "مارس",
+  "أبريل",
+  "مايو",
+  "يونيو",
+  "يوليو",
+  "أغسطس",
+  "سبتمبر",
+  "أكتوبر",
+  "نوفمبر",
+  "ديسمبر",
+];
+const WEEK_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEK_AR = ["أحد", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
 
 function iso(y: number, m: number, d: number) {
   return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
@@ -74,7 +120,9 @@ function CalendarPage() {
     mutationFn: async ({ e, action }: { e: CalendarEvent; action: "done" | "undo" }) => {
       const [kind, id] = e.id.split(/-(.+)/);
       if (kind === "hearing") {
-        return runHearingStatus({ data: { id, status: action === "done" ? "completed" : "scheduled" } });
+        return runHearingStatus({
+          data: { id, status: action === "done" ? "completed" : "scheduled" },
+        });
       }
       if (kind === "task") {
         return runTaskStatus({ data: { id, status: action === "done" ? "done" : "open" } });
@@ -85,7 +133,6 @@ function CalendarPage() {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
-
 
   const byDate = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>();
@@ -132,10 +179,15 @@ function CalendarPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">{tt("Scheduling", "الجدولة")}</div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">
+            {tt("Scheduling", "الجدولة")}
+          </div>
           <h1 className="font-display text-3xl">{tt("Court Calendar", "التقويم القضائي")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {tt("Hearings, appeal windows, and limitation deadlines.", "الجلسات ومواعيد الاستئناف والتقادم.")}
+            {tt(
+              "Hearings, appeal windows, and limitation deadlines.",
+              "الجلسات ومواعيد الاستئناف والتقادم.",
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -144,7 +196,8 @@ function CalendarPage() {
             onClick={() => setShowMonth(false)}
             className={cn(
               "gap-2",
-              !showMonth && "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
+              !showMonth &&
+                "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
             )}
           >
             <CalendarDays className="h-4 w-4" />
@@ -155,7 +208,8 @@ function CalendarPage() {
             onClick={() => setShowMonth(true)}
             className={cn(
               "gap-2",
-              showMonth && "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
+              showMonth &&
+                "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
             )}
           >
             <ListChecks className="h-4 w-4" />
@@ -163,8 +217,6 @@ function CalendarPage() {
           </Button>
         </div>
       </div>
-
-
 
       <Card>
         <CardContent className="pt-6">
@@ -228,41 +280,42 @@ function CalendarPage() {
                   >
                     {day}
                   </span>
-                  {dayEvents.length > 0 && (() => {
-                    const allDone = dayEvents.every(
-                      (e) => e.status === "completed" || e.status === "done",
-                    );
-                    if (allDone) {
+                  {dayEvents.length > 0 &&
+                    (() => {
+                      const allDone = dayEvents.every(
+                        (e) => e.status === "completed" || e.status === "done",
+                      );
+                      if (allDone) {
+                        return (
+                          <span className="mt-auto flex items-center justify-center">
+                            <span
+                              className="h-2.5 w-2.5 rounded-full bg-success ring-2 ring-success/30"
+                              title={tt("All completed", "تم الإنجاز")}
+                            />
+                          </span>
+                        );
+                      }
                       return (
-                        <span className="mt-auto flex items-center justify-center">
-                          <span
-                            className="h-2.5 w-2.5 rounded-full bg-success ring-2 ring-success/30"
-                            title={tt("All completed", "تم الإنجاز")}
-                          />
+                        <span className="flex flex-wrap justify-center gap-1 mt-auto">
+                          {dayEvents.slice(0, 3).map((e, i) => {
+                            const done = e.status === "completed" || e.status === "done";
+                            return (
+                              <span
+                                key={i}
+                                className={cn(
+                                  "h-2 w-2 rounded-full",
+                                  done
+                                    ? "bg-success"
+                                    : e.type === "hearing"
+                                      ? "bg-navy dark:bg-gold"
+                                      : "bg-destructive",
+                                )}
+                              />
+                            );
+                          })}
                         </span>
                       );
-                    }
-                    return (
-                      <span className="flex flex-wrap justify-center gap-1 mt-auto">
-                        {dayEvents.slice(0, 3).map((e, i) => {
-                          const done = e.status === "completed" || e.status === "done";
-                          return (
-                            <span
-                              key={i}
-                              className={cn(
-                                "h-2 w-2 rounded-full",
-                                done
-                                  ? "bg-success"
-                                  : e.type === "hearing"
-                                    ? "bg-navy dark:bg-gold"
-                                    : "bg-destructive",
-                              )}
-                            />
-                          );
-                        })}
-                      </span>
-                    );
-                  })()}
+                    })()}
                 </button>
               );
             })}
@@ -273,12 +326,12 @@ function CalendarPage() {
               <span className="h-2 w-2 rounded-full bg-navy dark:bg-gold" /> {tt("Hearing", "جلسة")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-destructive" /> {tt("Deadline", "ميعاد نهائي")}
+              <span className="h-2 w-2 rounded-full bg-destructive" />{" "}
+              {tt("Deadline", "ميعاد نهائي")}
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-success" /> {tt("Completed", "تم الإنجاز")}
             </span>
-
           </div>
         </CardContent>
       </Card>
@@ -336,7 +389,6 @@ function CalendarPage() {
             </div>
           </div>
 
-
           {isLoading ? (
             <Card>
               <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
@@ -366,7 +418,9 @@ function CalendarPage() {
                     key={e.id}
                     className={cn(
                       "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4 transition-colors cursor-pointer hover:border-gold/50 hover:bg-accent/40",
-                      e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
+                      e.type === "hearing"
+                        ? "border-s-navy dark:border-s-gold"
+                        : "border-s-destructive",
                     )}
                     onClick={() => {
                       setSelected(e.date);
@@ -389,8 +443,14 @@ function CalendarPage() {
                               : "bg-destructive/10 text-destructive",
                           )}
                         >
-                          {e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                          {e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
+                          {e.type === "hearing" ? (
+                            <Gavel className="h-3 w-3" />
+                          ) : (
+                            <Clock className="h-3 w-3" />
+                          )}
+                          {e.type === "hearing"
+                            ? tt("Hearing", "جلسة")
+                            : tt("Deadline", "ميعاد نهائي")}
                         </span>
                         {e.case_number && (
                           <span className="text-xs text-muted-foreground">#{e.case_number}</span>
@@ -430,8 +490,7 @@ function CalendarPage() {
       ) : (
         <div>
           <h2 className="font-display text-xl mb-3">
-            {tt("Agenda for", "جدول أعمال يوم")}{" "}
-            <span className="text-gold">{selected}</span>
+            {tt("Agenda for", "جدول أعمال يوم")} <span className="text-gold">{selected}</span>
           </h2>
 
           {isLoading ? (
@@ -459,87 +518,96 @@ function CalendarPage() {
               {selectedEvents.map((e) => {
                 const isDone = e.status === "completed" || e.status === "done";
                 return (
-                <div
-                  key={e.id}
-                  className={cn(
-                    "rounded-lg border bg-card p-4 border-s-4",
-                    isDone
-                      ? "border-s-success opacity-70"
-                      : e.type === "hearing" ? "border-s-navy dark:border-s-gold" : "border-s-destructive",
-                  )}
-                >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                        isDone
-                          ? "bg-success/15 text-success"
+                  <div
+                    key={e.id}
+                    className={cn(
+                      "rounded-lg border bg-card p-4 border-s-4",
+                      isDone
+                        ? "border-s-success opacity-70"
+                        : e.type === "hearing"
+                          ? "border-s-navy dark:border-s-gold"
+                          : "border-s-destructive",
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+                          isDone
+                            ? "bg-success/15 text-success"
+                            : e.type === "hearing"
+                              ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                              : "bg-destructive/10 text-destructive",
+                        )}
+                      >
+                        {isDone ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : e.type === "hearing" ? (
+                          <Gavel className="h-3 w-3" />
+                        ) : (
+                          <Clock className="h-3 w-3" />
+                        )}
+                        {isDone
+                          ? tt("Completed", "تم الإنجاز")
                           : e.type === "hearing"
-                            ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                            : "bg-destructive/10 text-destructive",
+                            ? tt("Hearing", "جلسة")
+                            : tt("Deadline", "ميعاد نهائي")}
+                      </span>
+                      {e.case_number && (
+                        <span className="text-xs text-muted-foreground">#{e.case_number}</span>
                       )}
-                    >
-                      {isDone ? <CheckCircle2 className="h-3 w-3" /> : e.type === "hearing" ? <Gavel className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                      {isDone
-                        ? tt("Completed", "تم الإنجاز")
-                        : e.type === "hearing" ? tt("Hearing", "جلسة") : tt("Deadline", "ميعاد نهائي")}
-                    </span>
-                    {e.case_number && (
-                      <span className="text-xs text-muted-foreground">#{e.case_number}</span>
-                    )}
-                  </div>
-                  <div className={cn("font-medium", isDone && "line-through")}>
-                    <span className={lang === "ar" ? "font-arabic" : ""}>
-                      {lang === "ar" ? e.title_ar : e.title}
-                    </span>
-                  </div>
-                  {(lang === "ar" ? e.sub_ar : e.sub) && (
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {lang === "ar" ? e.sub_ar : e.sub}
                     </div>
-                  )}
-                  <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
-                    <a
-                      href={buildGoogleCalendarUrl({
-                        title: `${e.type === "hearing" ? "⚖️" : "⏰"} ${lang === "ar" ? e.title_ar : e.title}${e.case_number ? ` #${e.case_number}` : ""}`,
-                        date: e.date,
-                        description: `${e.type === "hearing" ? "Court Hearing" : "Deadline"}${e.case_number ? ` — Case #${e.case_number}` : ""}\n${(lang === "ar" ? e.sub_ar : e.sub) ?? ""}`,
-                      })}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
-                    </a>
-                    {!isDone ? (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5 border-success/50 text-success hover:bg-success/10"
-                        disabled={toggleStatus.isPending}
-                        onClick={() => toggleStatus.mutate({ e, action: "done" })}
-                      >
-                        <Check className="h-3.5 w-3.5" />
-                        {tt("Mark done", "تم الإنجاز")}
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5"
-                        disabled={toggleStatus.isPending}
-                        onClick={() => toggleStatus.mutate({ e, action: "undo" })}
-                      >
-                        <Undo2 className="h-3.5 w-3.5" />
-                        {tt("Undo", "تراجع")}
-                      </Button>
+                    <div className={cn("font-medium", isDone && "line-through")}>
+                      <span className={lang === "ar" ? "font-arabic" : ""}>
+                        {lang === "ar" ? e.title_ar : e.title}
+                      </span>
+                    </div>
+                    {(lang === "ar" ? e.sub_ar : e.sub) && (
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {lang === "ar" ? e.sub_ar : e.sub}
+                      </div>
                     )}
+                    <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
+                      <a
+                        href={buildGoogleCalendarUrl({
+                          title: `${e.type === "hearing" ? "⚖️" : "⏰"} ${lang === "ar" ? e.title_ar : e.title}${e.case_number ? ` #${e.case_number}` : ""}`,
+                          date: e.date,
+                          description: `${e.type === "hearing" ? "Court Hearing" : "Deadline"}${e.case_number ? ` — Case #${e.case_number}` : ""}\n${(lang === "ar" ? e.sub_ar : e.sub) ?? ""}`,
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
+                      </a>
+                      {!isDone ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 border-success/50 text-success hover:bg-success/10"
+                          disabled={toggleStatus.isPending}
+                          onClick={() => toggleStatus.mutate({ e, action: "done" })}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                          {tt("Mark done", "تم الإنجاز")}
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5"
+                          disabled={toggleStatus.isPending}
+                          onClick={() => toggleStatus.mutate({ e, action: "undo" })}
+                        >
+                          <Undo2 className="h-3.5 w-3.5" />
+                          {tt("Undo", "تراجع")}
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </div>
                 );
               })}
-
             </div>
           )}
         </div>

@@ -1,5 +1,9 @@
 import { AlertTriangle, Calendar, Clock, ExternalLink } from "lucide-react";
-import { calculateDeadline, getDeadlineCalendarUrl, type DeadlineType } from "@/lib/deadline-calculator";
+import {
+  calculateDeadline,
+  getDeadlineCalendarUrl,
+  type DeadlineType,
+} from "@/lib/deadline-calculator";
 import { useApp } from "@/lib/app-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -122,12 +126,7 @@ export function AllDeadlines({ judgmentDate, caseTitle, className = "" }: AllDea
   return (
     <div className={cn("grid gap-2 sm:grid-cols-3", className)}>
       {types.map((type) => (
-        <DeadlineAlert
-          key={type}
-          judgmentDate={judgmentDate}
-          type={type}
-          caseTitle={caseTitle}
-        />
+        <DeadlineAlert key={type} judgmentDate={judgmentDate} type={type} caseTitle={caseTitle} />
       ))}
     </div>
   );
