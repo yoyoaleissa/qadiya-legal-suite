@@ -148,15 +148,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="h-9 w-9 rounded-md bg-gold flex items-center justify-center text-navy">
             <Gavel className="h-5 w-5" />
           </div>
-          <div>
-            <div className="font-display text-xl leading-none">
+          <div className="min-w-0 flex-1">
+            <div className="font-display text-xl leading-none truncate">
               <span className={lang === "ar" ? "font-arabic" : ""}>
-                {t("Qadiya OS", "قضية OS")}
+                {firm ? (lang === "ar" ? firm.name_ar : firm.name_en) : t("Qadiya OS", "قضية OS")}
               </span>
             </div>
             <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/60 mt-1">
               <span className={lang === "ar" ? "font-arabic" : ""}>
-                {t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}
+                {firm ? t("On Qadiya OS", "على قضية OS") : t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}
               </span>
             </div>
           </div>
