@@ -69,6 +69,7 @@ const NAV: NavItem[] = [
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
   { to: "/notes", labelEn: "Case Notes", labelAr: "الملاحظات", icon: StickyNote },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
+  { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
   { to: "/audit", labelEn: "Audit Log", labelAr: "سجل التدقيق", icon: ShieldCheck, adminOnly: true },
   { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
