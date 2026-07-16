@@ -20,6 +20,7 @@ export type Database = {
           actor_email: string | null
           actor_id: string | null
           created_at: string
+          firm_id: string
           id: string
           metadata: Json | null
           resource_id: string | null
@@ -30,6 +31,7 @@ export type Database = {
           actor_email?: string | null
           actor_id?: string | null
           created_at?: string
+          firm_id?: string
           id?: string
           metadata?: Json | null
           resource_id?: string | null
@@ -40,12 +42,21 @@ export type Database = {
           actor_email?: string | null
           actor_id?: string | null
           created_at?: string
+          firm_id?: string
           id?: string
           metadata?: Json | null
           resource_id?: string | null
           resource_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       case_documents: {
         Row: {
@@ -55,6 +66,7 @@ export type Database = {
           created_at: string
           description: string | null
           file_name: string
+          firm_id: string
           id: string
           is_client_visible: boolean
           mime_type: string | null
@@ -70,6 +82,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           file_name: string
+          firm_id?: string
           id?: string
           is_client_visible?: boolean
           mime_type?: string | null
@@ -85,6 +98,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           file_name?: string
+          firm_id?: string
           id?: string
           is_client_visible?: boolean
           mime_type?: string | null
@@ -108,6 +122,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "case_documents_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       case_notes: {
@@ -116,6 +137,7 @@ export type Database = {
           body: string
           case_id: string
           created_at: string
+          firm_id: string
           id: string
           is_internal: boolean
           updated_at: string
@@ -125,6 +147,7 @@ export type Database = {
           body: string
           case_id: string
           created_at?: string
+          firm_id?: string
           id?: string
           is_internal?: boolean
           updated_at?: string
@@ -134,6 +157,7 @@ export type Database = {
           body?: string
           case_id?: string
           created_at?: string
+          firm_id?: string
           id?: string
           is_internal?: boolean
           updated_at?: string
@@ -146,12 +170,20 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "case_notes_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       case_reports: {
         Row: {
           case_number: string
           created_at: string
+          firm_id: string
           id: string
           json_data: Json
           updated_at: string
@@ -160,6 +192,7 @@ export type Database = {
         Insert: {
           case_number: string
           created_at?: string
+          firm_id?: string
           id?: string
           json_data: Json
           updated_at?: string
@@ -168,12 +201,21 @@ export type Database = {
         Update: {
           case_number?: string
           created_at?: string
+          firm_id?: string
           id?: string
           json_data?: Json
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "case_reports_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       case_timeline: {
         Row: {
@@ -183,6 +225,7 @@ export type Database = {
           description_ar: string | null
           event_date: string | null
           event_type: string | null
+          firm_id: string
           id: string
           level: Database["public"]["Enums"]["court_level"] | null
           sort_order: number
@@ -196,6 +239,7 @@ export type Database = {
           description_ar?: string | null
           event_date?: string | null
           event_type?: string | null
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           sort_order?: number
@@ -209,6 +253,7 @@ export type Database = {
           description_ar?: string | null
           event_date?: string | null
           event_type?: string | null
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           sort_order?: number
@@ -223,6 +268,13 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "case_timeline_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       cases: {
@@ -232,6 +284,7 @@ export type Database = {
           case_type_ar: string | null
           client_id: string | null
           created_at: string
+          firm_id: string
           id: string
           overall_status: string
           title: string | null
@@ -244,6 +297,7 @@ export type Database = {
           case_type_ar?: string | null
           client_id?: string | null
           created_at?: string
+          firm_id?: string
           id?: string
           overall_status?: string
           title?: string | null
@@ -256,6 +310,7 @@ export type Database = {
           case_type_ar?: string | null
           client_id?: string | null
           created_at?: string
+          firm_id?: string
           id?: string
           overall_status?: string
           title?: string | null
@@ -270,6 +325,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cases_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       client_messages: {
@@ -277,6 +339,7 @@ export type Database = {
           body: string
           client_id: string
           created_at: string
+          firm_id: string
           id: string
           sender: string
           updated_at: string
@@ -285,6 +348,7 @@ export type Database = {
           body: string
           client_id: string
           created_at?: string
+          firm_id?: string
           id?: string
           sender?: string
           updated_at?: string
@@ -293,6 +357,7 @@ export type Database = {
           body?: string
           client_id?: string
           created_at?: string
+          firm_id?: string
           id?: string
           sender?: string
           updated_at?: string
@@ -305,12 +370,20 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "client_messages_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       clients: {
         Row: {
           created_at: string
           email: string | null
+          firm_id: string
           id: string
           name: string
           name_ar: string | null
@@ -322,6 +395,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email?: string | null
+          firm_id?: string
           id?: string
           name: string
           name_ar?: string | null
@@ -333,6 +407,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string | null
+          firm_id?: string
           id?: string
           name?: string
           name_ar?: string | null
@@ -341,7 +416,15 @@ export type Database = {
           phone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clients_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       court_levels: {
         Row: {
@@ -349,6 +432,7 @@ export type Database = {
           case_ref: string | null
           court_name: string | null
           created_at: string
+          firm_id: string
           id: string
           level: Database["public"]["Enums"]["court_level"]
           registered_date: string | null
@@ -361,6 +445,7 @@ export type Database = {
           case_ref?: string | null
           court_name?: string | null
           created_at?: string
+          firm_id?: string
           id?: string
           level: Database["public"]["Enums"]["court_level"]
           registered_date?: string | null
@@ -373,6 +458,7 @@ export type Database = {
           case_ref?: string | null
           court_name?: string | null
           created_at?: string
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"]
           registered_date?: string | null
@@ -388,6 +474,13 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "court_levels_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       execution_procedures: {
@@ -395,6 +488,7 @@ export type Database = {
           case_id: string
           created_at: string
           file_number: string | null
+          firm_id: string
           id: string
           jurisdiction: string | null
           notes: string | null
@@ -405,6 +499,7 @@ export type Database = {
           case_id: string
           created_at?: string
           file_number?: string | null
+          firm_id?: string
           id?: string
           jurisdiction?: string | null
           notes?: string | null
@@ -415,6 +510,7 @@ export type Database = {
           case_id?: string
           created_at?: string
           file_number?: string | null
+          firm_id?: string
           id?: string
           jurisdiction?: string | null
           notes?: string | null
@@ -429,6 +525,13 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "execution_procedures_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       execution_receipts: {
@@ -437,6 +540,7 @@ export type Database = {
           created_at: string
           description: string | null
           execution_id: string
+          firm_id: string
           id: string
           receipt_date: string | null
         }
@@ -445,6 +549,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           execution_id: string
+          firm_id?: string
           id?: string
           receipt_date?: string | null
         }
@@ -453,6 +558,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           execution_id?: string
+          firm_id?: string
           id?: string
           receipt_date?: string | null
         }
@@ -462,6 +568,60 @@ export type Database = {
             columns: ["execution_id"]
             isOneToOne: false
             referencedRelation: "execution_procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_receipts_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      firm_invitations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          firm_id: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          firm_id: string
+          id?: string
+          invited_by?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          firm_id?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "firm_invitations_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
             referencedColumns: ["id"]
           },
         ]
@@ -475,6 +635,7 @@ export type Database = {
           created_at: string
           default_currency: string
           email: string | null
+          firm_id: string
           firm_name: string
           firm_name_ar: string
           holidays: Json
@@ -498,6 +659,7 @@ export type Database = {
           created_at?: string
           default_currency?: string
           email?: string | null
+          firm_id?: string
           firm_name?: string
           firm_name_ar?: string
           holidays?: Json
@@ -521,6 +683,7 @@ export type Database = {
           created_at?: string
           default_currency?: string
           email?: string | null
+          firm_id?: string
           firm_name?: string
           firm_name_ar?: string
           holidays?: Json
@@ -536,12 +699,51 @@ export type Database = {
           working_hours_end?: string
           working_hours_start?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "firm_settings_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      firms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          name_ar: string
+          name_en: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name_ar: string
+          name_en: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name_ar?: string
+          name_en?: string
+          slug?: string
+          updated_at?: string
+        }
         Relationships: []
       }
       generated_reports: {
         Row: {
           case_id: string
           created_at: string
+          firm_id: string
           id: string
           report_data: Json | null
           status_headline: string | null
@@ -549,6 +751,7 @@ export type Database = {
         Insert: {
           case_id: string
           created_at?: string
+          firm_id?: string
           id?: string
           report_data?: Json | null
           status_headline?: string | null
@@ -556,6 +759,7 @@ export type Database = {
         Update: {
           case_id?: string
           created_at?: string
+          firm_id?: string
           id?: string
           report_data?: Json | null
           status_headline?: string | null
@@ -568,12 +772,20 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "generated_reports_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hearings: {
         Row: {
           case_id: string
           created_at: string
+          firm_id: string
           id: string
           level: Database["public"]["Enums"]["court_level"] | null
           notes: string | null
@@ -584,6 +796,7 @@ export type Database = {
         Insert: {
           case_id: string
           created_at?: string
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           notes?: string | null
@@ -594,6 +807,7 @@ export type Database = {
         Update: {
           case_id?: string
           created_at?: string
+          firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           notes?: string | null
@@ -609,6 +823,13 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hearings_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       invoices: {
@@ -621,6 +842,7 @@ export type Database = {
           description: string | null
           description_ar: string | null
           due_date: string | null
+          firm_id: string
           id: string
           invoice_number: string
           issue_date: string
@@ -637,6 +859,7 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           due_date?: string | null
+          firm_id?: string
           id?: string
           invoice_number: string
           issue_date?: string
@@ -653,6 +876,7 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           due_date?: string | null
+          firm_id?: string
           id?: string
           invoice_number?: string
           issue_date?: string
@@ -675,6 +899,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "invoices_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       judgments: {
@@ -682,6 +913,7 @@ export type Database = {
           amount: number | null
           case_id: string
           created_at: string
+          firm_id: string
           id: string
           judgment_date: string | null
           judgment_type: string | null
@@ -694,6 +926,7 @@ export type Database = {
           amount?: number | null
           case_id: string
           created_at?: string
+          firm_id?: string
           id?: string
           judgment_date?: string | null
           judgment_type?: string | null
@@ -706,6 +939,7 @@ export type Database = {
           amount?: number | null
           case_id?: string
           created_at?: string
+          firm_id?: string
           id?: string
           judgment_date?: string | null
           judgment_type?: string | null
@@ -720,6 +954,13 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "judgments_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
             referencedColumns: ["id"]
           },
         ]
@@ -755,6 +996,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          firm_id: string | null
           full_name: string | null
           full_name_ar: string | null
           id: string
@@ -764,6 +1006,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          firm_id?: string | null
           full_name?: string | null
           full_name_ar?: string | null
           id: string
@@ -773,13 +1016,22 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          firm_id?: string | null
           full_name?: string | null
           full_name_ar?: string | null
           id?: string
           title?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -790,6 +1042,7 @@ export type Database = {
           description: string | null
           description_ar: string | null
           due_date: string | null
+          firm_id: string
           id: string
           priority: string
           sort_order: number
@@ -806,6 +1059,7 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           due_date?: string | null
+          firm_id?: string
           id?: string
           priority?: string
           sort_order?: number
@@ -822,6 +1076,7 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           due_date?: string | null
+          firm_id?: string
           id?: string
           priority?: string
           sort_order?: number
@@ -838,6 +1093,13 @@ export type Database = {
             referencedRelation: "cases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tasks_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
         ]
       }
       time_entries: {
@@ -847,6 +1109,7 @@ export type Database = {
           description: string | null
           duration_minutes: number
           entry_date: string
+          firm_id: string
           id: string
           updated_at: string
           user_id: string
@@ -857,6 +1120,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number
           entry_date?: string
+          firm_id?: string
           id?: string
           updated_at?: string
           user_id: string
@@ -867,6 +1131,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number
           entry_date?: string
+          firm_id?: string
           id?: string
           updated_at?: string
           user_id?: string
@@ -877,6 +1142,13 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
             referencedColumns: ["id"]
           },
         ]
@@ -892,6 +1164,7 @@ export type Database = {
           description_ar: string | null
           entry_date: string
           entry_type: string
+          firm_id: string
           id: string
           recorded_by: string | null
           reference_number: string | null
@@ -907,6 +1180,7 @@ export type Database = {
           description_ar?: string | null
           entry_date?: string
           entry_type: string
+          firm_id?: string
           id?: string
           recorded_by?: string | null
           reference_number?: string | null
@@ -922,6 +1196,7 @@ export type Database = {
           description_ar?: string | null
           entry_date?: string
           entry_type?: string
+          firm_id?: string
           id?: string
           recorded_by?: string | null
           reference_number?: string | null
@@ -940,6 +1215,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trust_ledger_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
             referencedColumns: ["id"]
           },
         ]
@@ -967,6 +1249,7 @@ export type Database = {
           created_at: string
           description: string | null
           description_ar: string | null
+          firm_id: string
           id: string
           name: string
           name_ar: string | null
@@ -976,6 +1259,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           description_ar?: string | null
+          firm_id?: string
           id?: string
           name: string
           name_ar?: string | null
@@ -985,19 +1269,35 @@ export type Database = {
           created_at?: string
           description?: string | null
           description_ar?: string | null
+          firm_id?: string
           id?: string
           name?: string
           name_ar?: string | null
           steps?: Json
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "workflow_templates_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      accept_firm_invitation: { Args: { _token: string }; Returns: string }
+      belongs_to_firm: { Args: { _firm_id: string }; Returns: boolean }
       claim_first_admin: { Args: never; Returns: boolean }
+      create_firm_for_current_user: {
+        Args: { _name_ar: string; _name_en: string }
+        Returns: string
+      }
+      current_firm_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

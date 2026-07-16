@@ -1,81 +1,104 @@
-# Qadiya OS — Public Landing Page
 
-## Goal
-Ship a credible, Arabic-first marketing page at `/` that sells Qadiya OS to Kuwaiti law firms, without breaking the existing app.
+# Firm Scoping (Multi-Tenancy)
 
-## Routing changes
-- Move the current dashboard from `src/routes/_authenticated/index.tsx` → `src/routes/_authenticated/dashboard.tsx` (URL `/dashboard`).
-- Create a new public `src/routes/index.tsx` = the landing page (SSR on, no auth gate).
-- Signed-in visitors hitting `/` are redirected client-side to `/dashboard` (small `useEffect` reading the Supabase session — no SSR loop).
-- Update every internal reference from `to="/"` → `to="/dashboard"`:
-  - `src/components/app-shell.tsx` (top nav + bottom nav — 2 spots)
-  - `src/routes/login.tsx` (3 post-login navigations)
-  - The `<Link to="/">` inside the 404 component in `__root.tsx` stays as-is (goes to marketing, which is correct).
-- Add a "Sign in" button in the landing header that links to `/login`.
+Right now every staff user can read every other firm's data — the RLS policies check `is_staff(auth.uid())` with no firm filter. This plan fixes that and sets up the login/signup flow so each law office is its own tenant.
 
-## Page structure (Arabic primary, RTL, EN toggle)
-Single scroll landing on `/`, all copy AR-first with an EN mirror shown via a language toggle that reuses `useApp()` from `src/lib/app-context.tsx`.
+## Decisions I'm defaulting to (say the word to change any)
 
-1. **Sticky header** — Qadiya wordmark (Fraunces/IBM Plex Sans Arabic), primary nav anchors (المميزات · كيف تعمل · الأسعار · الأسئلة), language toggle, "دخول" (→ `/login`), "ابدأ التجربة" primary CTA.
-2. **Hero** — headline: "منظومة إدارة المكاتب القانونية في الكويت." Sub: MOJ sync · تذكيرات جلسات · فوترة KWD · بوابة موكل. Dual CTA: "ابدأ التجربة" + "شاهد عرضاً". Right side: a stylized dashboard mock built from real UI primitives (Cards/Badges), not a screenshot, so it stays crisp bilingual + dark/light.
-3. **Trust bar** — muted strip: "متوافق مع نقابة المحامين · تكامل بوابة وزارة العدل · بيانات على الأرض الكويتية · ثنائي اللغة AR/EN".
-4. **Problem** — 3 pain cards in the lawyer's voice ("فاتتني جلسة الأسبوع الماضي" · "أطارد فواتير من ستة أشهر" · "الموكّل يتصل كل يوم يسأل عن قضيته").
-5. **Pillars** — 4 cards: تقارير القضايا و مزامنة العدل · المساعد القانوني الذكي · التقويم القضائي · الفوترة و حساب الأمانة. Each with icon, one-line promise, "اعرف أكثر" jumping to the deep dive.
-6. **Deep dive strip** — 4 alternating rows (right/left) with a stylized mock and 3 bullets each, matching the pillars.
-7. **How it works** — 3 numbered steps: أنشئ حساب المكتب → استورد قضاياك → استلم إحاطتك اليومية.
-8. **Client portal teaser** — mini phone-frame mock + copy: "موكّلك يرى قضيته و فواتيره من هاتفه." Link to `/portal`.
-9. **Pricing** — 3 tiers in KWD/شهر (placeholder numbers, editable):
-   - **منفرد** — 19 KWD / محامٍ واحد / 50 قضية.
-   - **مكتب** — 49 KWD / حتى 10 محامين / قضايا غير محدودة / حساب أمانة.
-   - **شركاء** — 149 KWD / محامون غير محدودون / لوحة شركاء / تقارير مجدولة.
-   Middle tier highlighted with brass-gold border ("الأكثر شيوعاً").
-10. **FAQ** — 6 items in an accordion: أين تُخزَّن بياناتنا؟ · هل السحب من العدل قانوني؟ · هل تدعمون RTL كاملاً؟ · هل يمكن استيراد قضايانا الحالية؟ · هل هناك تجربة مجانية؟ · كيف نلغي الاشتراك؟
-11. **Founder note** — short paragraph, brass-gold accent, "صُنع في الكويت لمكاتب المحاماة الكويتية."
-12. **Final CTA** — big centered "جرّب Qadiya لمدة 14 يوماً" + primary button → `/login`.
-13. **Footer** — 4 columns (المنتج · الشركة · قانوني · تواصل), copyright, EN toggle mirror.
+- **Login stays email + password.** No firm code on the login screen. The firm is looked up from the user's profile.
+- **First user of a new firm creates the firm** during signup and becomes its `admin` + `partner`. Everyone else joins by invitation email.
+- **One firm per user.** A user cannot belong to two firms at once (rare in practice, and it doubles the complexity of every policy). We can revisit later.
+- **No firm number shown in the UI** for now. Internally each firm has a UUID; we can expose a human-readable "Firm ID" later if useful for support.
 
-## Visual system
-- Palette: Navy Trust (`#0f1b3d`, `#1e3a5f`, `#3b6fa0`, `#e8edf3`) — reuses existing tokens in `src/styles.css`, no new hex values in components.
-- Type: Fraunces (EN display), IBM Plex Sans Arabic (AR everywhere), Plus Jakarta Sans (EN body) — already loaded.
-- Motion: one hero fade+slide with `framer-motion` (already installed via shadcn deps; add only if missing). Scroll-in for pillar cards. No parallax, no auto-carousels.
-- Sections use `container mx-auto max-w-6xl`, generous vertical rhythm (py-24 md:py-32), brass-gold used only for the middle pricing tier and the founder note.
+## What changes in the database
 
-## SEO & metadata (landing route only)
-Per-route `head()` on `src/routes/index.tsx`:
-- `title`: "Qadiya OS — منظومة إدارة المكاتب القانونية في الكويت"
-- `description` (AR + EN mix, <160 chars)
-- `og:title`, `og:description`, `og:url` = `https://qadiya.lovable.app/`, `og:type: website`
-- `twitter:card: summary_large_image`
-- JSON-LD `SoftwareApplication` with name, applicationCategory, offers (3 tiers), inLanguage `["ar", "en"]`
-- Leaf-level `canonical` = `https://qadiya.lovable.app/`
-- The `/dashboard` route gets `robots: noindex` (private app surface).
-- No `og:image` this pass — hosting injects a screenshot at serve time. I'll mention to you that if you want a custom OG image later, I can generate one.
-- Update `public/sitemap[.]xml.ts` to include `/` (landing) and drop `/dashboard` from public sitemap; keep `/portal`.
+### 1. New `firms` table
+`name_en`, `name_ar`, `slug` (unique, e.g. `al-jaber-partners`), `created_by`, timestamps. Owned by the first user; readable by all its members.
 
-## Files touched
-**New**
-- `src/routes/index.tsx` (landing page, SSR, ~600 lines split into local sub-components)
-- `src/components/landing/*` — small local components (Hero, PillarCard, PricingCard, FAQ, DashboardMock, PortalMock) to keep the route file readable
-- `src/routes/_authenticated/dashboard.tsx` (moved from `_authenticated/index.tsx`, content unchanged)
+### 2. New `firm_invitations` table
+`firm_id`, `email`, `role`, `token`, `expires_at`, `accepted_at`. Partners/admins create invites; anyone with the token can accept.
 
-**Edited**
-- `src/routes/_authenticated/index.tsx` → deleted
-- `src/components/app-shell.tsx` — 2 `to="/"` → `to="/dashboard"`
-- `src/routes/login.tsx` — 3 `navigate({ to: "/" })` → `to: "/dashboard"`
-- `src/routes/sitemap[.]xml.ts` — landing entry + drop dashboard
-- `src/routes/__root.tsx` — 404 CTA stays `to="/"` (correct, points to marketing now)
+### 3. `profiles.firm_id` — the single source of truth for "who belongs where"
+Every user has exactly one `firm_id`. Signup creates a firm; invitation acceptance sets `firm_id` to the inviting firm.
 
-**Unchanged**
-- All feature code, backend, RLS, auth flow. Zero DB migrations.
+### 4. `firm_id` added to every business table
+`cases`, `clients`, `hearings`, `judgments`, `tasks`, `invoices`, `trust_ledger`, `time_entries`, `case_documents`, `case_notes`, `case_timeline`, `case_reports`, `client_messages`, `court_levels`, `execution_procedures`, `execution_receipts`, `generated_reports`, `workflow_templates`, `firm_settings`, `audit_log`, `legal_knowledge` (stays firm-agnostic — shared reference data), `client_messages`.
 
-## Explicit non-goals for this turn
-- No new backend / server functions.
-- No pricing enforcement or Stripe wiring (numbers are marketing copy only).
-- No email capture form (would need Lovable Emails domain — I'll offer this after the page ships).
-- No OG image generation.
-- No changes to `/portal` or `/login` visual design beyond a "back to home" affordance.
+`firm_id` is NOT NULL, indexed, and defaulted via a `BEFORE INSERT` trigger that reads `profiles.firm_id` for `auth.uid()` — so existing app code that inserts rows without a `firm_id` keeps working.
 
-## Risk & rollback
-The one thing that will feel different for existing users: bookmarking `qadiya.lovable.app` → they now land on marketing and click into `/dashboard` after signing in. Redirect makes the transition invisible for anyone with an active session.
+### 5. Two new security-definer helpers
+- `current_firm_id()` → returns the caller's `profiles.firm_id`
+- `belongs_to_firm(_firm_id uuid)` → returns `true` if the caller's firm matches
 
-Rollback = revert the two route-file moves + the 5 link updates.
+### 6. RLS rewrite — every business table's policies become:
+- `SELECT/UPDATE/DELETE`: `is_staff(auth.uid()) AND belongs_to_firm(firm_id)`
+- `INSERT`: `belongs_to_firm(firm_id)` (trigger fills the default)
+
+Existing role-based extras (partner-only trust writes, admin-only audit reads, bot-only case updates) are preserved and *AND*-ed with the firm check.
+
+### 7. Backfill
+Any existing rows are assigned to a single "legacy" firm owned by the first admin, so nothing breaks.
+
+## What changes in the app
+
+### Signup flow (`/auth`)
+Two paths on the same page:
+- **"Start a new firm"** — email, password, firm name (EN + AR). Creates `firms` row, creates `profiles` row with that `firm_id`, grants `admin` + `partner` roles. Lands on `/dashboard`.
+- **"I have an invitation"** — email, password, invitation token (prefilled from the URL when they click an invite link). Creates `profiles` row with the inviting firm's `firm_id`, grants the invited role.
+
+### Login stays the same
+Email + password. No firm code.
+
+### New `Settings → Team` page
+Lists firm members and pending invitations. Partners/admins can:
+- Invite a new member (email + role) → generates a token, shows a copyable invite link
+- Revoke pending invitations
+- Change a member's role
+- Remove a member
+
+### App-shell tweak
+Show the firm's name (from `firms.name_ar` / `name_en`) in the sidebar header so users always know which firm they're inside.
+
+### `Accept invitation` route (`/invite/$token`)
+Public route. Validates the token, then routes to signup with the token prefilled (or, if the user's already signed in with a different firm, shows an error).
+
+## Migration strategy (one DB migration, sequenced)
+
+```text
+1. CREATE firms, firm_invitations
+2. ALTER profiles ADD firm_id
+3. Create a "Legacy Firm" row, assign it to every existing profile
+4. ALTER every business table ADD firm_id (nullable at first)
+5. Backfill firm_id on every business row from profiles (via created_by/user_id fallback → legacy firm)
+6. Add NOT NULL + FK + index on firm_id
+7. Add BEFORE INSERT trigger that fills firm_id from profiles when missing
+8. DROP old policies, CREATE new firm-scoped policies
+9. Add current_firm_id() + belongs_to_firm() helpers
+10. GRANT the new tables
+```
+
+Wrapped in a single transaction; if anything fails, nothing lands.
+
+## Risk
+
+- The migration is large (~50 policies). Well-tested with backfill, but worth knowing.
+- Users signed in *right now* keep their session; on next request the new policies apply. If a firm exists, they see their firm's data. If not (edge case), they see nothing until we run the backfill — which is why backfill is part of the migration itself.
+- `client.server` admin operations bypass RLS as always; nothing there changes.
+
+## What I'm NOT doing in this pass
+
+- Cross-firm sharing (a lawyer temporarily working on another firm's case)
+- Firm-level billing/subscriptions
+- Firm branding (logo per firm in reports) — `firm_settings` already exists, we just scope it
+- Subdomain-per-firm (`aljaber.qadiya.app`) — schema will support it later
+- SSO / SAML — not requested
+
+## Files that will change
+
+- **New migration** (schema + policies + trigger + backfill)
+- **New**: `src/routes/invite.$token.tsx`, `src/routes/_authenticated/settings.team.tsx`, `src/components/InviteMemberDialog.tsx`, `src/lib/firms.functions.ts`, `src/lib/invitations.functions.ts`
+- **Edited**: `src/routes/auth.tsx` (add "Start a firm" / "Accept invite" tabs), `src/components/app-shell.tsx` (show firm name), `src/routes/_authenticated/dashboard.tsx` (queries will just work — RLS handles it)
+
+---
+
+Approve and I'll execute end-to-end. If any decision at the top looks wrong (one-firm-per-user, no firm code on login, first-signup-creates-firm), say so and I'll adjust before touching the DB.

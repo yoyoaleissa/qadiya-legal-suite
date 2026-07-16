@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Calendar,
@@ -22,6 +22,7 @@ import {
   StickyNote,
   ShieldCheck,
   Activity,
+  UsersRound,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -29,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { claimFirstAdmin } from "@/lib/roles.functions";
+import { getMyFirm } from "@/lib/firms.functions";
 import { cn } from "@/lib/utils";
 import { DemoTour } from "@/components/DemoTour";
 import {
@@ -70,6 +72,7 @@ const NAV: NavItem[] = [
   { to: "/notes", labelEn: "Case Notes", labelAr: "الملاحظات", icon: StickyNote },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
   { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
+  { to: "/team", labelEn: "Team", labelAr: "الفريق", icon: UsersRound },
   { to: "/audit", labelEn: "Audit Log", labelAr: "سجل التدقيق", icon: ShieldCheck, adminOnly: true },
   { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
@@ -92,6 +95,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const runClaimAdmin = useServerFn(claimFirstAdmin);
+  const runGetFirm = useServerFn(getMyFirm);
+  const { data: firm, isFetched: firmFetched } = useQuery({
+    queryKey: ["my-firm"],
+    queryFn: () => runGetFirm(),
+    staleTime: 30_000,
+  });
 
   // Global Cmd/Ctrl+K opens the search palette.
   useEffect(() => {
@@ -115,6 +124,14 @@ export function AppShell({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Redirect to onboarding if the user has no firm yet.
+  useEffect(() => {
+    if (!firmFetched) return;
+    if (!firm && pathname !== "/onboarding") {
+      navigate({ to: "/onboarding", replace: true });
+    }
+  }, [firm, firmFetched, pathname, navigate]);
+
   const nav = NAV.filter((n) => !n.adminOnly || isAdmin);
 
   const handleSignOut = async () => {
@@ -131,15 +148,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="h-9 w-9 rounded-md bg-gold flex items-center justify-center text-navy">
             <Gavel className="h-5 w-5" />
           </div>
-          <div>
-            <div className="font-display text-xl leading-none">
+          <div className="min-w-0 flex-1">
+            <div className="font-display text-xl leading-none truncate">
               <span className={lang === "ar" ? "font-arabic" : ""}>
-                {t("Qadiya OS", "قضية OS")}
+                {firm ? (lang === "ar" ? firm.name_ar : firm.name_en) : t("Qadiya OS", "قضية OS")}
               </span>
             </div>
             <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/60 mt-1">
               <span className={lang === "ar" ? "font-arabic" : ""}>
-                {t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}
+                {firm ? t("On Qadiya OS", "على قضية OS") : t("Kuwait Legal Suite", "منظومة المحاماة الكويتية")}
               </span>
             </div>
           </div>
