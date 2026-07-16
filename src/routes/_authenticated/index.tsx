@@ -49,6 +49,7 @@ import { listCalendarEvents } from "@/lib/calendar.functions";
 import { getDailyBriefing, type DailyBriefing } from "@/lib/briefing.functions";
 import { listInvoices } from "@/lib/billing.functions";
 import { createCase } from "@/lib/cases.functions";
+import { FocusToday } from "@/components/FocusToday";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
