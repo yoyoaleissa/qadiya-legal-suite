@@ -1,0 +1,20 @@
+{
+  "name": "قضية — إدارة المكتب القانوني",
+  "short_name": "قضية",
+  "description": "Qadiya OS — Kuwait Legal Practice Management",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1e40af",
+  "background_color": "#0b1220",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
