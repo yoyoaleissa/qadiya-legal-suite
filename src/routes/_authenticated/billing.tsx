@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
+  Download,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,9 @@ import {
   updateInvoiceStatus,
   type InvoiceItem,
 } from "@/lib/billing.functions";
+import { getMyFirm } from "@/lib/firms.functions";
+import { exportInvoicePdf } from "@/lib/invoice-pdf";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/billing")({
   head: () => ({
@@ -428,6 +432,38 @@ function InvoiceRow({
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs gap-1"
+              onClick={async () => {
+                try {
+                  const firm = await getMyFirm();
+                  await exportInvoicePdf({
+                    firmNameEn: firm?.name_en ?? "Qadiya OS",
+                    firmNameAr: firm?.name_ar ?? "قضية",
+                    lang: lang as "en" | "ar",
+                    invoice_number: inv.invoice_number,
+                    status: displayStatus,
+                    issue_date: inv.issue_date,
+                    due_date: inv.due_date,
+                    paid_date: inv.paid_date,
+                    amount: inv.amount,
+                    currency: inv.currency,
+                    description: inv.description,
+                    description_ar: inv.description_ar,
+                    client_name: inv.client_name,
+                    client_name_ar: inv.client_name_ar,
+                    case_number: inv.case_number,
+                  });
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : String(e));
+                }
+              }}
+            >
+              <Download className="h-3 w-3" />
+              {tt("PDF", "PDF")}
+            </Button>
             {inv.status === "draft" && (
               <Button
                 size="sm"
