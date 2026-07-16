@@ -104,6 +104,10 @@ function buildCalendarLink(date, caseNumber, court, decision) {
  * Build the premium HTML for PDF generation
  */
 function buildPremiumDossierHTML(data, aiSummary, qrDataUrl) {
+  // Sanitize ALL scraped and AI-generated content before templating.
+  // qrDataUrl is generated locally from a fixed URL so it is safe as-is.
+  data = deepEscape(data);
+  aiSummary = deepEscape(aiSummary);
   const { caseNumber, firstInstance, appeal, execution, police, events, hearings, judgments } = data;
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
