@@ -126,8 +126,11 @@ function UploadedDocuments() {
     try {
       const { data: user } = await supabase.auth.getUser();
       const uid = user.user?.id ?? "anon";
+      const { data: prof } = await supabase.from("profiles").select("firm_id").eq("id", uid).maybeSingle();
+      const firmId = prof?.firm_id;
+      if (!firmId) throw new Error(t("No firm on profile", "لا توجد شركة مرتبطة بالحساب"));
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${uid}/${Date.now()}-${safeName}`;
+      const path = `${firmId}/${uid}/${Date.now()}-${safeName}`;
       const { error: upErr } = await supabase.storage
         .from("case-documents")
         .upload(path, file, { upsert: false, contentType: file.type });
