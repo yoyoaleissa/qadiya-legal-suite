@@ -55,7 +55,7 @@ import { TimeTracker } from "@/components/TimeTracker";
 import { CaseFreshness } from "@/components/CaseFreshness";
 import { ActivityFeed } from "@/components/ActivityFeed";
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
