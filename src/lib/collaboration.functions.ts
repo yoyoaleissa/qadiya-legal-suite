@@ -32,11 +32,11 @@ export const listMyCaseNotes = createServerFn({ method: "GET" })
         ? supabase.from("cases").select("id, case_number").in("id", caseIds)
         : Promise.resolve({ data: [] as { id: string; case_number: string }[] }),
       authorIds.length
-        ? supabase.from("profiles").select("id, email").in("id", authorIds)
-        : Promise.resolve({ data: [] as { id: string; email: string | null }[] }),
+        ? supabase.from("profiles").select("id, full_name").in("id", authorIds)
+        : Promise.resolve({ data: [] as { id: string; full_name: string | null }[] }),
     ]);
     const caseMap = new Map((cases ?? []).map((c) => [c.id, c.case_number]));
-    const profMap = new Map((profiles ?? []).map((p) => [p.id, p.email]));
+    const profMap = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
     return (notes ?? []).map((n) => ({
       id: n.id,
       case_id: n.case_id,
@@ -62,9 +62,9 @@ export const listCaseNotes = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const authorIds = Array.from(new Set((notes ?? []).map((n) => n.author_id)));
     const { data: profiles } = authorIds.length
-      ? await supabase.from("profiles").select("id, email").in("id", authorIds)
-      : { data: [] as { id: string; email: string | null }[] };
-    const profMap = new Map((profiles ?? []).map((p) => [p.id, p.email]));
+      ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
+      : { data: [] as { id: string; full_name: string | null }[] };
+    const profMap = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
     return (notes ?? []).map((n) => ({
       id: n.id,
       case_id: n.case_id,
@@ -121,7 +121,7 @@ export interface AuditEntry {
   action: string;
   resource_type: string;
   resource_id: string | null;
-  metadata: unknown;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -221,11 +221,11 @@ export const buildArabicReminder = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const { data: settings } = await supabase
       .from("firm_settings")
-      .select("firm_name_ar, firm_name_en")
+      .select("firm_name_ar, firm_name")
       .limit(1)
       .maybeSingle();
     const firmName =
-      settings?.firm_name_ar || settings?.firm_name_en || "مكتب المحاماة";
+      settings?.firm_name_ar || settings?.firm_name || "مكتب المحاماة";
     let clientName = "عزيزي الموكّل";
     let email: string | null = null;
     if (inv.client_id) {
