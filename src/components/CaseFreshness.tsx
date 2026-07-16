@@ -42,7 +42,7 @@ export function CaseFreshness() {
     mutationFn: async (caseNumber: string) => {
       setRefreshingId(caseNumber);
       const report = await runReport({ data: { caseNumber } });
-      await savePersist({ data: { case_number: caseNumber, json_data: report } });
+      await savePersist({ data: { caseNumber, report } });
     },
     onSuccess: () => {
       toast.success(t("Case refreshed", "تم تحديث القضية"));

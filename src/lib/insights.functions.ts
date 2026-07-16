@@ -127,13 +127,13 @@ export const checkConflict = createServerFn({ method: "POST" })
     const nId = data.national_id?.replace(/\s/g, "") || "";
     for (const c of clients ?? []) {
       if (nId && c.national_id && c.national_id.replace(/\s/g, "") === nId) {
-        matches.push({ ...c, match_type: "national_id" });
+        matches.push({ client_id: c.id, name: c.name, name_ar: c.name_ar, national_id: c.national_id, match_type: "national_id" });
         continue;
       }
       const cEn = normalizeName(c.name);
       const cAr = c.name_ar ? normalizeName(c.name_ar) : "";
       if ((nEn && cEn === nEn) || (nAr && cAr === nAr)) {
-        matches.push({ ...c, match_type: "name_exact" });
+        matches.push({ client_id: c.id, name: c.name, name_ar: c.name_ar, national_id: c.national_id, match_type: "name_exact" });
         continue;
       }
       // Loose token overlap for similarity
@@ -142,7 +142,7 @@ export const checkConflict = createServerFn({ method: "POST" })
       let overlap = 0;
       tokensA.forEach((t) => tokensB.has(t) && overlap++);
       if (overlap >= 2) {
-        matches.push({ ...c, match_type: "name_similar" });
+        matches.push({ client_id: c.id, name: c.name, name_ar: c.name_ar, national_id: c.national_id, match_type: "name_similar" });
       }
     }
     return matches;
