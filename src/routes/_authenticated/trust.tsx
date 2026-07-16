@@ -132,9 +132,64 @@ function TrustPage() {
             )}
           </p>
         </div>
-        <Button onClick={() => setOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" /> {t("New entry", "قيد جديد")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={async () => {
+              try {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth(); // 0-based
+                const monthStart = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
+                const nextMonthStart = new Date(Date.UTC(year, month + 1, 1)).toISOString().slice(0, 10);
+                const all = entries ?? [];
+                const inMonth = all
+                  .filter((e) => e.entry_date >= monthStart && e.entry_date < nextMonthStart)
+                  .sort((a, b) => a.entry_date.localeCompare(b.entry_date));
+                const opening = all
+                  .filter((e) => e.entry_date < monthStart)
+                  .reduce((s, e) => {
+                    const sign =
+                      e.entry_type === "deposit" || e.entry_type === "adjustment" ? 1 : -1;
+                    return s + sign * Number(e.amount);
+                  }, 0);
+                const caseMap = new Map<string, string>();
+                const firm = await getMyFirm();
+                const monthName = now.toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB", {
+                  month: "long",
+                });
+                const lines: TrustLine[] = inMonth.map((e) => ({
+                  entry_date: e.entry_date,
+                  entry_type: e.entry_type as TrustLine["entry_type"],
+                  client_name: clientName(e.client_id),
+                  case_number: e.case_id ? (caseMap.get(e.case_id) ?? null) : null,
+                  reference_number: e.reference_number ?? null,
+                  description:
+                    (lang === "ar" ? e.description_ar : e.description) ?? e.description ?? "",
+                  amount: Number(e.amount),
+                }));
+                await exportTrustReconciliationPdf({
+                  firmNameEn: firm?.name_en ?? "Qadiya OS",
+                  firmNameAr: firm?.name_ar ?? "قضية",
+                  lang: lang as "en" | "ar",
+                  monthName,
+                  year,
+                  currency: "KWD",
+                  openingBalance: opening,
+                  entries: lines,
+                });
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : String(e));
+              }
+            }}
+          >
+            <FileText className="h-4 w-4" /> {t("Reconciliation PDF", "تسوية شهرية PDF")}
+          </Button>
+          <Button onClick={() => setOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" /> {t("New entry", "قيد جديد")}
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
