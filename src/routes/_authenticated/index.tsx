@@ -49,6 +49,7 @@ import { listCalendarEvents } from "@/lib/calendar.functions";
 import { getDailyBriefing, type DailyBriefing } from "@/lib/briefing.functions";
 import { listInvoices } from "@/lib/billing.functions";
 import { createCase } from "@/lib/cases.functions";
+import { FocusToday } from "@/components/FocusToday";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
@@ -164,6 +165,9 @@ function Dashboard() {
           <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </Link>
       </div>
+
+      {/* Focus Today — highest-priority actionable items */}
+      <FocusToday />
 
       {/* Daily Briefing */}
       <DailyBriefingCard

@@ -14,6 +14,140 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+        }
+        Relationships: []
+      }
+      case_documents: {
+        Row: {
+          case_id: string | null
+          category: string | null
+          client_id: string | null
+          created_at: string
+          description: string | null
+          file_name: string
+          id: string
+          is_client_visible: boolean
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          case_id?: string | null
+          category?: string | null
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          file_name: string
+          id?: string
+          is_client_visible?: boolean
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          case_id?: string | null
+          category?: string | null
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          file_name?: string
+          id?: string
+          is_client_visible?: boolean
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_documents_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_notes: {
+        Row: {
+          author_id: string
+          body: string
+          case_id: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          case_id: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          case_id?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_notes_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       case_reports: {
         Row: {
           case_number: string
@@ -331,6 +465,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      firm_settings: {
+        Row: {
+          address: string | null
+          address_ar: string | null
+          bank_iban: string | null
+          bank_name: string | null
+          created_at: string
+          default_currency: string
+          email: string | null
+          firm_name: string
+          firm_name_ar: string
+          holidays: Json
+          id: string
+          invoice_next_seq: number
+          invoice_prefix: string
+          knet_merchant_link: string | null
+          logo_url: string | null
+          owner_id: string
+          phone: string | null
+          updated_at: string
+          vat_number: string | null
+          working_hours_end: string
+          working_hours_start: string
+        }
+        Insert: {
+          address?: string | null
+          address_ar?: string | null
+          bank_iban?: string | null
+          bank_name?: string | null
+          created_at?: string
+          default_currency?: string
+          email?: string | null
+          firm_name?: string
+          firm_name_ar?: string
+          holidays?: Json
+          id?: string
+          invoice_next_seq?: number
+          invoice_prefix?: string
+          knet_merchant_link?: string | null
+          logo_url?: string | null
+          owner_id: string
+          phone?: string | null
+          updated_at?: string
+          vat_number?: string | null
+          working_hours_end?: string
+          working_hours_start?: string
+        }
+        Update: {
+          address?: string | null
+          address_ar?: string | null
+          bank_iban?: string | null
+          bank_name?: string | null
+          created_at?: string
+          default_currency?: string
+          email?: string | null
+          firm_name?: string
+          firm_name_ar?: string
+          holidays?: Json
+          id?: string
+          invoice_next_seq?: number
+          invoice_prefix?: string
+          knet_merchant_link?: string | null
+          logo_url?: string | null
+          owner_id?: string
+          phone?: string | null
+          updated_at?: string
+          vat_number?: string | null
+          working_hours_end?: string
+          working_hours_start?: string
+        }
+        Relationships: []
       }
       generated_reports: {
         Row: {
@@ -671,6 +877,69 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_ledger: {
+        Row: {
+          amount: number
+          case_id: string | null
+          client_id: string
+          created_at: string
+          currency: string
+          description: string | null
+          description_ar: string | null
+          entry_date: string
+          entry_type: string
+          id: string
+          recorded_by: string | null
+          reference_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          case_id?: string | null
+          client_id: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          description_ar?: string | null
+          entry_date?: string
+          entry_type: string
+          id?: string
+          recorded_by?: string | null
+          reference_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          case_id?: string | null
+          client_id?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          description_ar?: string | null
+          entry_date?: string
+          entry_type?: string
+          id?: string
+          recorded_by?: string | null
+          reference_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_ledger_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trust_ledger_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
         ]
