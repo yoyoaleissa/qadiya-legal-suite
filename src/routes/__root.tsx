@@ -91,7 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Instant, plain-language case reports in Arabic and English, plus deadline and practice management for Kuwaiti law firms.",
+          "AI-drafted case reports, deadline intelligence, and a full practice command center for Kuwaiti law firms. Bilingual Arabic & English.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -99,6 +99,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "قضية" },
+      { name: "twitter:title", content: "Qadiya OS — Kuwait Legal Practice Management" },
+      { name: "twitter:description", content: "AI-drafted case reports, deadline intelligence, and a full practice command center for Kuwaiti law firms. Bilingual Arabic & English." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
