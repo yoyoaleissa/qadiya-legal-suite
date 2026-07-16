@@ -221,6 +221,45 @@ function Dashboard() {
         </Link>
       </div>
 
+      {/* Quick-action tiles */}
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
+        <a
+          href="/portal"
+          className="group rounded-xl border bg-card p-4 flex flex-col items-center gap-2 text-center hover:border-gold/50 hover:bg-accent/40 transition-colors"
+        >
+          <span className="text-2xl">📋</span>
+          <span className="text-sm font-medium">{t("Case Lookup", "بحث قضية")}</span>
+        </a>
+        <Link
+          to="/calendar"
+          className="group rounded-xl border bg-card p-4 flex flex-col items-center gap-2 text-center hover:border-gold/50 hover:bg-accent/40 transition-colors"
+        >
+          <span className="text-2xl">📅</span>
+          <span className="text-sm font-medium">{t("Calendar", "التقويم")}</span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            const summary =
+              lang === "ar"
+                ? `📋 موجز اليوم — Qadiya\nجلسات اليوم: ${briefing?.hearingsToday ?? 0}\nمهام متأخرة: ${briefing?.tasksOverdue ?? 0}\nمستحقة اليوم: ${briefing?.tasksDueToday ?? 0}\n\n— Qadiya AI`
+                : `📋 Today's brief — Qadiya\nHearings today: ${briefing?.hearingsToday ?? 0}\nOverdue tasks: ${briefing?.tasksOverdue ?? 0}\nDue today: ${briefing?.tasksDueToday ?? 0}\n\n— Qadiya AI`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(summary)}`, "_blank", "noopener,noreferrer");
+          }}
+          className="group rounded-xl border bg-card p-4 flex flex-col items-center gap-2 text-center hover:border-gold/50 hover:bg-accent/40 transition-colors"
+        >
+          <span className="text-2xl">📤</span>
+          <span className="text-sm font-medium">{t("WhatsApp", "واتساب")}</span>
+        </button>
+        <Link
+          to="/ai-assistant"
+          className="group rounded-xl border bg-card p-4 flex flex-col items-center gap-2 text-center hover:border-gold/50 hover:bg-accent/40 transition-colors"
+        >
+          <span className="text-2xl">🤖</span>
+          <span className="text-sm font-medium">{t("AI Assistant", "المساعد")}</span>
+        </Link>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <StatLink to="/clients" icon={Users} label={t("Active clients", "الموكّلون النشطون")} value={activeClients} sub={t("View directory", "عرض السجل")} />
