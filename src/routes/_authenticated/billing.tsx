@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
+  Download,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
