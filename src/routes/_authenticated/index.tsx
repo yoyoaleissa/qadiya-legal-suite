@@ -50,6 +50,9 @@ import { getDailyBriefing, type DailyBriefing } from "@/lib/briefing.functions";
 import { listInvoices } from "@/lib/billing.functions";
 import { createCase } from "@/lib/cases.functions";
 import { FocusToday } from "@/components/FocusToday";
+import { PartnerKPIs } from "@/components/PartnerKPIs";
+import { TimeTracker } from "@/components/TimeTracker";
+import { CaseFreshness } from "@/components/CaseFreshness";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
@@ -168,6 +171,16 @@ function Dashboard() {
 
       {/* Focus Today — highest-priority actionable items */}
       <FocusToday />
+
+      {/* Partner KPIs — admin-only, hidden for other roles */}
+      <PartnerKPIs />
+
+      {/* Time tracker + MOJ freshness side by side */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <TimeTracker />
+        <CaseFreshness />
+      </div>
+
 
       {/* Daily Briefing */}
       <DailyBriefingCard
