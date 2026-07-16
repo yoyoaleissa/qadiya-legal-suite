@@ -418,7 +418,7 @@ function CalendarPage() {
                         className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-gold transition-colors"
                       >
                         <ExternalLink className="h-3 w-3" />
-                        {tt("Google Cal", "تقويم Google")}
+                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
                       </a>
                     </div>
                   </li>
@@ -510,7 +510,7 @@ function CalendarPage() {
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
                     >
                       <ExternalLink className="h-3 w-3" />
-                      {tt("Add to Google Calendar", "إضافة إلى تقويم Google")}
+                      {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
                     </a>
                     {!isDone ? (
                       <Button

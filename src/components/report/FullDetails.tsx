@@ -15,6 +15,8 @@ import {
 import type { CaseReport } from "@/lib/report-types";
 import { COURT_LEVEL_LABELS, useApp } from "@/lib/app-context";
 import { formatDate, formatKwd } from "./format";
+import { CourtMapLink } from "@/components/CourtMapLink";
+import { AllDeadlines } from "@/components/DeadlineAlert";
 
 export function FullDetails({ report }: { report: CaseReport }) {
   const { lang, t } = useApp();
@@ -45,7 +47,9 @@ export function FullDetails({ report }: { report: CaseReport }) {
                   {report.court_levels.map((l, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-medium">{levelLabel(l.level)}</TableCell>
-                      <TableCell>{l.court_name ?? "—"}</TableCell>
+                      <TableCell>
+                        {l.court_name ? <CourtMapLink courtName={l.court_name} /> : "—"}
+                      </TableCell>
                       <TableCell dir="ltr">{l.case_ref ?? "—"}</TableCell>
                       <TableCell>{formatDate(l.registered_date, lang)}</TableCell>
                       <TableCell>{l.status ?? "—"}</TableCell>
@@ -87,6 +91,23 @@ export function FullDetails({ report }: { report: CaseReport }) {
                 </TableBody>
               </Table>
             </div>
+            {(() => {
+              const latest = [...report.judgments]
+                .filter((j) => j.judgment_date)
+                .sort((a, b) => (b.judgment_date ?? "").localeCompare(a.judgment_date ?? ""))[0];
+              if (!latest?.judgment_date) return null;
+              return (
+                <div className="mt-4">
+                  <h5 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {lang === "ar" ? "المواعيد المحسوبة من تاريخ الحكم" : "Deadlines from judgment date"}
+                  </h5>
+                  <AllDeadlines
+                    judgmentDate={new Date(latest.judgment_date)}
+                    caseTitle={report.case_number}
+                  />
+                </div>
+              );
+            })()}
           </section>
 
           {/* Hearings */}
