@@ -38,6 +38,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
 import { createClient, addTimelineEvent } from "@/lib/cases.functions";
+import { checkConflict, type ConflictMatch } from "@/lib/insights.functions";
+import { AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/clients")({
   validateSearch: (search: Record<string, unknown>): { clientId?: string } => ({
@@ -222,13 +224,42 @@ function ClientsPage() {
     const [nameAr, setNameAr] = useState("");
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
+    const [nationalId, setNationalId] = useState("");
     const [notes, setNotes] = useState("");
     const [loading, setLoading] = useState(false);
+    const [conflicts, setConflicts] = useState<ConflictMatch[] | null>(null);
+    const [ackConflict, setAckConflict] = useState(false);
+    const [checking, setChecking] = useState(false);
     const runCreate = useServerFn(createClient);
+    const runCheck = useServerFn(checkConflict);
     const qc = useQueryClient();
+
+    const runConflictCheck = async () => {
+      if (!name.trim() && !nameAr.trim() && !nationalId.trim()) return;
+      setChecking(true);
+      try {
+        const matches = await runCheck({
+          data: {
+            name: name.trim() || nameAr.trim(),
+            name_ar: nameAr.trim() || undefined,
+            national_id: nationalId.trim() || undefined,
+          },
+        });
+        setConflicts(matches);
+        setAckConflict(false);
+      } finally {
+        setChecking(false);
+      }
+    };
 
     const handleSubmit = async () => {
       if (!name.trim()) return;
+      // Require a conflict check before creating
+      if (conflicts === null) {
+        await runConflictCheck();
+        return;
+      }
+      if (conflicts.length > 0 && !ackConflict) return;
       setLoading(true);
       try {
         await runCreate({
@@ -237,6 +268,7 @@ function ClientsPage() {
             name_ar: nameAr || undefined,
             phone: phone || undefined,
             email: email || undefined,
+            national_id: nationalId || undefined,
             notes: notes || undefined,
           },
         });
@@ -246,7 +278,10 @@ function ClientsPage() {
         setNameAr("");
         setPhone("");
         setEmail("");
+        setNationalId("");
         setNotes("");
+        setConflicts(null);
+        setAckConflict(false);
       } finally {
         setLoading(false);
       }
@@ -300,6 +335,20 @@ function ClientsPage() {
             </div>
             <div>
               <label className="text-xs text-muted-foreground">
+                {tt("National ID / Civil ID", "الرقم المدني")}
+              </label>
+              <Input
+                value={nationalId}
+                onChange={(e) => {
+                  setNationalId(e.target.value);
+                  setConflicts(null);
+                }}
+                placeholder="XXXXXXXXXXXX"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">
                 {tt("Legal Matter / Notes", "موضوع النزاع / ملاحظات")}
               </label>
               <Textarea
@@ -309,18 +358,72 @@ function ClientsPage() {
                 placeholder={tt("Brief description of the legal matter", "وصف موجز لموضوع النزاع")}
               />
             </div>
+            {conflicts && conflicts.length > 0 && (
+              <div className="rounded-md border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-200">
+                  <AlertTriangle className="h-4 w-4" />
+                  {tt(
+                    `${conflicts.length} possible conflict${conflicts.length > 1 ? "s" : ""} found`,
+                    `تم العثور على ${conflicts.length} تعارض محتمل`,
+                  )}
+                </div>
+                <ul className="text-xs space-y-1">
+                  {conflicts.map((c) => (
+                    <li key={c.client_id} className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-[10px]">
+                        {c.match_type}
+                      </Badge>
+                      <span>{lang === "ar" ? c.name_ar ?? c.name : c.name}</span>
+                    </li>
+                  ))}
+                </ul>
+                <label className="flex items-center gap-2 text-xs cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={ackConflict}
+                    onChange={(e) => setAckConflict(e.target.checked)}
+                  />
+                  {tt(
+                    "I've reviewed these and confirm no conflict",
+                    "راجعت النتائج وأؤكد عدم وجود تعارض",
+                  )}
+                </label>
+              </div>
+            )}
+            {conflicts && conflicts.length === 0 && (
+              <div className="text-xs text-emerald-700 dark:text-emerald-400">
+                {tt("No conflicts found.", "لا توجد تعارضات.")}
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={onClose}>
               {tt("Cancel", "إلغاء")}
             </Button>
             <Button
+              variant="outline"
+              onClick={runConflictCheck}
+              disabled={checking || (!name.trim() && !nameAr.trim() && !nationalId.trim())}
+            >
+              {checking ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                tt("Check for conflicts", "فحص التعارض")
+              )}
+            </Button>
+            <Button
               onClick={handleSubmit}
-              disabled={!name.trim() || loading}
+              disabled={
+                !name.trim() ||
+                loading ||
+                (conflicts !== null && conflicts.length > 0 && !ackConflict)
+              }
               className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
+              ) : conflicts === null ? (
+                tt("Check & Create", "فحص وإنشاء")
               ) : (
                 tt("Create Client", "إنشاء موكّل")
               )}
