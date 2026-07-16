@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Calendar,
@@ -22,6 +22,7 @@ import {
   StickyNote,
   ShieldCheck,
   Activity,
+  UsersRound,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -29,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { claimFirstAdmin } from "@/lib/roles.functions";
+import { getMyFirm } from "@/lib/firms.functions";
 import { cn } from "@/lib/utils";
 import { DemoTour } from "@/components/DemoTour";
 import {
