@@ -53,7 +53,7 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
+  { to: "/dashboard", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
   {
     to: "/reports",
     labelEn: "Case Reports",
@@ -76,7 +76,7 @@ const NAV: NavItem[] = [
 
 // Core icons for the mobile bottom navigation bar.
 const BOTTOM_NAV: NavItem[] = [
-  { to: "/", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
+  { to: "/dashboard", labelEn: "Dashboard", labelAr: "الرئيسية", icon: LayoutDashboard },
   { to: "/calendar", labelEn: "Calendar", labelAr: "التقويم", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
   { to: "/clients", labelEn: "Clients", labelAr: "الموكّلون", icon: Users },
