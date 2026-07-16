@@ -736,6 +736,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       match_legal_knowledge: {
         Args: { match_count?: number; query_embedding: string }
         Returns: {
