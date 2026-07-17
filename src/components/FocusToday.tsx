@@ -8,14 +8,14 @@ import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import { listNotifications, type NotificationItem } from "@/lib/notifications.functions";
 
-const ICONS = {
+const ICONS: Record<string, typeof AlertTriangle> = {
   task_overdue: AlertTriangle,
   task_due_today: CalendarClock,
   hearing_today: Gavel,
   hearing_tomorrow: Gavel,
   invoice_overdue: Receipt,
   appeal_window: AlertTriangle,
-} as const;
+};
 
 function tone(sev: NotificationItem["severity"]) {
   if (sev === "danger") return "border-destructive/40 bg-destructive/5 text-destructive";
