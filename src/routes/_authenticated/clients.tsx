@@ -40,6 +40,7 @@ import { listClients, getClientDetail } from "@/lib/clients.functions";
 import { createClient, addTimelineEvent } from "@/lib/cases.functions";
 import { checkConflict, type ConflictMatch } from "@/lib/insights.functions";
 import { AlertTriangle } from "lucide-react";
+import { ConflictChecker } from "@/components/ConflictChecker";
 
 export const Route = createFileRoute("/_authenticated/clients")({
   validateSearch: (search: Record<string, unknown>): { clientId?: string } => ({
@@ -395,6 +396,10 @@ function ClientsPage() {
                 {tt("No conflicts found.", "لا توجد تعارضات.")}
               </div>
             )}
+
+            <div className="pt-2 border-t border-border">
+              <ConflictChecker />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={onClose}>
