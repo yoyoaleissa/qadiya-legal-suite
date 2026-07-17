@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { z } from "zod";
 
 export type NotificationKind =
   | "task_overdue"
@@ -7,18 +8,25 @@ export type NotificationKind =
   | "hearing_today"
   | "hearing_tomorrow"
   | "invoice_overdue"
-  | "appeal_window";
+  | "appeal_window"
+  | "portal_message"
+  | "case_update"
+  | "system"
+  | string;
 
 export interface NotificationItem {
   id: string;
   kind: NotificationKind;
-  severity: "danger" | "warn" | "info";
+  severity: "danger" | "warn" | "info" | "success";
   title_en: string;
   title_ar: string;
   subtitle_en?: string;
   subtitle_ar?: string;
   href: string;
   date?: string;
+  read?: boolean;
+  persistent?: boolean; // true = stored row, false = computed
+  created_at?: string;
 }
 
 function iso(d: Date) {
@@ -26,9 +34,7 @@ function iso(d: Date) {
 }
 
 /**
- * Compute a live notifications feed for the signed-in user by aggregating
- * overdue tasks, hearings today/tomorrow, overdue invoices, and open appeal
- * windows. No storage — always fresh on read.
+ * Live notifications feed = persisted rows (unread first) + computed deadline items.
  */
 export const listNotifications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -43,7 +49,14 @@ export const listNotifications = createServerFn({ method: "GET" })
     windowStart.setDate(windowStart.getDate() - 30);
     const windowStartStr = iso(windowStart);
 
-    const [tasksRes, hearingsRes, invoicesRes, judgmentsRes] = await Promise.all([
+    const [storedRes, tasksRes, hearingsRes, invoicesRes, judgmentsRes] = await Promise.all([
+      supabase
+        .from("notifications")
+        .select("id, kind, severity, title_en, title_ar, subtitle_en, subtitle_ar, href, read_at, created_at")
+        .eq("user_id", context.userId)
+        .order("read_at", { ascending: true, nullsFirst: true })
+        .order("created_at", { ascending: false })
+        .limit(50),
       supabase
         .from("tasks")
         .select("id, title, title_ar, due_date, status, priority")
@@ -74,6 +87,22 @@ export const listNotifications = createServerFn({ method: "GET" })
 
     const out: NotificationItem[] = [];
 
+    for (const n of storedRes.data ?? []) {
+      out.push({
+        id: n.id as string,
+        kind: n.kind as NotificationKind,
+        severity: n.severity as NotificationItem["severity"],
+        title_en: n.title_en as string,
+        title_ar: n.title_ar as string,
+        subtitle_en: (n.subtitle_en as string | null) ?? undefined,
+        subtitle_ar: (n.subtitle_ar as string | null) ?? undefined,
+        href: (n.href as string | null) ?? "/",
+        read: !!n.read_at,
+        persistent: true,
+        created_at: n.created_at as string,
+      });
+    }
+
     for (const t of tasksRes.data ?? []) {
       const overdue = (t.due_date as string) < todayStr;
       out.push({
@@ -88,6 +117,8 @@ export const listNotifications = createServerFn({ method: "GET" })
         subtitle_ar: t.due_date ?? undefined,
         href: "/tasks",
         date: t.due_date ?? undefined,
+        read: false,
+        persistent: false,
       });
     }
 
@@ -104,6 +135,8 @@ export const listNotifications = createServerFn({ method: "GET" })
         subtitle_ar: h.notes ?? undefined,
         href: "/calendar",
         date: h.session_date ?? undefined,
+        read: false,
+        persistent: false,
       });
     }
 
@@ -118,6 +151,8 @@ export const listNotifications = createServerFn({ method: "GET" })
         subtitle_ar: `${inv.amount} ${inv.currency}`,
         href: "/billing",
         date: inv.due_date ?? undefined,
+        read: false,
+        persistent: false,
       });
     }
 
@@ -138,16 +173,57 @@ export const listNotifications = createServerFn({ method: "GET" })
         subtitle_ar: j.ruling_text ?? undefined,
         href: "/reports",
         date: j.judgment_date ?? undefined,
+        read: false,
+        persistent: false,
       });
     }
 
-    // Sort: danger > warn > info, then by date ascending
-    const rank = { danger: 0, warn: 1, info: 2 } as const;
+    const rank = { danger: 0, warn: 1, info: 2, success: 3 } as const;
     out.sort((a, b) => {
+      // Unread first
+      if (!!a.read !== !!b.read) return a.read ? 1 : -1;
       const r = rank[a.severity] - rank[b.severity];
       if (r !== 0) return r;
       return (a.date ?? "").localeCompare(b.date ?? "");
     });
 
-    return out.slice(0, 50);
+    return out.slice(0, 80);
+  });
+
+export const markNotificationRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("user_id", context.userId);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const markAllNotificationsRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { error } = await context.supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", context.userId)
+      .is("read_at", null);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const deleteNotification = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("notifications")
+      .delete()
+      .eq("id", data.id)
+      .eq("user_id", context.userId);
+    if (error) throw error;
+    return { ok: true };
   });
