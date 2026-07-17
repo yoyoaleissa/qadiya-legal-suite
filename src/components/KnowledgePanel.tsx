@@ -261,29 +261,42 @@ export function KnowledgePanel({
             <div className="space-y-2">
               {(sources ?? []).map((s) => (
                 <div
-                  key={s.title}
+                  key={`${s.scope}-${s.title}`}
                   className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3"
                 >
                   <div className="h-9 w-9 shrink-0 rounded-md bg-gold/15 text-gold flex items-center justify-center">
                     <FileText className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium truncate">
-                      <span className={lang === "ar" ? "font-arabic" : ""}>{s.title}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-medium truncate ${lang === "ar" ? "font-arabic" : ""}`}>
+                        {s.title}
+                      </span>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
+                          s.scope === "global"
+                            ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {s.scope === "global" ? tt("Shared", "عام") : tt("Firm", "مكتب")}
+                      </span>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {s.chunks} {tt("passages", "مقطع")} ·{" "}
                       {new Date(s.created_at).toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB")}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleDelete(s.title)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {s.scope === "firm" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(s.title)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               ))}
             </div>
