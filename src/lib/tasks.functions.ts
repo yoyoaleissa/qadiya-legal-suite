@@ -13,6 +13,7 @@ export interface TaskItem {
   assignee: string | null;
   assignee_ar: string | null;
   due_date: string | null;
+  case_id: string | null;
   case_number: string | null;
   case_title: string | null;
   case_title_ar: string | null;
