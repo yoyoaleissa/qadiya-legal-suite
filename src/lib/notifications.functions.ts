@@ -52,8 +52,9 @@ export const listNotifications = createServerFn({ method: "GET" })
     const [storedRes, tasksRes, hearingsRes, invoicesRes, judgmentsRes] = await Promise.all([
       supabase
         .from("notifications")
-        .select("id, kind, severity, title_en, title_ar, subtitle_en, subtitle_ar, href, read_at, created_at")
+        .select("id, kind, severity, title_en, title_ar, subtitle_en, subtitle_ar, href, read_at, clicked_at, dismissed_at, delivered_at, created_at")
         .eq("user_id", context.userId)
+        .is("dismissed_at", null)
         .order("read_at", { ascending: true, nullsFirst: true })
         .order("created_at", { ascending: false })
         .limit(50),
