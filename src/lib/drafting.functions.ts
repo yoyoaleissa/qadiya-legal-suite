@@ -88,14 +88,14 @@ export const draftLegalDocument = createServerFn({ method: "POST" })
         .eq("id", data.caseId)
         .maybeSingle();
       if (c) {
-        const [{ data: client }, { data: hearings }] = await Promise.all([
+        const [clientRes, hearingsRes] = await Promise.all([
           c.client_id
             ? supabase
                 .from("clients")
-                .select("name, name_ar, civil_id")
+                .select("name, name_ar, national_id")
                 .eq("id", c.client_id)
                 .maybeSingle()
-            : Promise.resolve({ data: null }),
+            : Promise.resolve({ data: null as null | { name: string; name_ar: string | null; national_id: string | null } }),
           supabase
             .from("hearings")
             .select("session_date, level, status, notes")
@@ -103,6 +103,8 @@ export const draftLegalDocument = createServerFn({ method: "POST" })
             .order("session_date", { ascending: true })
             .limit(3),
         ]);
+        const client = clientRes.data;
+        const hearings = hearingsRes.data;
         const nextHearing = (hearings ?? []).find((h) => h.status !== "held") ?? null;
         caseSnapshot = {
           caseNumber: c.case_number ?? null,
@@ -120,7 +122,7 @@ export const draftLegalDocument = createServerFn({ method: "POST" })
           title_ar: c.title_ar,
           client_name: client?.name,
           client_name_ar: client?.name_ar,
-          client_civil_id: client?.civil_id,
+          client_national_id: client?.national_id,
           hearings: hearings ?? [],
         });
       }
