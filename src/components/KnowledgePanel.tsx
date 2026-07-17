@@ -38,6 +38,7 @@ export function KnowledgePanel({
 }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [scope, setScope] = useState<"firm" | "global">("firm");
   const [ingesting, setIngesting] = useState(false);
   const [parsing, setParsing] = useState(false);
 
@@ -83,7 +84,7 @@ export function KnowledgePanel({
     if (!title.trim() || !content.trim()) return;
     setIngesting(true);
     try {
-      const res = await runIngest({ data: { title: title.trim(), content } });
+      const res = await runIngest({ data: { title: title.trim(), content, scope } });
       toast.success(tt(`Indexed ${res.chunks} passage(s).`, `تمت فهرسة ${res.chunks} مقطع.`));
       setTitle("");
       setContent("");
@@ -136,6 +137,43 @@ export function KnowledgePanel({
               placeholder={tt("e.g. Labour Law No. 6/2010", "مثال: قانون العمل رقم 6/2010")}
               className={lang === "ar" ? "font-arabic" : ""}
             />
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground">
+              {tt("Visibility", "النطاق")}
+            </label>
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setScope("firm")}
+                className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                  scope === "firm"
+                    ? "border-gold bg-gold/10 text-foreground"
+                    : "border-border bg-card text-muted-foreground hover:border-gold/40"
+                }`}
+              >
+                <div className="font-medium">{tt("My firm only", "مكتبي فقط")}</div>
+                <div className="text-[11px]">
+                  {tt("Private briefs, memos, precedents", "مذكرات وسوابق خاصة")}
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setScope("global")}
+                disabled
+                title={tt(
+                  "Only Qadiya editors can add to the shared corpus.",
+                  "لا يمكن إضافة المحتوى العام إلا من محرري قضية.",
+                )}
+                className="rounded-lg border border-dashed border-border/60 bg-muted/30 px-3 py-2 text-left text-sm text-muted-foreground opacity-70 cursor-not-allowed"
+              >
+                <div className="font-medium">{tt("Shared corpus", "المحتوى العام")}</div>
+                <div className="text-[11px]">
+                  {tt("Kuwaiti laws — curated by Qadiya", "قوانين كويتية — يديرها قضية")}
+                </div>
+              </button>
+            </div>
           </div>
 
           <div>
@@ -223,29 +261,42 @@ export function KnowledgePanel({
             <div className="space-y-2">
               {(sources ?? []).map((s) => (
                 <div
-                  key={s.title}
+                  key={`${s.scope}-${s.title}`}
                   className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3"
                 >
                   <div className="h-9 w-9 shrink-0 rounded-md bg-gold/15 text-gold flex items-center justify-center">
                     <FileText className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium truncate">
-                      <span className={lang === "ar" ? "font-arabic" : ""}>{s.title}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-medium truncate ${lang === "ar" ? "font-arabic" : ""}`}>
+                        {s.title}
+                      </span>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
+                          s.scope === "global"
+                            ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {s.scope === "global" ? tt("Shared", "عام") : tt("Firm", "مكتب")}
+                      </span>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {s.chunks} {tt("passages", "مقطع")} ·{" "}
                       {new Date(s.created_at).toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB")}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleDelete(s.title)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {s.scope === "firm" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(s.title)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               ))}
             </div>
