@@ -11,24 +11,28 @@ function supabaseForUser(token: string) {
 }
 
 export default defineTool({
-  name: "list_my_tasks",
-  title: "List my tasks",
+  name: "list_tasks",
+  title: "List tasks",
   description:
-    "List tasks assigned to the signed-in user (or all firm tasks if scope='firm'). Returns id, title, status, due_date, case_id.",
+    "List tasks in the signed-in user's firm. Returns id, title, status, due_date, priority, case_id, assignee.",
   inputSchema: {
-    scope: z.enum(["mine", "firm"]).optional().describe("Default 'mine'."),
-    status: z.string().optional().describe("Filter by status."),
+    status: z.string().optional().describe("Filter by status (e.g. 'todo', 'done')."),
+    assignee: z.string().optional().describe("Filter by assignee name (partial match)."),
     limit: z.number().int().min(1).max(200).optional(),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async ({ scope, status, limit }, ctx) => {
-    if (!ctx.isAuthenticated()) {
+  handler: async ({ status, assignee, limit }, ctx) => {
+    const token = ctx.getToken();
+    if (!ctx.isAuthenticated() || !token) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = supabaseForUser(ctx.getToken());
-    let q = supabase.from("tasks").select("*").order("due_date", { ascending: true }).limit(limit ?? 50);
-    if (!scope || scope === "mine") q = q.eq("assigned_to", ctx.getUserId());
+    let q = supabaseForUser(token)
+      .from("tasks")
+      .select("*")
+      .order("due_date", { ascending: true, nullsFirst: false })
+      .limit(limit ?? 50);
     if (status) q = q.eq("status", status);
+    if (assignee) q = q.ilike("assignee", `%${assignee}%`);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {

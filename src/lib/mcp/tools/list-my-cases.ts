@@ -14,18 +14,18 @@ export default defineTool({
   name: "list_my_cases",
   title: "List my cases",
   description:
-    "List cases in the signed-in user's firm. Returns id, case_number, title (EN/AR), type, and status. Scoped by RLS to the user's firm.",
+    "List cases in the signed-in user's firm. Returns id, case_number, title (EN/AR), type, and status. Scoped by RLS.",
   inputSchema: {
-    limit: z.number().int().min(1).max(100).optional().describe("Max cases to return (default 25)."),
-    status: z.string().optional().describe("Filter by overall_status, e.g. 'active', 'closed'."),
+    limit: z.number().int().min(1).max(100).optional().describe("Max cases (default 25)."),
+    status: z.string().optional().describe("Filter by overall_status."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ limit, status }, ctx) => {
-    if (!ctx.isAuthenticated()) {
+    const token = ctx.getToken();
+    if (!ctx.isAuthenticated() || !token) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = supabaseForUser(ctx.getToken());
-    let q = supabase
+    let q = supabaseForUser(token)
       .from("cases")
       .select("id, case_number, title, title_ar, case_type, overall_status, updated_at")
       .order("updated_at", { ascending: false })

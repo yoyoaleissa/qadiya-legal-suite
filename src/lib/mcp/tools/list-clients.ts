@@ -20,11 +20,15 @@ export default defineTool({
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ search, limit }, ctx) => {
-    if (!ctx.isAuthenticated()) {
+    const token = ctx.getToken();
+    if (!ctx.isAuthenticated() || !token) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = supabaseForUser(ctx.getToken());
-    let q = supabase.from("clients").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
+    let q = supabaseForUser(token)
+      .from("clients")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit ?? 50);
     if (search) q = q.ilike("name", `%${search}%`);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };

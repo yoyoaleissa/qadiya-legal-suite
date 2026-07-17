@@ -14,31 +14,30 @@ export default defineTool({
   name: "create_task",
   title: "Create task",
   description:
-    "Create a task for the signed-in user (or a specified assignee). Optionally link to a case. Written under the caller's RLS.",
+    "Create a task in the signed-in user's firm. Optionally link to a case and set a due date, assignee, and priority.",
   inputSchema: {
     title: z.string().min(1).describe("Task title."),
     description: z.string().optional(),
-    due_date: z.string().optional().describe("ISO date (YYYY-MM-DD or full ISO timestamp)."),
+    due_date: z.string().optional().describe("ISO date YYYY-MM-DD or full ISO timestamp."),
     case_id: z.string().uuid().optional(),
-    assigned_to: z.string().uuid().optional().describe("Defaults to caller."),
-    priority: z.string().optional(),
+    assignee: z.string().optional().describe("Assignee display name."),
+    priority: z.string().optional().describe("e.g. 'low', 'medium', 'high'."),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   handler: async (input, ctx) => {
-    if (!ctx.isAuthenticated()) {
+    const token = ctx.getToken();
+    if (!ctx.isAuthenticated() || !token) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = supabaseForUser(ctx.getToken());
-    const { data, error } = await supabase
+    const { data, error } = await supabaseForUser(token)
       .from("tasks")
       .insert({
         title: input.title,
-        description: input.description ?? null,
-        due_date: input.due_date ?? null,
-        case_id: input.case_id ?? null,
-        assigned_to: input.assigned_to ?? ctx.getUserId(),
-        priority: input.priority ?? null,
-        created_by: ctx.getUserId(),
+        description: input.description,
+        due_date: input.due_date,
+        case_id: input.case_id,
+        assignee: input.assignee,
+        priority: input.priority ?? "medium",
       })
       .select()
       .maybeSingle();

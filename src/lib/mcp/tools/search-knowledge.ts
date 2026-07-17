@@ -14,18 +14,18 @@ export default defineTool({
   name: "search_legal_knowledge",
   title: "Search legal knowledge",
   description:
-    "Keyword search across the firm's legal knowledge base (Kuwaiti law references, case notes, precedents). Bilingual EN/AR.",
+    "Keyword search across the firm's legal knowledge base (Kuwaiti law references, notes, precedents). Bilingual EN/AR.",
   inputSchema: {
     query: z.string().min(1).describe("Search terms (Arabic or English)."),
     limit: z.number().int().min(1).max(50).optional(),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ query, limit }, ctx) => {
-    if (!ctx.isAuthenticated()) {
+    const token = ctx.getToken();
+    if (!ctx.isAuthenticated() || !token) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = supabaseForUser(ctx.getToken());
-    const { data, error } = await supabase
+    const { data, error } = await supabaseForUser(token)
       .from("legal_knowledge")
       .select("*")
       .or(`title.ilike.%${query}%,content.ilike.%${query}%`)

@@ -19,7 +19,7 @@
       {
         "name": "list_my_cases",
         "title": "List my cases",
-        "description": "List cases in the signed-in user's firm. Returns id, case_number, title (EN/AR), type, and status. Scoped by RLS to the user's firm.",
+        "description": "List cases in the signed-in user's firm. Returns id, case_number, title (EN/AR), type, and status. Scoped by RLS.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -30,13 +30,13 @@
           "type": "object",
           "properties": {
             "limit": {
-              "description": "Max cases to return (default 25).",
+              "description": "Max cases (default 25).",
               "type": "integer",
               "minimum": 1,
               "maximum": 100
             },
             "status": {
-              "description": "Filter by overall_status, e.g. 'active', 'closed'.",
+              "description": "Filter by overall_status.",
               "type": "string"
             }
           }
@@ -46,7 +46,7 @@
       {
         "name": "get_case",
         "title": "Get case details",
-        "description": "Return a case with its hearings, tasks, and timeline events. Scoped by RLS to the signed-in user's firm.",
+        "description": "Return a case with hearings, tasks, and timeline events. Scoped by RLS to the caller's firm.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -70,9 +70,9 @@
         "outputSchema": null
       },
       {
-        "name": "list_my_tasks",
-        "title": "List my tasks",
-        "description": "List tasks assigned to the signed-in user (or all firm tasks if scope='firm'). Returns id, title, status, due_date, case_id.",
+        "name": "list_tasks",
+        "title": "List tasks",
+        "description": "List tasks in the signed-in user's firm. Returns id, title, status, due_date, priority, case_id, assignee.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -82,16 +82,12 @@
           "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
-            "scope": {
-              "description": "Default 'mine'.",
-              "type": "string",
-              "enum": [
-                "mine",
-                "firm"
-              ]
-            },
             "status": {
-              "description": "Filter by status.",
+              "description": "Filter by status (e.g. 'todo', 'done').",
+              "type": "string"
+            },
+            "assignee": {
+              "description": "Filter by assignee name (partial match).",
               "type": "string"
             },
             "limit": {
@@ -132,7 +128,7 @@
       {
         "name": "create_task",
         "title": "Create task",
-        "description": "Create a task for the signed-in user (or a specified assignee). Optionally link to a case. Written under the caller's RLS.",
+        "description": "Create a task in the signed-in user's firm. Optionally link to a case and set a due date, assignee, and priority.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
@@ -152,7 +148,7 @@
               "type": "string"
             },
             "due_date": {
-              "description": "ISO date (YYYY-MM-DD or full ISO timestamp).",
+              "description": "ISO date YYYY-MM-DD or full ISO timestamp.",
               "type": "string"
             },
             "case_id": {
@@ -160,13 +156,12 @@
               "format": "uuid",
               "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
             },
-            "assigned_to": {
-              "description": "Defaults to caller.",
-              "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            "assignee": {
+              "description": "Assignee display name.",
+              "type": "string"
             },
             "priority": {
+              "description": "e.g. 'low', 'medium', 'high'.",
               "type": "string"
             }
           },
@@ -179,7 +174,7 @@
       {
         "name": "search_legal_knowledge",
         "title": "Search legal knowledge",
-        "description": "Keyword search across the firm's legal knowledge base (Kuwaiti law references, case notes, precedents). Bilingual EN/AR.",
+        "description": "Keyword search across the firm's legal knowledge base (Kuwaiti law references, notes, precedents). Bilingual EN/AR.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
