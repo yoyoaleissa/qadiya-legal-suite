@@ -1006,6 +1006,62 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          firm_id: string | null
+          href: string | null
+          id: string
+          kind: string
+          metadata: Json | null
+          read_at: string | null
+          severity: string
+          subtitle_ar: string | null
+          subtitle_en: string | null
+          title_ar: string
+          title_en: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          firm_id?: string | null
+          href?: string | null
+          id?: string
+          kind: string
+          metadata?: Json | null
+          read_at?: string | null
+          severity?: string
+          subtitle_ar?: string | null
+          subtitle_en?: string | null
+          title_ar: string
+          title_en: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          firm_id?: string | null
+          href?: string | null
+          id?: string
+          kind?: string
+          metadata?: Json | null
+          read_at?: string | null
+          severity?: string
+          subtitle_ar?: string | null
+          subtitle_en?: string | null
+          title_ar?: string
+          title_en?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
