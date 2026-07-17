@@ -397,7 +397,135 @@ function CalendarPage() {
         </CardContent>
       </Card>
 
-      {showMonth ? (
+      {showDeadlines ? (
+        <div>
+          <div className="flex flex-wrap items-end justify-between gap-2 mb-3">
+            <h2 className="font-display text-xl">
+              {tt("Appeal & Cassation Deadlines", "مواعيد الاستئناف والتمييز")}
+            </h2>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-destructive" />
+                {tt("≤ 3 days", "≤ 3 أيام")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                {tt("≤ 7 days", "≤ 7 أيام")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-success" />
+                {tt("> 7 days", "> 7 أيام")}
+              </span>
+            </div>
+          </div>
+
+          {loadingDeadlines ? (
+            <Card>
+              <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {tt("Loading…", "جارٍ التحميل…")}
+              </CardContent>
+            </Card>
+          ) : deadlines.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={AlarmClock}
+                  title={tt("No open deadlines", "لا توجد مواعيد نهائية")}
+                  desc={tt(
+                    "Appeal and cassation deadlines will appear here after judgments are recorded.",
+                    "ستظهر مواعيد الاستئناف والتمييز هنا بعد تسجيل الأحكام.",
+                  )}
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <ol className="space-y-2">
+              {deadlines.map((d) => {
+                const urgency =
+                  d.days_remaining < 0
+                    ? "expired"
+                    : d.days_remaining <= 3
+                      ? "red"
+                      : d.days_remaining <= 7
+                        ? "yellow"
+                        : "green";
+                const border =
+                  urgency === "red" || urgency === "expired"
+                    ? "border-s-destructive"
+                    : urgency === "yellow"
+                      ? "border-s-yellow-500"
+                      : "border-s-success";
+                const chip =
+                  urgency === "red" || urgency === "expired"
+                    ? "bg-destructive/10 text-destructive"
+                    : urgency === "yellow"
+                      ? "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
+                      : "bg-success/10 text-success";
+                const title = lang === "ar" ? d.title_ar ?? d.title : d.title;
+                const caseTitle = lang === "ar" ? d.case_title_ar ?? d.case_title : d.case_title;
+                return (
+                  <li
+                    key={d.id}
+                    className={cn(
+                      "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4",
+                      border,
+                    )}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+                            chip,
+                          )}
+                        >
+                          <AlarmClock className="h-3 w-3" />
+                          {urgency === "expired"
+                            ? tt("Expired", "منتهي")
+                            : `${d.days_remaining} ${tt("days", "يوم")}`}
+                        </span>
+                        {d.case_number && (
+                          <span className="text-xs text-muted-foreground">#{d.case_number}</span>
+                        )}
+                        {d.kind !== "other" && (
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {d.kind === "appeal"
+                              ? tt("Appeal", "استئناف")
+                              : tt("Cassation", "تمييز")}
+                          </span>
+                        )}
+                      </div>
+                      <div className="font-medium mt-1">
+                        <span className={lang === "ar" ? "font-arabic" : ""}>{title}</span>
+                      </div>
+                      {caseTitle && (
+                        <div className="text-xs text-muted-foreground mt-0.5">{caseTitle}</div>
+                      )}
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {tt("Due:", "الاستحقاق:")} {d.due_date}
+                      </div>
+                      <a
+                        href={buildGoogleCalendarUrl({
+                          title: `⏰ ${title}${d.case_number ? ` #${d.case_number}` : ""}`,
+                          date: d.due_date,
+                          description: `${caseTitle ?? ""}`,
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-gold transition-colors"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
+                      </a>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      ) : showMonth ? (
         <div>
           <div className="flex flex-wrap items-end justify-between gap-2 mb-3">
             <h2 className="font-display text-xl">
