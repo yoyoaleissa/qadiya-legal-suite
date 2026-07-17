@@ -100,10 +100,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const runClaimAdmin = useServerFn(claimFirstAdmin);
   const runGetFirm = useServerFn(getMyFirm);
+  const runUrgent = useServerFn(countUrgentDeadlines);
   const { data: firm, isFetched: firmFetched } = useQuery({
     queryKey: ["my-firm"],
     queryFn: () => runGetFirm(),
     staleTime: 30_000,
+  });
+  const { data: urgentCount = 0 } = useQuery({
+    queryKey: ["urgent-deadlines"],
+    queryFn: () => runUrgent(),
+    staleTime: 60_000,
   });
 
   // Global Cmd/Ctrl+K opens the search palette.
