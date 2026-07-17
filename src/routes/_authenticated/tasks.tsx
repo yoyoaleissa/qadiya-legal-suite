@@ -14,7 +14,9 @@ import {
   PlayCircle,
   ExternalLink,
   Undo2,
+  Timer,
 } from "lucide-react";
+import { LogHoursDialog } from "@/components/LogHoursDialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
