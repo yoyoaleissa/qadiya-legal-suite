@@ -1388,6 +1388,15 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      lookup_invitation_by_token: {
+        Args: { _token: string }
+        Returns: {
+          email: string
+          firm_name_ar: string
+          firm_name_en: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
       match_legal_knowledge: {
         Args: { match_count?: number; query_embedding: string }
         Returns: {

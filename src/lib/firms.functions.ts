@@ -186,7 +186,8 @@ export const getInvitationByToken = createServerFn({ method: "GET" })
     return { token: input.token };
   })
   .handler(async ({ data }) => {
-    // Use anon publishable client — token lookup allowed by RLS policy for anon
+    // Use anon publishable client to call the token-scoped SECURITY DEFINER RPC.
+    // Direct SELECT on firm_invitations is no longer allowed for anon.
     const { createClient } = await import("@supabase/supabase-js");
     const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
     const url = process.env.SUPABASE_URL!;
@@ -203,23 +204,16 @@ export const getInvitationByToken = createServerFn({ method: "GET" })
         },
       },
     });
-    const { data: inv } = await client
-      .from("firm_invitations")
-      .select("id, firm_id, email, role, expires_at, accepted_at")
-      .eq("token", data.token)
-      .maybeSingle();
-    if (!inv || inv.accepted_at || new Date(inv.expires_at) < new Date()) {
-      return null;
-    }
-    const { data: firm } = await client
-      .from("firms")
-      .select("name_en, name_ar")
-      .eq("id", inv.firm_id)
-      .maybeSingle();
+    const { data: rows, error } = await client.rpc("lookup_invitation_by_token", {
+      _token: data.token,
+    });
+    if (error) throw new Error(error.message);
+    const inv = Array.isArray(rows) ? rows[0] : rows;
+    if (!inv) return null;
     return {
-      email: inv.email,
-      role: inv.role,
-      firm_name_en: firm?.name_en ?? "",
-      firm_name_ar: firm?.name_ar ?? "",
+      email: inv.email as string,
+      role: inv.role as string,
+      firm_name_en: (inv.firm_name_en as string) ?? "",
+      firm_name_ar: (inv.firm_name_ar as string) ?? "",
     };
   });
