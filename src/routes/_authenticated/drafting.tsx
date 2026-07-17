@@ -122,7 +122,7 @@ function DraftingPage() {
   };
 
   return (
-    <AppShell>
+    
       <div className="space-y-6">
         <div>
           <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold">
@@ -409,6 +409,6 @@ function DraftingPage() {
           </div>
         </div>
       </div>
-    </AppShell>
+    
   );
 }
