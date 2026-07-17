@@ -16,6 +16,9 @@ import {
   CheckCircle2,
   Check,
   Undo2,
+  Calculator,
+  ChevronDown,
+  AlarmClock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,10 +30,12 @@ import {
   type CalendarEvent,
 } from "@/lib/calendar.functions";
 import { updateTaskStatus } from "@/lib/tasks.functions";
+import { listDeadlines } from "@/lib/deadlines.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 import { buildIcs, downloadIcs } from "@/lib/ics-export";
 import { EmptyState } from "@/components/EmptyState";
+import { StatuteCalculator } from "@/components/StatuteCalculator";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
