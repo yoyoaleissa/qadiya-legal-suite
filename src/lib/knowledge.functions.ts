@@ -51,17 +51,23 @@ export const listKnowledge = createServerFn({ method: "GET" })
     const supabase = context.supabase;
     const { data, error } = await supabase
       .from("legal_knowledge")
-      .select("title, created_at")
+      .select("title, created_at, scope")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
 
     const map = new Map<string, KnowledgeSource>();
     for (const row of data ?? []) {
-      const existing = map.get(row.title);
+      const key = `${row.scope}::${row.title}`;
+      const existing = map.get(key);
       if (existing) {
         existing.chunks += 1;
       } else {
-        map.set(row.title, { title: row.title, chunks: 1, created_at: row.created_at });
+        map.set(key, {
+          title: row.title,
+          chunks: 1,
+          created_at: row.created_at,
+          scope: (row.scope as "global" | "firm") ?? "global",
+        });
       }
     }
     return Array.from(map.values());
