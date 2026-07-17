@@ -168,10 +168,10 @@ function LandingHeader({
             {lang === "ar" ? "EN" : "ع"}
           </button>
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">{t("دخول", "Sign in")}</Link>
+            <Link to="/login" search={{ next: undefined }}>{t("دخول", "Sign in")}</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link to="/login">{t("ابدأ التجربة", "Start trial")}</Link>
+            <Link to="/login" search={{ next: undefined }}>{t("ابدأ التجربة", "Start trial")}</Link>
           </Button>
         </div>
       </div>
@@ -219,7 +219,7 @@ function Hero({ t, lang }: { t: TT; lang: "ar" | "en" }) {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button size="lg" asChild>
-              <Link to="/login" className="gap-2">
+              <Link to="/login" search={{ next: undefined }} className="gap-2">
                 {t("ابدأ التجربة مجاناً", "Start free trial")}
                 <Arrow className="h-4 w-4" />
               </Link>
@@ -832,7 +832,7 @@ function Pricing({ t, lang }: { t: TT; lang: "ar" | "en" }) {
                   variant={tier.highlighted ? "default" : "outline"}
                   asChild
                 >
-                  <Link to="/login">{tier.cta}</Link>
+                  <Link to="/login" search={{ next: undefined }}>{tier.cta}</Link>
                 </Button>
                 <ul className="mt-6 space-y-2 text-sm">
                   {tier.features.map((f) => (
@@ -953,7 +953,7 @@ function FinalCTA({ t }: { t: TT }) {
           {t("بدون بطاقة ائتمان. ألغِ في أي وقت.", "No credit card. Cancel anytime.")}
         </p>
         <Button size="lg" className="mt-8" asChild>
-          <Link to="/login">{t("ابدأ الآن", "Get started")}</Link>
+          <Link to="/login" search={{ next: undefined }}>{t("ابدأ الآن", "Get started")}</Link>
         </Button>
       </div>
     </section>

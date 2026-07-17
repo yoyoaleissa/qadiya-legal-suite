@@ -41,7 +41,7 @@ function InvitePage() {
     if (signedIn) {
       navigate({ to: "/onboarding" });
     } else {
-      navigate({ to: "/login" });
+      navigate({ to: "/login", search: { next: undefined } });
     }
   };
 
