@@ -47,7 +47,20 @@ function LoginPage() {
   const { lang, setLang, t } = useApp();
   const navigate = useNavigate();
   const router = useRouter();
+  const { next } = Route.useSearch();
   const isAr = lang === "ar";
+
+  // Only allow same-origin relative paths as return targets.
+  const safeNext =
+    typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : null;
+
+  const goPostAuth = () => {
+    if (safeNext) {
+      window.location.assign(safeNext);
+    } else {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  };
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -58,13 +71,17 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  // If already signed in, go straight to the dashboard.
+  // If already signed in, go straight to the return target (or dashboard).
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       if (data.session) {
-        navigate({ to: "/dashboard", replace: true });
+        if (safeNext) {
+          window.location.assign(safeNext);
+        } else {
+          navigate({ to: "/dashboard", replace: true });
+        }
       } else {
         setChecking(false);
       }
@@ -72,7 +89,7 @@ function LoginPage() {
     return () => {
       active = false;
     };
-  }, [navigate]);
+  }, [navigate, safeNext]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,20 +102,22 @@ function LoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
         await router.invalidate();
-        navigate({ to: "/dashboard", replace: true });
+        goPostAuth();
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: safeNext
+              ? `${window.location.origin}${safeNext}`
+              : window.location.origin,
             data: { full_name: fullName.trim() || null },
           },
         });
         if (error) throw error;
         if (data.session) {
           await router.invalidate();
-          navigate({ to: "/dashboard", replace: true });
+          goPostAuth();
         } else {
           setNotice(
             t(
