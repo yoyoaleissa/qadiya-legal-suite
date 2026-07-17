@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   StickyNote,
   ShieldCheck,
+  Shield,
   Activity,
   UsersRound,
 } from "lucide-react";
@@ -31,6 +32,7 @@ import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { claimFirstAdmin } from "@/lib/roles.functions";
 import { getMyFirm } from "@/lib/firms.functions";
+import { countUrgentDeadlines } from "@/lib/deadlines.functions";
 import { cn } from "@/lib/utils";
 import { DemoTour } from "@/components/DemoTour";
 import {
@@ -74,6 +76,7 @@ const NAV: NavItem[] = [
   { to: "/drafting", labelEn: "AI Drafting", labelAr: "المسودة الذكية", icon: Sparkles },
   { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
   { to: "/team", labelEn: "Team", labelAr: "الفريق", icon: UsersRound },
+  { to: "/tools", labelEn: "Tools", labelAr: "الأدوات", icon: Shield },
   { to: "/audit", labelEn: "Audit Log", labelAr: "سجل التدقيق", icon: ShieldCheck, adminOnly: true },
   { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
