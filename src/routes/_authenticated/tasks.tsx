@@ -103,6 +103,7 @@ function TasksPage() {
   const [filter, setFilter] = useState<FilterStatus>(filterParam ?? "all");
   const [showCreate, setShowCreate] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
+  const [logHoursFor, setLogHoursFor] = useState<TaskItem | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
