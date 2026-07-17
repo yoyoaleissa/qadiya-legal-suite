@@ -145,6 +145,9 @@ function Dashboard() {
 
   return (
     <div className="space-y-8">
+      {/* Mobile-only sticky Today's Hearings card */}
+      <TodayHearingsSticky />
+
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
