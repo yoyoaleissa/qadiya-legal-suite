@@ -970,27 +970,41 @@ export type Database = {
           content: string
           created_at: string
           embedding: string | null
+          firm_id: string | null
           id: string
           metadata: Json
+          scope: string
           title: string
         }
         Insert: {
           content: string
           created_at?: string
           embedding?: string | null
+          firm_id?: string | null
           id?: string
           metadata?: Json
+          scope?: string
           title: string
         }
         Update: {
           content?: string
           created_at?: string
           embedding?: string | null
+          firm_id?: string | null
           id?: string
           metadata?: Json
+          scope?: string
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "legal_knowledge_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1311,6 +1325,7 @@ export type Database = {
         Returns: {
           content: string
           id: string
+          metadata: Json
           similarity: number
           title: string
         }[]
