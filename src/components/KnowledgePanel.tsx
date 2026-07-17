@@ -84,7 +84,7 @@ export function KnowledgePanel({
     if (!title.trim() || !content.trim()) return;
     setIngesting(true);
     try {
-      const res = await runIngest({ data: { title: title.trim(), content } });
+      const res = await runIngest({ data: { title: title.trim(), content, scope } });
       toast.success(tt(`Indexed ${res.chunks} passage(s).`, `تمت فهرسة ${res.chunks} مقطع.`));
       setTitle("");
       setContent("");
