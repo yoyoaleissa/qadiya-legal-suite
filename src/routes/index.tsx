@@ -195,8 +195,9 @@ function Hero({ t, lang }: { t: TT; lang: "ar" | "en" }) {
       />
       <div className="container relative mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-2 md:py-32">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          animate={{ opacity: [0.001, 1], y: [12, 0] }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex flex-col justify-center"
         >
@@ -243,12 +244,13 @@ function Hero({ t, lang }: { t: TT; lang: "ar" | "en" }) {
           </div>
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 1, y: 0 }}
+          animate={{ opacity: [0.001, 1], y: [16, 0] }}
           transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
         >
           <DashboardMock t={t} />
         </motion.div>
+
       </div>
     </section>
   );
