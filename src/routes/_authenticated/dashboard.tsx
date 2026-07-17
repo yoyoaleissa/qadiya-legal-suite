@@ -54,6 +54,7 @@ import { PartnerKPIs } from "@/components/PartnerKPIs";
 import { TimeTracker } from "@/components/TimeTracker";
 import { CaseFreshness } from "@/components/CaseFreshness";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { TodayHearingsSticky } from "@/components/TodayHearingsSticky";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
