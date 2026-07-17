@@ -14,7 +14,9 @@ import {
   PlayCircle,
   ExternalLink,
   Undo2,
+  Timer,
 } from "lucide-react";
+import { LogHoursDialog } from "@/components/LogHoursDialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -101,6 +103,7 @@ function TasksPage() {
   const [filter, setFilter] = useState<FilterStatus>(filterParam ?? "all");
   const [showCreate, setShowCreate] = useState(false);
   const [showWorkflow, setShowWorkflow] = useState(false);
+  const [logHoursFor, setLogHoursFor] = useState<TaskItem | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -320,6 +323,19 @@ function TasksPage() {
                     )}
                   </div>
                 </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLogHoursFor(task);
+                  }}
+                  className="mt-0.5 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:border-gold transition-colors"
+                  aria-label={tt("Log hours", "تسجيل الساعات")}
+                  title={tt("Log hours", "تسجيل الساعات")}
+                >
+                  <Timer className="h-3 w-3" />
+                  <span className="hidden sm:inline">{tt("Hours", "ساعات")}</span>
+                </button>
                 {task.status === "done" && (
                   <button
                     type="button"
@@ -380,6 +396,13 @@ function TasksPage() {
         tt={tt}
         lang={lang}
         onCreated={() => queryClient.invalidateQueries({ queryKey: ["tasks"] })}
+      />
+
+      <LogHoursDialog
+        open={!!logHoursFor}
+        onOpenChange={(v) => !v && setLogHoursFor(null)}
+        caseId={logHoursFor?.case_id ?? null}
+        taskTitle={logHoursFor ? (lang === "ar" ? (logHoursFor.title_ar ?? logHoursFor.title) : logHoursFor.title) : undefined}
       />
     </div>
   );
