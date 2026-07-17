@@ -65,6 +65,8 @@ export function NotificationCenter() {
   const runMarkRead = useServerFn(markNotificationRead);
   const runMarkAll = useServerFn(markAllNotificationsRead);
   const runDelete = useServerFn(deleteNotification);
+  const runLogClicked = useServerFn(logNotificationClicked);
+  const runLogDelivered = useServerFn(logNotificationDelivered);
 
   const { data } = useQuery({
     queryKey: ["notifications"],
@@ -74,6 +76,21 @@ export function NotificationCenter() {
   });
 
   const seenIds = useRef<Set<string>>(new Set());
+  const deliveredLoggedRef = useRef<Set<string>>(new Set());
+
+  // Log delivery for any newly-observed persistent notification. Fires when
+  // the item shows up in the feed (fetched OR pushed via realtime).
+  useEffect(() => {
+    const fresh = (data ?? [])
+      .filter((n) => n.persistent && !deliveredLoggedRef.current.has(n.id))
+      .map((n) => n.id);
+    if (fresh.length === 0) return;
+    fresh.forEach((id) => deliveredLoggedRef.current.add(id));
+    // Backfill delivered_at only when null; safe no-op otherwise.
+    runLogDelivered({ data: { ids: fresh } }).catch(() => {
+      /* engagement log is best-effort */
+    });
+  }, [data, runLogDelivered]);
 
   // Realtime: subscribe to my notification inserts and pop a toast
   useEffect(() => {
@@ -118,7 +135,10 @@ export function NotificationCenter() {
               action: row.href
                 ? {
                     label: t("Open", "فتح"),
-                    onClick: () => navigate({ to: row.href! }),
+                    onClick: () => {
+                      runLogClicked({ data: { id: row.id } }).catch(() => {});
+                      navigate({ to: row.href! });
+                    },
                   }
                 : undefined,
             });
@@ -140,9 +160,9 @@ export function NotificationCenter() {
   const dangerCount = unread.filter((i) => i.severity === "danger").length;
 
   async function handleItemClick(n: NotificationItem) {
-    if (n.persistent && !n.read) {
+    if (n.persistent) {
       try {
-        await runMarkRead({ data: { id: n.id } });
+        await runLogClicked({ data: { id: n.id } });
         qc.invalidateQueries({ queryKey: ["notifications"] });
       } catch {
         /* noop */
@@ -171,6 +191,7 @@ export function NotificationCenter() {
       /* noop */
     }
   }
+
 
   return (
     <Popover>
