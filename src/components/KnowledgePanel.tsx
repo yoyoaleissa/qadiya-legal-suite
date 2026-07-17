@@ -38,6 +38,7 @@ export function KnowledgePanel({
 }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [scope, setScope] = useState<"firm" | "global">("firm");
   const [ingesting, setIngesting] = useState(false);
   const [parsing, setParsing] = useState(false);
 
