@@ -28,6 +28,8 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
   deleteNotification,
+  logNotificationClicked,
+  logNotificationDelivered,
   type NotificationItem,
   type NotificationKind,
 } from "@/lib/notifications.functions";
