@@ -16,6 +16,7 @@ export const ingestKnowledge = createServerFn({ method: "POST" })
       .object({
         title: z.string().trim().min(1).max(300),
         content: z.string().trim().min(1),
+        scope: z.enum(["global", "firm"]).default("firm"),
       })
       .parse(data),
   )
@@ -32,6 +33,7 @@ export const ingestKnowledge = createServerFn({ method: "POST" })
       title: data.title,
       content,
       embedding: JSON.stringify(embeddings[index]),
+      scope: data.scope,
       metadata: { source: data.title, chunk_index: index, total_chunks: chunks.length },
     }));
 
