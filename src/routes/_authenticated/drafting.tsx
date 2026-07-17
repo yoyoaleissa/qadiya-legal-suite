@@ -15,7 +15,6 @@ import {
   Sparkles,
   Wand2,
 } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
 import { useApp } from "@/lib/app-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
