@@ -16,6 +16,9 @@ import {
   CheckCircle2,
   Check,
   Undo2,
+  Calculator,
+  ChevronDown,
+  AlarmClock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,10 +30,12 @@ import {
   type CalendarEvent,
 } from "@/lib/calendar.functions";
 import { updateTaskStatus } from "@/lib/tasks.functions";
+import { listDeadlines } from "@/lib/deadlines.functions";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
 import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 import { buildIcs, downloadIcs } from "@/lib/ics-export";
 import { EmptyState } from "@/components/EmptyState";
+import { StatuteCalculator } from "@/components/StatuteCalculator";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
@@ -98,7 +103,14 @@ function CalendarPage() {
   const [view, setView] = useState({ year: iy, month: im - 1 });
   const [selected, setSelected] = useState(initial);
   const [showMonth, setShowMonth] = useState(false);
+  const [showDeadlines, setShowDeadlines] = useState(false);
+  const [showStatute, setShowStatute] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const runDeadlines = useServerFn(listDeadlines);
+  const { data: deadlines = [], isLoading: loadingDeadlines } = useQuery({
+    queryKey: ["deadlines"],
+    queryFn: () => runDeadlines(),
+  });
 
   useEffect(() => {
     if (date) {
@@ -191,13 +203,13 @@ function CalendarPage() {
             )}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
-            variant={showMonth ? "outline" : "default"}
-            onClick={() => setShowMonth(false)}
+            variant={!showMonth && !showDeadlines ? "default" : "outline"}
+            onClick={() => { setShowMonth(false); setShowDeadlines(false); }}
             className={cn(
               "gap-2",
-              !showMonth &&
+              !showMonth && !showDeadlines &&
                 "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
             )}
           >
@@ -206,7 +218,7 @@ function CalendarPage() {
           </Button>
           <Button
             variant={showMonth ? "default" : "outline"}
-            onClick={() => setShowMonth(true)}
+            onClick={() => { setShowMonth(true); setShowDeadlines(false); }}
             className={cn(
               "gap-2",
               showMonth &&
@@ -216,8 +228,46 @@ function CalendarPage() {
             <ListChecks className="h-4 w-4" />
             {tt("Monthly Overview", "ملخص الشهر")}
           </Button>
+          <Button
+            variant={showDeadlines ? "default" : "outline"}
+            onClick={() => { setShowDeadlines(true); setShowMonth(false); }}
+            className={cn(
+              "gap-2",
+              showDeadlines &&
+                "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
+            )}
+          >
+            <AlarmClock className="h-4 w-4" />
+            {tt("Deadlines", "المواعيد النهائية")}
+            {deadlines.filter((d) => d.days_remaining <= 7 && d.days_remaining >= 0).length > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold">
+                {deadlines.filter((d) => d.days_remaining <= 7 && d.days_remaining >= 0).length}
+              </span>
+            )}
+          </Button>
         </div>
       </div>
+
+      {/* Collapsible Statute of Limitations Calculator */}
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowStatute((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent/40 transition-colors"
+        >
+          <span className="flex items-center gap-2 text-sm font-medium">
+            <Calculator className="h-4 w-4 text-gold" />
+            {tt("Statute of Limitations Calculator", "حاسبة التقادم")}
+          </span>
+          <ChevronDown className={cn("h-4 w-4 transition-transform", showStatute && "rotate-180")} />
+        </button>
+        {showStatute && (
+          <div className="p-4 border-t border-border">
+            <StatuteCalculator />
+          </div>
+        )}
+      </div>
+
 
       <Card>
         <CardContent className="pt-6">
@@ -347,7 +397,135 @@ function CalendarPage() {
         </CardContent>
       </Card>
 
-      {showMonth ? (
+      {showDeadlines ? (
+        <div>
+          <div className="flex flex-wrap items-end justify-between gap-2 mb-3">
+            <h2 className="font-display text-xl">
+              {tt("Appeal & Cassation Deadlines", "مواعيد الاستئناف والتمييز")}
+            </h2>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-destructive" />
+                {tt("≤ 3 days", "≤ 3 أيام")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                {tt("≤ 7 days", "≤ 7 أيام")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-success" />
+                {tt("> 7 days", "> 7 أيام")}
+              </span>
+            </div>
+          </div>
+
+          {loadingDeadlines ? (
+            <Card>
+              <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {tt("Loading…", "جارٍ التحميل…")}
+              </CardContent>
+            </Card>
+          ) : deadlines.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={AlarmClock}
+                  title={tt("No open deadlines", "لا توجد مواعيد نهائية")}
+                  desc={tt(
+                    "Appeal and cassation deadlines will appear here after judgments are recorded.",
+                    "ستظهر مواعيد الاستئناف والتمييز هنا بعد تسجيل الأحكام.",
+                  )}
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <ol className="space-y-2">
+              {deadlines.map((d) => {
+                const urgency =
+                  d.days_remaining < 0
+                    ? "expired"
+                    : d.days_remaining <= 3
+                      ? "red"
+                      : d.days_remaining <= 7
+                        ? "yellow"
+                        : "green";
+                const border =
+                  urgency === "red" || urgency === "expired"
+                    ? "border-s-destructive"
+                    : urgency === "yellow"
+                      ? "border-s-yellow-500"
+                      : "border-s-success";
+                const chip =
+                  urgency === "red" || urgency === "expired"
+                    ? "bg-destructive/10 text-destructive"
+                    : urgency === "yellow"
+                      ? "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
+                      : "bg-success/10 text-success";
+                const title = lang === "ar" ? d.title_ar ?? d.title : d.title;
+                const caseTitle = lang === "ar" ? d.case_title_ar ?? d.case_title : d.case_title;
+                return (
+                  <li
+                    key={d.id}
+                    className={cn(
+                      "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4",
+                      border,
+                    )}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+                            chip,
+                          )}
+                        >
+                          <AlarmClock className="h-3 w-3" />
+                          {urgency === "expired"
+                            ? tt("Expired", "منتهي")
+                            : `${d.days_remaining} ${tt("days", "يوم")}`}
+                        </span>
+                        {d.case_number && (
+                          <span className="text-xs text-muted-foreground">#{d.case_number}</span>
+                        )}
+                        {d.kind !== "other" && (
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {d.kind === "appeal"
+                              ? tt("Appeal", "استئناف")
+                              : tt("Cassation", "تمييز")}
+                          </span>
+                        )}
+                      </div>
+                      <div className="font-medium mt-1">
+                        <span className={lang === "ar" ? "font-arabic" : ""}>{title}</span>
+                      </div>
+                      {caseTitle && (
+                        <div className="text-xs text-muted-foreground mt-0.5">{caseTitle}</div>
+                      )}
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {tt("Due:", "الاستحقاق:")} {d.due_date}
+                      </div>
+                      <a
+                        href={buildGoogleCalendarUrl({
+                          title: `⏰ ${title}${d.case_number ? ` #${d.case_number}` : ""}`,
+                          date: d.due_date,
+                          description: `${caseTitle ?? ""}`,
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-gold transition-colors"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
+                      </a>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      ) : showMonth ? (
         <div>
           <div className="flex flex-wrap items-end justify-between gap-2 mb-3">
             <h2 className="font-display text-xl">

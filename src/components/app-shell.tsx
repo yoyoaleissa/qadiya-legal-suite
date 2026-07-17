@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   StickyNote,
   ShieldCheck,
+  Shield,
   Activity,
   UsersRound,
 } from "lucide-react";
@@ -31,6 +32,7 @@ import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { claimFirstAdmin } from "@/lib/roles.functions";
 import { getMyFirm } from "@/lib/firms.functions";
+import { countUrgentDeadlines } from "@/lib/deadlines.functions";
 import { cn } from "@/lib/utils";
 import { DemoTour } from "@/components/DemoTour";
 import {
@@ -74,6 +76,7 @@ const NAV: NavItem[] = [
   { to: "/drafting", labelEn: "AI Drafting", labelAr: "المسودة الذكية", icon: Sparkles },
   { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
   { to: "/team", labelEn: "Team", labelAr: "الفريق", icon: UsersRound },
+  { to: "/tools", labelEn: "Tools", labelAr: "الأدوات", icon: Shield },
   { to: "/audit", labelEn: "Audit Log", labelAr: "سجل التدقيق", icon: ShieldCheck, adminOnly: true },
   { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
@@ -97,10 +100,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const runClaimAdmin = useServerFn(claimFirstAdmin);
   const runGetFirm = useServerFn(getMyFirm);
+  const runUrgent = useServerFn(countUrgentDeadlines);
   const { data: firm, isFetched: firmFetched } = useQuery({
     queryKey: ["my-firm"],
     queryFn: () => runGetFirm(),
     staleTime: 30_000,
+  });
+  const { data: urgentCount = 0 } = useQuery({
+    queryKey: ["urgent-deadlines"],
+    queryFn: () => runUrgent(),
+    staleTime: 60_000,
   });
 
   // Global Cmd/Ctrl+K opens the search palette.
@@ -181,7 +190,20 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             >
               <Icon className="h-4 w-4" />
-              <span className={lang === "ar" ? "font-arabic" : ""}>{t(n.labelEn, n.labelAr)}</span>
+              <span className={cn("flex-1", lang === "ar" ? "font-arabic" : "")}>
+                {t(n.labelEn, n.labelAr)}
+              </span>
+              {n.to === "/calendar" && urgentCount > 0 && (
+                <span
+                  className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold"
+                  title={t(
+                    `${urgentCount} deadline(s) within 7 days`,
+                    `${urgentCount} ميعاد خلال 7 أيام`,
+                  )}
+                >
+                  {urgentCount > 99 ? "99+" : urgentCount}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -305,7 +327,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   active ? "text-gold" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <div className="relative">
+                  <Icon className="h-5 w-5" />
+                  {n.to === "/calendar" && urgentCount > 0 && (
+                    <span className="absolute -top-1 -end-1 h-2 w-2 rounded-full bg-destructive" />
+                  )}
+                </div>
                 <span className={lang === "ar" ? "font-arabic" : ""}>
                   {t(n.labelEn, n.labelAr)}
                 </span>
