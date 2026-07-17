@@ -52,8 +52,9 @@ export const listNotifications = createServerFn({ method: "GET" })
     const [storedRes, tasksRes, hearingsRes, invoicesRes, judgmentsRes] = await Promise.all([
       supabase
         .from("notifications")
-        .select("id, kind, severity, title_en, title_ar, subtitle_en, subtitle_ar, href, read_at, created_at")
+        .select("id, kind, severity, title_en, title_ar, subtitle_en, subtitle_ar, href, read_at, clicked_at, dismissed_at, delivered_at, created_at")
         .eq("user_id", context.userId)
+        .is("dismissed_at", null)
         .order("read_at", { ascending: true, nullsFirst: true })
         .order("created_at", { ascending: false })
         .limit(50),
@@ -198,7 +199,8 @@ export const markNotificationRead = createServerFn({ method: "POST" })
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
       .eq("id", data.id)
-      .eq("user_id", context.userId);
+      .eq("user_id", context.userId)
+      .is("read_at", null);
     if (error) throw error;
     return { ok: true };
   });
@@ -215,15 +217,91 @@ export const markAllNotificationsRead = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const logNotificationClicked = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const now = new Date().toISOString();
+    // Log first click; also mark as read if not already.
+    const { error } = await context.supabase
+      .from("notifications")
+      .update({ clicked_at: now, read_at: now })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .is("clicked_at", null);
+    if (error) throw error;
+    // Ensure read_at is set even if clicked_at was already logged.
+    await context.supabase
+      .from("notifications")
+      .update({ read_at: now })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .is("read_at", null);
+    return { ok: true };
+  });
+
+export const logNotificationDelivered = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { ids: string[] }) =>
+    z.object({ ids: z.array(z.string().uuid()).max(50) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    if (data.ids.length === 0) return { ok: true, count: 0 };
+    // delivered_at defaults to insert time; this only backfills if somehow null.
+    const { error, count } = await context.supabase
+      .from("notifications")
+      .update({ delivered_at: new Date().toISOString() }, { count: "exact" })
+      .in("id", data.ids)
+      .eq("user_id", context.userId)
+      .is("delivered_at", null);
+    if (error) throw error;
+    return { ok: true, count: count ?? 0 };
+  });
+
 export const deleteNotification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
+    // Soft-dismiss: keep the row for audit; hide from feed.
     const { error } = await context.supabase
       .from("notifications")
-      .delete()
+      .update({ dismissed_at: new Date().toISOString() })
       .eq("id", data.id)
-      .eq("user_id", context.userId);
+      .eq("user_id", context.userId)
+      .is("dismissed_at", null);
     if (error) throw error;
     return { ok: true };
+  });
+
+export interface NotificationEngagementRow {
+  id: string;
+  kind: string;
+  severity: string;
+  title_en: string;
+  title_ar: string;
+  href: string | null;
+  delivered_at: string;
+  read_at: string | null;
+  clicked_at: string | null;
+  dismissed_at: string | null;
+  created_at: string;
+}
+
+/**
+ * Full engagement log for the signed-in user (accountability view).
+ * Returns delivered/read/clicked/dismissed timestamps for every notification.
+ */
+export const listNotificationEngagement = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<NotificationEngagementRow[]> => {
+    const { data, error } = await context.supabase
+      .from("notifications")
+      .select(
+        "id, kind, severity, title_en, title_ar, href, delivered_at, read_at, clicked_at, dismissed_at, created_at",
+      )
+      .eq("user_id", context.userId)
+      .order("delivered_at", { ascending: false })
+      .limit(200);
+    if (error) throw error;
+    return (data ?? []) as NotificationEngagementRow[];
   });
