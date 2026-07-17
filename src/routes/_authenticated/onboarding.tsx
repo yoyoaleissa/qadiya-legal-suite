@@ -13,6 +13,15 @@ import { createFirm, acceptInvitation, getMyFirm } from "@/lib/firms.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  beforeLoad: async () => {
+    try {
+      const firm = await getMyFirm();
+      if (firm) throw redirect({ to: "/dashboard", replace: true });
+    } catch (err) {
+      // Rethrow redirects; swallow fetch errors so onboarding stays reachable.
+      if (err && typeof err === "object" && "isRedirect" in err) throw err;
+    }
+  },
   head: () => ({
     meta: [
       { title: "Set up your firm — Qadiya OS" },
