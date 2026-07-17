@@ -141,6 +141,43 @@ export function KnowledgePanel({
 
           <div>
             <label className="text-xs text-muted-foreground">
+              {tt("Visibility", "النطاق")}
+            </label>
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setScope("firm")}
+                className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                  scope === "firm"
+                    ? "border-gold bg-gold/10 text-foreground"
+                    : "border-border bg-card text-muted-foreground hover:border-gold/40"
+                }`}
+              >
+                <div className="font-medium">{tt("My firm only", "مكتبي فقط")}</div>
+                <div className="text-[11px]">
+                  {tt("Private briefs, memos, precedents", "مذكرات وسوابق خاصة")}
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setScope("global")}
+                disabled
+                title={tt(
+                  "Only Qadiya editors can add to the shared corpus.",
+                  "لا يمكن إضافة المحتوى العام إلا من محرري قضية.",
+                )}
+                className="rounded-lg border border-dashed border-border/60 bg-muted/30 px-3 py-2 text-left text-sm text-muted-foreground opacity-70 cursor-not-allowed"
+              >
+                <div className="font-medium">{tt("Shared corpus", "المحتوى العام")}</div>
+                <div className="text-[11px]">
+                  {tt("Kuwaiti laws — curated by Qadiya", "قوانين كويتية — يديرها قضية")}
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground">
               {tt("Or upload a file (PDF, TXT, MD)", "أو ارفع ملفاً (PDF، TXT، MD)")}
             </label>
             <label className="mt-1 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed py-6 text-sm text-muted-foreground hover:border-gold/50 hover:bg-accent/30 transition-colors">
