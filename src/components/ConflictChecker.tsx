@@ -21,16 +21,10 @@ export function ConflictChecker() {
     setChecked(false);
 
     try {
-      // Fetch all clients
+      // Fetch all clients (English + Arabic names)
       const { data: clients } = await supabase
         .from("clients")
-        .select("id, name, company_name")
-        .limit(500);
-
-      // Fetch all cases for opposing parties (from case title or notes)
-      const { data: cases } = await supabase
-        .from("cases")
-        .select("id, title, opposing_party, client_id")
+        .select("id, name, name_ar")
         .limit(500);
 
       const entities: Array<{
@@ -41,36 +35,13 @@ export function ConflictChecker() {
         clientId?: string;
       }> = [];
 
-      // Add client names
       if (clients) {
         for (const c of clients) {
           if (c.name) {
-            entities.push({
-              name: c.name,
-              type: "client_name",
-              clientId: c.id,
-            });
+            entities.push({ name: c.name, type: "client_name", clientId: c.id });
           }
-          if (c.company_name) {
-            entities.push({
-              name: c.company_name,
-              type: "client_name",
-              clientId: c.id,
-            });
-          }
-        }
-      }
-
-      // Add opposing parties from cases
-      if (cases) {
-        for (const cs of cases) {
-          if (cs.opposing_party) {
-            entities.push({
-              name: cs.opposing_party,
-              type: "opposing_party",
-              caseTitle: cs.title,
-              caseId: cs.id,
-            });
+          if (c.name_ar) {
+            entities.push({ name: c.name_ar, type: "client_name", clientId: c.id });
           }
         }
       }
