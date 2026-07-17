@@ -37,6 +37,9 @@ export const Route = createFileRoute("/login")({
     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/login" }],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
   component: LoginPage,
 });
 
