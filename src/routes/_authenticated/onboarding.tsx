@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -9,10 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/lib/app-context";
-import { createFirm, acceptInvitation } from "@/lib/firms.functions";
+import { createFirm, acceptInvitation, getMyFirm } from "@/lib/firms.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  beforeLoad: async () => {
+    try {
+      const firm = await getMyFirm();
+      if (firm) throw redirect({ to: "/dashboard", replace: true });
+    } catch (err) {
+      // Rethrow redirects; swallow fetch errors so onboarding stays reachable.
+      if (err && typeof err === "object" && "isRedirect" in err) throw err;
+    }
+  },
   head: () => ({
     meta: [
       { title: "Set up your firm — Qadiya OS" },
