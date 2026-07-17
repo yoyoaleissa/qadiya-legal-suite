@@ -397,6 +397,13 @@ function TasksPage() {
         lang={lang}
         onCreated={() => queryClient.invalidateQueries({ queryKey: ["tasks"] })}
       />
+
+      <LogHoursDialog
+        open={!!logHoursFor}
+        onOpenChange={(v) => !v && setLogHoursFor(null)}
+        caseId={logHoursFor?.case_id ?? null}
+        taskTitle={logHoursFor ? (lang === "ar" ? (logHoursFor.title_ar ?? logHoursFor.title) : logHoursFor.title) : undefined}
+      />
     </div>
   );
 }
