@@ -50,6 +50,7 @@ export const listTasks = createServerFn({ method: "GET" })
         assignee: t.assignee,
         assignee_ar: t.assignee_ar,
         due_date: t.due_date,
+        case_id: t.case_id ?? null,
         case_number: cs?.case_number ?? null,
         case_title: cs?.title ?? null,
         case_title_ar: cs?.title_ar ?? null,
