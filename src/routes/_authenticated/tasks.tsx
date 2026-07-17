@@ -323,6 +323,19 @@ function TasksPage() {
                     )}
                   </div>
                 </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLogHoursFor(task);
+                  }}
+                  className="mt-0.5 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:border-gold transition-colors"
+                  aria-label={tt("Log hours", "تسجيل الساعات")}
+                  title={tt("Log hours", "تسجيل الساعات")}
+                >
+                  <Timer className="h-3 w-3" />
+                  <span className="hidden sm:inline">{tt("Hours", "ساعات")}</span>
+                </button>
                 {task.status === "done" && (
                   <button
                     type="button"
