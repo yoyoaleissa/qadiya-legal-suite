@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -38,6 +39,11 @@ import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticat
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/portal': typeof PortalRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activity': typeof AuthenticatedActivityRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/portal': typeof PortalRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activity': typeof AuthenticatedActivityRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/portal': typeof PortalRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/ai-assistant': typeof AuthenticatedAiAssistantRoute
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/portal'
+    | '/privacy'
     | '/sitemap.xml'
     | '/activity'
     | '/ai-assistant'
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/portal'
+    | '/privacy'
     | '/sitemap.xml'
     | '/activity'
     | '/ai-assistant'
@@ -300,6 +311,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/portal'
+    | '/privacy'
     | '/sitemap.xml'
     | '/_authenticated/activity'
     | '/_authenticated/ai-assistant'
@@ -328,6 +340,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   PortalRoute: typeof PortalRoute
+  PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
   InviteTokenRoute: typeof InviteTokenRoute
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -563,6 +583,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   PortalRoute: PortalRoute,
+  PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
   InviteTokenRoute: InviteTokenRoute,
