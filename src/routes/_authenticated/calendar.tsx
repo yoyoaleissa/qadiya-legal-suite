@@ -103,7 +103,14 @@ function CalendarPage() {
   const [view, setView] = useState({ year: iy, month: im - 1 });
   const [selected, setSelected] = useState(initial);
   const [showMonth, setShowMonth] = useState(false);
+  const [showDeadlines, setShowDeadlines] = useState(false);
+  const [showStatute, setShowStatute] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const runDeadlines = useServerFn(listDeadlines);
+  const { data: deadlines = [], isLoading: loadingDeadlines } = useQuery({
+    queryKey: ["deadlines"],
+    queryFn: () => runDeadlines(),
+  });
 
   useEffect(() => {
     if (date) {
@@ -196,13 +203,13 @@ function CalendarPage() {
             )}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
-            variant={showMonth ? "outline" : "default"}
-            onClick={() => setShowMonth(false)}
+            variant={!showMonth && !showDeadlines ? "default" : "outline"}
+            onClick={() => { setShowMonth(false); setShowDeadlines(false); }}
             className={cn(
               "gap-2",
-              !showMonth &&
+              !showMonth && !showDeadlines &&
                 "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
             )}
           >
@@ -211,7 +218,7 @@ function CalendarPage() {
           </Button>
           <Button
             variant={showMonth ? "default" : "outline"}
-            onClick={() => setShowMonth(true)}
+            onClick={() => { setShowMonth(true); setShowDeadlines(false); }}
             className={cn(
               "gap-2",
               showMonth &&
@@ -221,8 +228,46 @@ function CalendarPage() {
             <ListChecks className="h-4 w-4" />
             {tt("Monthly Overview", "ملخص الشهر")}
           </Button>
+          <Button
+            variant={showDeadlines ? "default" : "outline"}
+            onClick={() => { setShowDeadlines(true); setShowMonth(false); }}
+            className={cn(
+              "gap-2",
+              showDeadlines &&
+                "bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90",
+            )}
+          >
+            <AlarmClock className="h-4 w-4" />
+            {tt("Deadlines", "المواعيد النهائية")}
+            {deadlines.filter((d) => d.days_remaining <= 7 && d.days_remaining >= 0).length > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold">
+                {deadlines.filter((d) => d.days_remaining <= 7 && d.days_remaining >= 0).length}
+              </span>
+            )}
+          </Button>
         </div>
       </div>
+
+      {/* Collapsible Statute of Limitations Calculator */}
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowStatute((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent/40 transition-colors"
+        >
+          <span className="flex items-center gap-2 text-sm font-medium">
+            <Calculator className="h-4 w-4 text-gold" />
+            {tt("Statute of Limitations Calculator", "حاسبة التقادم")}
+          </span>
+          <ChevronDown className={cn("h-4 w-4 transition-transform", showStatute && "rotate-180")} />
+        </button>
+        {showStatute && (
+          <div className="p-4 border-t border-border">
+            <StatuteCalculator />
+          </div>
+        )}
+      </div>
+
 
       <Card>
         <CardContent className="pt-6">
