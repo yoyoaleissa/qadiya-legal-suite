@@ -989,8 +989,10 @@ function Footer({ t }: { t: TT }) {
         <FooterCol
           title={t("الشركة", "Company")}
           items={[
-            { l: t("من نحن", "About"), h: "#" },
             { l: t("الأسئلة", "FAQ"), h: "#faq" },
+            { l: t("دليل الاستخدام", "Help & guide"), h: "/help" },
+            { l: t("الخصوصية", "Privacy"), h: "/privacy" },
+            { l: t("الشروط", "Terms"), h: "/terms" },
           ]}
         />
         <FooterCol
@@ -999,6 +1001,7 @@ function Footer({ t }: { t: TT }) {
             { l: "hello@qadiya.app", h: "mailto:hello@qadiya.app", icon: Phone },
           ]}
         />
+
       </div>
       <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} Qadiya OS · {t("كل الحقوق محفوظة", "All rights reserved")}

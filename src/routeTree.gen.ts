@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortalRouteImport } from './routes/portal'
@@ -36,6 +37,11 @@ import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAiAssistantRouteImport } from './routes/_authenticated/ai-assistant'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/portal': typeof PortalRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/activity': typeof AuthenticatedActivityRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/audit': typeof AuthenticatedAuditRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/portal': typeof PortalRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/activity': typeof AuthenticatedActivityRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/audit': typeof AuthenticatedAuditRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/portal': typeof PortalRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/activity'
     | '/ai-assistant'
     | '/audit'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/activity'
     | '/ai-assistant'
     | '/audit'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/_authenticated/activity'
     | '/_authenticated/ai-assistant'
     | '/_authenticated/audit'
@@ -342,12 +354,20 @@ export interface RootRouteChildren {
   PortalRoute: typeof PortalRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
   InviteTokenRoute: typeof InviteTokenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -585,6 +605,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortalRoute: PortalRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
   InviteTokenRoute: InviteTokenRoute,
 }
