@@ -1008,7 +1008,10 @@ export type Database = {
       }
       notifications: {
         Row: {
+          clicked_at: string | null
           created_at: string
+          delivered_at: string
+          dismissed_at: string | null
           firm_id: string | null
           href: string | null
           id: string
@@ -1023,7 +1026,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          clicked_at?: string | null
           created_at?: string
+          delivered_at?: string
+          dismissed_at?: string | null
           firm_id?: string | null
           href?: string | null
           id?: string
@@ -1038,7 +1044,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          clicked_at?: string | null
           created_at?: string
+          delivered_at?: string
+          dismissed_at?: string | null
           firm_id?: string | null
           href?: string | null
           id?: string
