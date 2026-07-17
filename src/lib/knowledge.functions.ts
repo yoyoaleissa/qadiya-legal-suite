@@ -6,6 +6,7 @@ export interface KnowledgeSource {
   title: string;
   chunks: number;
   created_at: string;
+  scope: "global" | "firm";
 }
 
 /** Ingest a document: chunk the text, embed each chunk, and store it for retrieval. */
