@@ -327,7 +327,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   active ? "text-gold" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <div className="relative">
+                  <Icon className="h-5 w-5" />
+                  {n.to === "/calendar" && urgentCount > 0 && (
+                    <span className="absolute -top-1 -end-1 h-2 w-2 rounded-full bg-destructive" />
+                  )}
+                </div>
                 <span className={lang === "ar" ? "font-arabic" : ""}>
                   {t(n.labelEn, n.labelAr)}
                 </span>
