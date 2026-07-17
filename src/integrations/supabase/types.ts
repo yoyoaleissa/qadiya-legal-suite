@@ -286,6 +286,7 @@ export type Database = {
           created_at: string
           firm_id: string
           id: string
+          opposing_party: string | null
           overall_status: string
           title: string | null
           title_ar: string | null
@@ -299,6 +300,7 @@ export type Database = {
           created_at?: string
           firm_id?: string
           id?: string
+          opposing_party?: string | null
           overall_status?: string
           title?: string | null
           title_ar?: string | null
@@ -312,6 +314,7 @@ export type Database = {
           created_at?: string
           firm_id?: string
           id?: string
+          opposing_party?: string | null
           overall_status?: string
           title?: string | null
           title_ar?: string | null
