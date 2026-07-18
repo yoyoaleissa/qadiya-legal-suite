@@ -791,6 +791,7 @@ function CalendarPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               {selectedEvents.map((e) => {
                 const isDone = e.status === "completed" || e.status === "done";
+                const pc = priorityClasses(e.priority);
                 return (
                   <div
                     key={e.id}
@@ -798,9 +799,11 @@ function CalendarPage() {
                       "rounded-lg border bg-card p-4 border-s-4",
                       isDone
                         ? "border-s-success opacity-70"
-                        : e.type === "hearing"
-                          ? "border-s-navy dark:border-s-gold"
-                          : "border-s-destructive",
+                        : pc
+                          ? pc.border
+                          : e.type === "hearing"
+                            ? "border-s-navy dark:border-s-gold"
+                            : "border-s-destructive",
                     )}
                   >
                     <div className="flex items-center justify-between gap-2 mb-2">
@@ -809,11 +812,14 @@ function CalendarPage() {
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
                           isDone
                             ? "bg-success/15 text-success"
-                            : e.type === "hearing"
-                              ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                              : "bg-destructive/10 text-destructive",
+                            : pc
+                              ? pc.chip
+                              : e.type === "hearing"
+                                ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                                : "bg-destructive/10 text-destructive",
                         )}
                       >
+
                         {isDone ? (
                           <CheckCircle2 className="h-3 w-3" />
                         ) : e.type === "hearing" ? (
