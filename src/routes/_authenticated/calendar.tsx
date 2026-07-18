@@ -413,6 +413,7 @@ function CalendarPage() {
                         <span className="flex flex-wrap justify-center gap-1 mt-auto">
                           {dayEvents.slice(0, 3).map((e, i) => {
                             const done = e.status === "completed" || e.status === "done";
+                            const pc = priorityClasses(e.priority);
                             return (
                               <span
                                 key={i}
@@ -420,13 +421,16 @@ function CalendarPage() {
                                   "h-2 w-2 rounded-full",
                                   done
                                     ? "bg-success"
-                                    : e.type === "hearing"
-                                      ? "bg-navy dark:bg-gold"
-                                      : "bg-destructive",
+                                    : pc
+                                      ? pc.dot
+                                      : e.type === "hearing"
+                                        ? "bg-navy dark:bg-gold"
+                                        : "bg-destructive",
                                 )}
                               />
                             );
                           })}
+
                         </span>
                       );
                     })()}
