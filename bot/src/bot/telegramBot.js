@@ -313,18 +313,17 @@ _Powered by AI — Qadiya_
       // Initialize the scraper
       await this.scraper.init();
       
-      // Start the bot
-      this.bot.launch().then(() => {
-        logger.info('Qadiya Telegram Bot polling active');
-      }).catch(err => {
-        logger.error('Bot launch error:', err);
-      });
-      
-      logger.info('Qadiya Telegram Bot started successfully');
-      
-      // Graceful shutdown
+      // Graceful shutdown handlers (register before launch)
       process.once('SIGINT', () => this.stop('SIGINT'));
       process.once('SIGTERM', () => this.stop('SIGTERM'));
+      
+      // Start the bot with dropPendingUpdates to avoid 409 conflicts on restart
+      await this.bot.launch({
+        dropPendingUpdates: true,
+        allowedUpdates: ['message', 'callback_query'],
+      });
+      
+      logger.info('Qadiya Telegram Bot polling active');
     } catch (error) {
       logger.error('Failed to start bot:', error);
       throw error;
