@@ -93,7 +93,7 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
 export interface CaseLite {
   id: string;
   case_number: string | null;
-  title: string;
+  title: string | null;
   title_ar: string | null;
 }
 
@@ -105,8 +105,9 @@ export const listCasesLite = createServerFn({ method: "GET" })
       .select("id, case_number, title, title_ar")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return (data ?? []) as CaseLite[];
   });
+
 
 export const addHearing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
