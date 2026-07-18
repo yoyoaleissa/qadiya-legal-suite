@@ -81,9 +81,6 @@ function priorityClasses(priority: EventPriority) {
   };
 }
 
-function priorityRank(p: EventPriority) {
-  return p === "high" ? 3 : p === "medium" ? 2 : p === "low" ? 1 : 0;
-}
 
 
 export const Route = createFileRoute("/_authenticated/calendar")({
