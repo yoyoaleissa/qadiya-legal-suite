@@ -681,14 +681,17 @@ function CalendarPage() {
             <ol className="space-y-2">
               {monthEvents.map((e) => {
                 const day = Number(e.date.slice(8, 10));
+                const pc = priorityClasses(e.priority);
                 return (
                   <li
                     key={e.id}
                     className={cn(
                       "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4 transition-colors cursor-pointer hover:border-gold/50 hover:bg-accent/40",
-                      e.type === "hearing"
-                        ? "border-s-navy dark:border-s-gold"
-                        : "border-s-destructive",
+                      pc
+                        ? pc.border
+                        : e.type === "hearing"
+                          ? "border-s-navy dark:border-s-gold"
+                          : "border-s-destructive",
                     )}
                     onClick={() => {
                       setSelected(e.date);
@@ -706,11 +709,14 @@ function CalendarPage() {
                         <span
                           className={cn(
                             "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-                            e.type === "hearing"
-                              ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                              : "bg-destructive/10 text-destructive",
+                            pc
+                              ? pc.chip
+                              : e.type === "hearing"
+                                ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                                : "bg-destructive/10 text-destructive",
                           )}
                         >
+
                           {e.type === "hearing" ? (
                             <Gavel className="h-3 w-3" />
                           ) : (
