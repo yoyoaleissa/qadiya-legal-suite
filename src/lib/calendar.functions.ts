@@ -119,51 +119,25 @@ export const addHearing = createServerFn({ method: "POST" })
         session_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
         priority: z.enum(["high", "medium", "low"]).default("medium"),
         notes: z.string().optional(),
-        case_id: z.string().uuid().optional(),
+        case_id: z.string().uuid(),
       })
       .parse(data),
   )
   .handler(async ({ context, data }) => {
-    let caseId = data.case_id ?? null;
-
-    // hearings.case_id is nullable now, but if none provided, attach to (or create) a placeholder "General" case per firm
-    if (!caseId) {
-      const { data: existing } = await context.supabase
-        .from("cases")
-        .select("id")
-        .eq("case_number", "GENERAL")
-        .maybeSingle();
-      if (existing?.id) {
-        caseId = existing.id;
-      } else {
-        const { data: created, error: cErr } = await context.supabase
-          .from("cases")
-          .insert({
-            case_number: "GENERAL",
-            title: "General Calendar Events",
-            title_ar: "مواعيد عامة",
-            status: "active",
-          })
-          .select("id")
-          .single();
-        if (cErr) throw new Error(cErr.message);
-        caseId = created.id;
-      }
-    }
-
     const { data: row, error } = await context.supabase
       .from("hearings")
       .insert({
-        case_id: caseId,
+        case_id: data.case_id,
         session_date: data.session_date,
         notes: data.notes || null,
         status: "scheduled",
         priority: data.priority,
         title: data.title,
         title_ar: data.title_ar || null,
-      })
+      } as never)
       .select("id")
       .single();
     if (error) throw new Error(error.message);
     return row;
   });
+
