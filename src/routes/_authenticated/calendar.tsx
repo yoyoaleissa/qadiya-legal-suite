@@ -253,6 +253,10 @@ function CalendarPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <AddEventDialog defaultDate={selected} onCreated={() =>
+            queryClient.invalidateQueries({ queryKey: ["calendar-events"] })
+          } />
+
           <Button
             variant={!showMonth && !showDeadlines ? "default" : "outline"}
             onClick={() => { setShowMonth(false); setShowDeadlines(false); }}
