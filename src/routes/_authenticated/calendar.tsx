@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   CalendarDays,
   ChevronLeft,
@@ -19,15 +20,37 @@ import {
   Calculator,
   ChevronDown,
   AlarmClock,
+  Plus,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import {
   listCalendarEvents,
   updateHearingStatus,
+  addHearing,
+  listCasesLite,
   type CalendarEvent,
+  type EventPriority,
 } from "@/lib/calendar.functions";
 import { updateTaskStatus } from "@/lib/tasks.functions";
 import { listDeadlines } from "@/lib/deadlines.functions";
@@ -36,6 +59,32 @@ import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 import { buildIcs, downloadIcs } from "@/lib/ics-export";
 import { EmptyState } from "@/components/EmptyState";
 import { StatuteCalculator } from "@/components/StatuteCalculator";
+
+function priorityClasses(priority: EventPriority) {
+  if (!priority) return null;
+  if (priority === "high")
+    return {
+      border: "border-s-destructive",
+      chip: "bg-destructive/10 text-destructive",
+      dot: "bg-destructive",
+    };
+  if (priority === "medium")
+    return {
+      border: "border-s-gold",
+      chip: "bg-gold/15 text-gold",
+      dot: "bg-gold",
+    };
+  return {
+    border: "border-s-success",
+    chip: "bg-success/10 text-success",
+    dot: "bg-success",
+  };
+}
+
+function priorityRank(p: EventPriority) {
+  return p === "high" ? 3 : p === "medium" ? 2 : p === "low" ? 1 : 0;
+}
+
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
