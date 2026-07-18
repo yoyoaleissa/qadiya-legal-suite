@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   CalendarDays,
   ChevronLeft,
@@ -19,15 +20,37 @@ import {
   Calculator,
   ChevronDown,
   AlarmClock,
+  Plus,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useApp } from "@/lib/app-context";
 import { cn } from "@/lib/utils";
 import {
   listCalendarEvents,
   updateHearingStatus,
+  addHearing,
+  listCasesLite,
   type CalendarEvent,
+  type EventPriority,
 } from "@/lib/calendar.functions";
 import { updateTaskStatus } from "@/lib/tasks.functions";
 import { listDeadlines } from "@/lib/deadlines.functions";
@@ -36,6 +59,29 @@ import { exportMonthlyOverviewPdf } from "@/lib/calendar-export";
 import { buildIcs, downloadIcs } from "@/lib/ics-export";
 import { EmptyState } from "@/components/EmptyState";
 import { StatuteCalculator } from "@/components/StatuteCalculator";
+
+function priorityClasses(priority: EventPriority) {
+  if (!priority) return null;
+  if (priority === "high")
+    return {
+      border: "border-s-destructive",
+      chip: "bg-destructive/10 text-destructive",
+      dot: "bg-destructive",
+    };
+  if (priority === "medium")
+    return {
+      border: "border-s-gold",
+      chip: "bg-gold/15 text-gold",
+      dot: "bg-gold",
+    };
+  return {
+    border: "border-s-success",
+    chip: "bg-success/10 text-success",
+    dot: "bg-success",
+  };
+}
+
+
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   validateSearch: (search: Record<string, unknown>): { date?: string } => ({
@@ -204,6 +250,10 @@ function CalendarPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <AddEventDialog defaultDate={selected} onCreated={() =>
+            queryClient.invalidateQueries({ queryKey: ["calendar-events"] })
+          } />
+
           <Button
             variant={!showMonth && !showDeadlines ? "default" : "outline"}
             onClick={() => { setShowMonth(false); setShowDeadlines(false); }}
@@ -360,6 +410,7 @@ function CalendarPage() {
                         <span className="flex flex-wrap justify-center gap-1 mt-auto">
                           {dayEvents.slice(0, 3).map((e, i) => {
                             const done = e.status === "completed" || e.status === "done";
+                            const pc = priorityClasses(e.priority);
                             return (
                               <span
                                 key={i}
@@ -367,13 +418,16 @@ function CalendarPage() {
                                   "h-2 w-2 rounded-full",
                                   done
                                     ? "bg-success"
-                                    : e.type === "hearing"
-                                      ? "bg-navy dark:bg-gold"
-                                      : "bg-destructive",
+                                    : pc
+                                      ? pc.dot
+                                      : e.type === "hearing"
+                                        ? "bg-navy dark:bg-gold"
+                                        : "bg-destructive",
                                 )}
                               />
                             );
                           })}
+
                         </span>
                       );
                     })()}
@@ -624,14 +678,17 @@ function CalendarPage() {
             <ol className="space-y-2">
               {monthEvents.map((e) => {
                 const day = Number(e.date.slice(8, 10));
+                const pc = priorityClasses(e.priority);
                 return (
                   <li
                     key={e.id}
                     className={cn(
                       "flex items-start gap-3 rounded-lg border bg-card p-3 border-s-4 transition-colors cursor-pointer hover:border-gold/50 hover:bg-accent/40",
-                      e.type === "hearing"
-                        ? "border-s-navy dark:border-s-gold"
-                        : "border-s-destructive",
+                      pc
+                        ? pc.border
+                        : e.type === "hearing"
+                          ? "border-s-navy dark:border-s-gold"
+                          : "border-s-destructive",
                     )}
                     onClick={() => {
                       setSelected(e.date);
@@ -649,11 +706,14 @@ function CalendarPage() {
                         <span
                           className={cn(
                             "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-                            e.type === "hearing"
-                              ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                              : "bg-destructive/10 text-destructive",
+                            pc
+                              ? pc.chip
+                              : e.type === "hearing"
+                                ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                                : "bg-destructive/10 text-destructive",
                           )}
                         >
+
                           {e.type === "hearing" ? (
                             <Gavel className="h-3 w-3" />
                           ) : (
@@ -728,6 +788,7 @@ function CalendarPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               {selectedEvents.map((e) => {
                 const isDone = e.status === "completed" || e.status === "done";
+                const pc = priorityClasses(e.priority);
                 return (
                   <div
                     key={e.id}
@@ -735,9 +796,11 @@ function CalendarPage() {
                       "rounded-lg border bg-card p-4 border-s-4",
                       isDone
                         ? "border-s-success opacity-70"
-                        : e.type === "hearing"
-                          ? "border-s-navy dark:border-s-gold"
-                          : "border-s-destructive",
+                        : pc
+                          ? pc.border
+                          : e.type === "hearing"
+                            ? "border-s-navy dark:border-s-gold"
+                            : "border-s-destructive",
                     )}
                   >
                     <div className="flex items-center justify-between gap-2 mb-2">
@@ -746,11 +809,14 @@ function CalendarPage() {
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
                           isDone
                             ? "bg-success/15 text-success"
-                            : e.type === "hearing"
-                              ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
-                              : "bg-destructive/10 text-destructive",
+                            : pc
+                              ? pc.chip
+                              : e.type === "hearing"
+                                ? "bg-navy/10 text-navy dark:bg-gold/15 dark:text-gold"
+                                : "bg-destructive/10 text-destructive",
                         )}
                       >
+
                         {isDone ? (
                           <CheckCircle2 className="h-3 w-3" />
                         ) : e.type === "hearing" ? (
@@ -826,3 +892,136 @@ function CalendarPage() {
     </div>
   );
 }
+
+function AddEventDialog({
+  defaultDate,
+  onCreated,
+}: {
+  defaultDate: string;
+  onCreated: () => void;
+}) {
+  const { lang } = useApp();
+  const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [titleAr, setTitleAr] = useState("");
+  const [date, setDate] = useState(defaultDate);
+  const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
+  const [caseId, setCaseId] = useState<string>("");
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    if (open) setDate(defaultDate);
+  }, [open, defaultDate]);
+
+  const runListCases = useServerFn(listCasesLite);
+  const { data: cases = [] } = useQuery({
+    queryKey: ["cases-lite"],
+    queryFn: () => runListCases(),
+    enabled: open,
+  });
+
+  const runAdd = useServerFn(addHearing);
+  const create = useMutation({
+    mutationFn: () =>
+      runAdd({
+        data: {
+          title,
+          title_ar: titleAr || undefined,
+          session_date: date,
+          priority,
+          notes: notes || undefined,
+          case_id: caseId,
+        },
+      }),
+    onSuccess: () => {
+      toast.success(tt("Event added", "تمت إضافة الموعد"));
+      setOpen(false);
+      setTitle("");
+      setTitleAr("");
+      setNotes("");
+      setCaseId("");
+      setPriority("medium");
+      onCreated();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const canSubmit = title.trim() && date && caseId && !create.isPending;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90">
+          <Plus className="h-4 w-4" />
+          {tt("Add Event", "إضافة موعد")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{tt("New calendar event", "موعد جديد")}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-3">
+          <div className="grid gap-1.5">
+            <Label>{tt("Title (English)", "العنوان (إنجليزي)")}</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Hearing / Meeting…" />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>{tt("Title (Arabic)", "العنوان (عربي)")}</Label>
+            <Input value={titleAr} onChange={(e) => setTitleAr(e.target.value)} dir="rtl" placeholder="جلسة / اجتماع…" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label>{tt("Date", "التاريخ")}</Label>
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{tt("Priority", "الأولوية")}</Label>
+              <Select value={priority} onValueChange={(v) => setPriority(v as "high" | "medium" | "low")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">🔴 {tt("High", "عالية")}</SelectItem>
+                  <SelectItem value="medium">🟡 {tt("Medium", "متوسطة")}</SelectItem>
+                  <SelectItem value="low">🟢 {tt("Low", "منخفضة")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>{tt("Case", "القضية")}</Label>
+            <Select value={caseId} onValueChange={setCaseId}>
+              <SelectTrigger>
+                <SelectValue placeholder={tt("Select a case…", "اختر قضية…")} />
+              </SelectTrigger>
+              <SelectContent>
+                {cases.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.case_number ? `#${c.case_number} — ` : ""}
+                    {(lang === "ar" ? c.title_ar : c.title) || c.title || "—"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>{tt("Notes", "ملاحظات")}</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            {tt("Cancel", "إلغاء")}
+          </Button>
+          <Button
+            disabled={!canSubmit}
+            onClick={() => create.mutate()}
+            className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90"
+          >
+            {create.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : tt("Create", "إنشاء")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+

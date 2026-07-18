@@ -786,37 +786,46 @@ export type Database = {
       }
       hearings: {
         Row: {
-          case_id: string
+          case_id: string | null
           created_at: string
           firm_id: string
           id: string
           level: Database["public"]["Enums"]["court_level"] | null
           notes: string | null
+          priority: string | null
           session_date: string | null
           sort_order: number
           status: string | null
+          title: string | null
+          title_ar: string | null
         }
         Insert: {
-          case_id: string
+          case_id?: string | null
           created_at?: string
           firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           notes?: string | null
+          priority?: string | null
           session_date?: string | null
           sort_order?: number
           status?: string | null
+          title?: string | null
+          title_ar?: string | null
         }
         Update: {
-          case_id?: string
+          case_id?: string | null
           created_at?: string
           firm_id?: string
           id?: string
           level?: Database["public"]["Enums"]["court_level"] | null
           notes?: string | null
+          priority?: string | null
           session_date?: string | null
           sort_order?: number
           status?: string | null
+          title?: string | null
+          title_ar?: string | null
         }
         Relationships: [
           {
