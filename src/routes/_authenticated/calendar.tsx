@@ -879,3 +879,136 @@ function CalendarPage() {
     </div>
   );
 }
+
+function AddEventDialog({
+  defaultDate,
+  onCreated,
+}: {
+  defaultDate: string;
+  onCreated: () => void;
+}) {
+  const { lang } = useApp();
+  const tt = (en: string, ar: string) => (lang === "ar" ? ar : en);
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [titleAr, setTitleAr] = useState("");
+  const [date, setDate] = useState(defaultDate);
+  const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
+  const [caseId, setCaseId] = useState<string>("");
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    if (open) setDate(defaultDate);
+  }, [open, defaultDate]);
+
+  const runListCases = useServerFn(listCasesLite);
+  const { data: cases = [] } = useQuery({
+    queryKey: ["cases-lite"],
+    queryFn: () => runListCases(),
+    enabled: open,
+  });
+
+  const runAdd = useServerFn(addHearing);
+  const create = useMutation({
+    mutationFn: () =>
+      runAdd({
+        data: {
+          title,
+          title_ar: titleAr || undefined,
+          session_date: date,
+          priority,
+          notes: notes || undefined,
+          case_id: caseId,
+        },
+      }),
+    onSuccess: () => {
+      toast.success(tt("Event added", "تمت إضافة الموعد"));
+      setOpen(false);
+      setTitle("");
+      setTitleAr("");
+      setNotes("");
+      setCaseId("");
+      setPriority("medium");
+      onCreated();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const canSubmit = title.trim() && date && caseId && !create.isPending;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="gap-2 bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90">
+          <Plus className="h-4 w-4" />
+          {tt("Add Event", "إضافة موعد")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{tt("New calendar event", "موعد جديد")}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-3">
+          <div className="grid gap-1.5">
+            <Label>{tt("Title (English)", "العنوان (إنجليزي)")}</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Hearing / Meeting…" />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>{tt("Title (Arabic)", "العنوان (عربي)")}</Label>
+            <Input value={titleAr} onChange={(e) => setTitleAr(e.target.value)} dir="rtl" placeholder="جلسة / اجتماع…" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label>{tt("Date", "التاريخ")}</Label>
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{tt("Priority", "الأولوية")}</Label>
+              <Select value={priority} onValueChange={(v) => setPriority(v as "high" | "medium" | "low")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">🔴 {tt("High", "عالية")}</SelectItem>
+                  <SelectItem value="medium">🟡 {tt("Medium", "متوسطة")}</SelectItem>
+                  <SelectItem value="low">🟢 {tt("Low", "منخفضة")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>{tt("Case", "القضية")}</Label>
+            <Select value={caseId} onValueChange={setCaseId}>
+              <SelectTrigger>
+                <SelectValue placeholder={tt("Select a case…", "اختر قضية…")} />
+              </SelectTrigger>
+              <SelectContent>
+                {cases.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.case_number ? `#${c.case_number} — ` : ""}
+                    {(lang === "ar" ? c.title_ar : c.title) || c.title || "—"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>{tt("Notes", "ملاحظات")}</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            {tt("Cancel", "إلغاء")}
+          </Button>
+          <Button
+            disabled={!canSubmit}
+            onClick={() => create.mutate()}
+            className="bg-navy text-white hover:bg-navy/90 dark:bg-gold dark:text-navy dark:hover:bg-gold/90"
+          >
+            {create.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : tt("Create", "إنشاء")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
