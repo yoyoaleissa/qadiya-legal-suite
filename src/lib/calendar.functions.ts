@@ -17,6 +17,7 @@ export const updateHearingStatus = createServerFn({ method: "POST" })
   });
 
 export type CalendarEventType = "hearing" | "deadline";
+export type EventPriority = "high" | "medium" | "low" | null;
 
 export interface CalendarEvent {
   id: string;
@@ -28,6 +29,7 @@ export interface CalendarEvent {
   sub_ar: string | null;
   status: string | null;
   case_number: string | null;
+  priority: EventPriority;
 }
 
 export const listCalendarEvents = createServerFn({ method: "GET" })
@@ -37,7 +39,9 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
 
     const [{ data: cases }, { data: hearings }, { data: tasks }] = await Promise.all([
       supabase.from("cases").select("id, case_number, title, title_ar"),
-      supabase.from("hearings").select("id, case_id, session_date, notes, status, level"),
+      supabase
+        .from("hearings")
+        .select("id, case_id, session_date, notes, status, level, priority, title, title_ar"),
       supabase
         .from("tasks")
         .select("id, title, title_ar, due_date, status, priority, case_id")
@@ -45,22 +49,24 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
     ]);
 
     const caseMap = new Map((cases ?? []).map((c) => [c.id, c] as const));
-
     const events: CalendarEvent[] = [];
 
     for (const h of hearings ?? []) {
       if (!h.session_date) continue;
       const cs = h.case_id ? caseMap.get(h.case_id) : null;
+      const title = h.title || cs?.title || "Court hearing";
+      const title_ar = h.title_ar || cs?.title_ar || h.title || "جلسة قضائية";
       events.push({
         id: `hearing-${h.id}`,
         date: h.session_date,
         type: "hearing",
-        title: cs?.title ?? "Court hearing",
-        title_ar: cs?.title_ar ?? "جلسة قضائية",
+        title,
+        title_ar,
         sub: h.notes,
         sub_ar: h.notes,
         status: h.status,
         case_number: cs?.case_number ?? null,
+        priority: (h.priority as EventPriority) ?? null,
       });
     }
 
@@ -77,8 +83,86 @@ export const listCalendarEvents = createServerFn({ method: "GET" })
         sub_ar: cs?.title_ar ?? null,
         status: tk.priority,
         case_number: cs?.case_number ?? null,
+        priority: (tk.priority as EventPriority) ?? null,
       });
     }
 
     return events;
+  });
+
+export interface CaseLite {
+  id: string;
+  case_number: string | null;
+  title: string;
+  title_ar: string | null;
+}
+
+export const listCasesLite = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<CaseLite[]> => {
+    const { data, error } = await context.supabase
+      .from("cases")
+      .select("id, case_number, title, title_ar")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const addHearing = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        title: z.string().min(1),
+        title_ar: z.string().optional(),
+        session_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        priority: z.enum(["high", "medium", "low"]).default("medium"),
+        notes: z.string().optional(),
+        case_id: z.string().uuid().optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }) => {
+    let caseId = data.case_id ?? null;
+
+    // hearings.case_id is nullable now, but if none provided, attach to (or create) a placeholder "General" case per firm
+    if (!caseId) {
+      const { data: existing } = await context.supabase
+        .from("cases")
+        .select("id")
+        .eq("case_number", "GENERAL")
+        .maybeSingle();
+      if (existing?.id) {
+        caseId = existing.id;
+      } else {
+        const { data: created, error: cErr } = await context.supabase
+          .from("cases")
+          .insert({
+            case_number: "GENERAL",
+            title: "General Calendar Events",
+            title_ar: "مواعيد عامة",
+            status: "active",
+          })
+          .select("id")
+          .single();
+        if (cErr) throw new Error(cErr.message);
+        caseId = created.id;
+      }
+    }
+
+    const { data: row, error } = await context.supabase
+      .from("hearings")
+      .insert({
+        case_id: caseId,
+        session_date: data.session_date,
+        notes: data.notes || null,
+        status: "scheduled",
+        priority: data.priority,
+        title: data.title,
+        title_ar: data.title_ar || null,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
   });
