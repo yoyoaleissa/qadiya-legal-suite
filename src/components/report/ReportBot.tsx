@@ -28,7 +28,7 @@ export function ReportBot() {
       kind: "text",
       text: "Hello — I'm the Qadiya Report Bot. Send me a case number (e.g. 222486500) and I'll pull the latest status, timeline, and next steps from the Ministry of Justice.",
       textAr:
-        "أهلاً بك، أنا بوت تقارير قضية. أرسل رقم الدعوى (مثال: 222486500) وسأعرض لك آخر حالة لها والجدول الزمني والخطوات الإجرائية القادمة من وزارة العدل.",
+        "أهلاً بكم، هذا مساعد تقارير الدعاوى. يُرجى إرسال رقم الدعوى (مثال: 222486500) لعرض آخر حالة لها، والجدول الزمني، والخطوات الإجرائية القادمة وفقاً لبيانات وزارة العدل.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -81,7 +81,7 @@ export function ReportBot() {
         kind: "text",
         text: "Hello — I'm the Qadiya Report Bot. Send me a case number (e.g. 222486500) and I'll pull the latest status, timeline, and next steps from the Ministry of Justice.",
         textAr:
-          "أهلاً بك، أنا بوت تقارير قضية. أرسل رقم الدعوى (مثال: 222486500) وسأعرض لك آخر حالة لها والجدول الزمني والخطوات الإجرائية القادمة من وزارة العدل.",
+          "أهلاً بكم، هذا مساعد تقارير الدعاوى. يُرجى إرسال رقم الدعوى (مثال: 222486500) لعرض آخر حالة لها، والجدول الزمني، والخطوات الإجرائية القادمة وفقاً لبيانات وزارة العدل.",
       },
     ]);
     setInput("");
@@ -96,7 +96,7 @@ export function ReportBot() {
           </div>
           <div className="flex-1">
             <div className="font-display text-lg leading-tight">
-              {t("Report Bot", "روبوت التقارير")}
+              {t("Report Bot", "مساعد التقارير")}
             </div>
             <div className="text-xs text-white/70">
               {t(
@@ -174,7 +174,7 @@ export function ReportBot() {
                 )}
               </li>
               <li>
-                {t("Bot fetches the latest MOJ extract.", "يستخرج البوت أحدث بيانات وزارة العدل.")}
+                {t("Bot fetches the latest MOJ extract.", "يستخرج المساعد الآلي أحدث بيانات وزارة العدل.")}
               </li>
               <li>
                 {t(

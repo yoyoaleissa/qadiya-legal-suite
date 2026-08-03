@@ -126,7 +126,7 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     title: "Telegram Bot (Live Integration)",
-    titleAr: "بوت تلغرام (تكامل مباشر)",
+    titleAr: "مساعد تليجرام الآلي (تكامل مباشر)",
     description:
       "Clients send a case number on Telegram → get an instant PDF report. Lawyers get smart judgment alerts with appeal deadline countdown and one-click Google Calendar buttons. Data syncs to this dashboard automatically.",
     descriptionAr:
