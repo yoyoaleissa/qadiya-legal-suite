@@ -70,6 +70,43 @@ function LoginPage() {
   const [checking, setChecking] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const [googleHidden, setGoogleHidden] = useState(false);
+
+  // Additive Google sign-in. If the provider isn't configured, we hide the
+  // button rather than surfacing a broken flow — email/password is untouched.
+  const handleGoogle = async () => {
+    if (googleLoading) return;
+    setGoogleError(null);
+    setGoogleLoading(true);
+    try {
+      const { lovable } = await import("@/integrations/lovable/index");
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        const msg = String(result.error.message ?? result.error).toLowerCase();
+        if (msg.includes("unsupported provider") || msg.includes("not enabled")) {
+          setGoogleHidden(true);
+        } else {
+          setGoogleError(
+            isAr ? "تعذّر تسجيل الدخول عبر جوجل." : "Google sign-in is unavailable right now.",
+          );
+        }
+        return;
+      }
+      if (result.redirected) return;
+      await router.invalidate();
+      goPostAuth();
+    } catch {
+      setGoogleError(
+        isAr ? "تعذّر تسجيل الدخول عبر جوجل." : "Google sign-in is unavailable right now.",
+      );
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   // If already signed in, go straight to the return target (or dashboard).
   useEffect(() => {
