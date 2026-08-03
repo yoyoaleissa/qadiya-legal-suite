@@ -87,6 +87,38 @@ export const createCase = createServerFn({ method: "POST" })
     return row;
   });
 
+export const updateCaseParties = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        case_id: z.string().uuid(),
+        opposing_party: z.string().optional(),
+        opposing_party_ar: z.string().optional(),
+        judge_name: z.string().optional(),
+        judge_name_ar: z.string().optional(),
+        opposing_counsel: z.string().optional(),
+        opposing_counsel_ar: z.string().optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }) => {
+    const clean = (value: string | undefined) => value?.trim() || null;
+    const { error } = await context.supabase
+      .from("cases")
+      .update({
+        opposing_party: clean(data.opposing_party),
+        opposing_party_ar: clean(data.opposing_party_ar),
+        judge_name: clean(data.judge_name),
+        judge_name_ar: clean(data.judge_name_ar),
+        opposing_counsel: clean(data.opposing_counsel),
+        opposing_counsel_ar: clean(data.opposing_counsel_ar),
+      })
+      .eq("id", data.case_id);
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
+
 /** Add a manual timeline event to a case, optionally updating the case's overall status. */
 export const addTimelineEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

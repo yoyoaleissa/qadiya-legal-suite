@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Plus,
   CalendarPlus,
+  Pencil,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,7 +38,8 @@ import { useApp } from "@/lib/app-context";
 import { EmptyState } from "@/components/EmptyState";
 import { ClientChat } from "@/components/ClientChat";
 import { listClients, getClientDetail } from "@/lib/clients.functions";
-import { createClient, addTimelineEvent } from "@/lib/cases.functions";
+import { createClient, addTimelineEvent, updateCaseParties } from "@/lib/cases.functions";
+import type { ClientCase } from "@/lib/clients.functions";
 import { checkConflict, type ConflictMatch } from "@/lib/insights.functions";
 import { AlertTriangle } from "lucide-react";
 import { ConflictChecker } from "@/components/ConflictChecker";
@@ -446,6 +448,7 @@ function ClientsPage() {
       title: string;
       status: string;
     } | null>(null);
+    const [editCase, setEditCase] = useState<ClientCase | null>(null);
     const { data: detail, isLoading: loadingDetail } = useQuery({
       queryKey: ["client", clientId],
       queryFn: () => runDetail({ data: { clientId: clientId! } }),
@@ -539,21 +542,32 @@ function ClientsPage() {
                               </span>
                             </div>
 
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="mt-3 gap-1.5"
-                              onClick={() =>
-                                setAddEventCase({
-                                  id: cs.id,
-                                  title: cs.title ?? cs.case_number,
-                                  status: cs.overall_status,
-                                })
-                              }
-                            >
-                              <CalendarPlus className="h-3.5 w-3.5" />
-                              {tt("Add Event", "إضافة حدث")}
-                            </Button>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={() => setEditCase(cs)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                                {tt("Edit parties", "تعديل أطراف الدعوى")}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={() =>
+                                  setAddEventCase({
+                                    id: cs.id,
+                                    title: cs.title ?? cs.case_number,
+                                    status: cs.overall_status,
+                                  })
+                                }
+                              >
+                                <CalendarPlus className="h-3.5 w-3.5" />
+                                {tt("Add Event", "إضافة حدث")}
+                              </Button>
+                            </div>
 
                             {cs.timeline.length > 0 && (
                               <ol className="mt-4 space-y-3 border-s ps-4">
@@ -594,7 +608,99 @@ function ClientsPage() {
           tt={tt}
           lang={lang}
         />
+        <EditCasePartiesDialog
+          caseInfo={editCase}
+          clientId={clientId}
+          onClose={() => setEditCase(null)}
+          tt={tt}
+        />
       </>
+    );
+  }
+
+  function EditCasePartiesDialog({
+    caseInfo,
+    clientId,
+    onClose,
+    tt,
+  }: {
+    caseInfo: ClientCase | null;
+    clientId: string | null;
+    onClose: () => void;
+    tt: (en: string, ar: string) => string;
+  }) {
+    const runUpdate = useServerFn(updateCaseParties);
+    const qc = useQueryClient();
+    const [saving, setSaving] = useState(false);
+    const [values, setValues] = useState({
+      opposing_party: "",
+      opposing_party_ar: "",
+      judge_name: "",
+      judge_name_ar: "",
+      opposing_counsel: "",
+      opposing_counsel_ar: "",
+    });
+
+    useEffect(() => {
+      if (!caseInfo) return;
+      setValues({
+        opposing_party: caseInfo.opposing_party ?? "",
+        opposing_party_ar: caseInfo.opposing_party_ar ?? "",
+        judge_name: caseInfo.judge_name ?? "",
+        judge_name_ar: caseInfo.judge_name_ar ?? "",
+        opposing_counsel: caseInfo.opposing_counsel ?? "",
+        opposing_counsel_ar: caseInfo.opposing_counsel_ar ?? "",
+      });
+    }, [caseInfo]);
+
+    const field = (key: keyof typeof values, en: string, ar: string, dir?: "rtl") => (
+      <div>
+        <label className="text-xs text-muted-foreground">{tt(en, ar)}</label>
+        <Input
+          value={values[key]}
+          dir={dir}
+          onChange={(event) => setValues((current) => ({ ...current, [key]: event.target.value }))}
+        />
+      </div>
+    );
+
+    const save = async () => {
+      if (!caseInfo || !clientId) return;
+      setSaving(true);
+      try {
+        await runUpdate({ data: { case_id: caseInfo.id, ...values } });
+        await qc.invalidateQueries({ queryKey: ["client", clientId] });
+        onClose();
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    return (
+      <Dialog open={!!caseInfo} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{tt("People involved", "أطراف الدعوى")}</DialogTitle>
+            <DialogDescription>
+              {caseInfo ? `${tt("Case", "الدعوى")} #${caseInfo.case_number}` : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2 sm:grid-cols-2">
+            {field("opposing_party", "Opposing party (English)", "الخصم (بالإنجليزية)")}
+            {field("opposing_party_ar", "Opposing party (Arabic)", "الخصم (بالعربية)", "rtl")}
+            {field("judge_name", "Presiding judge (English)", "رئيس الدائرة (بالإنجليزية)")}
+            {field("judge_name_ar", "Presiding judge (Arabic)", "رئيس الدائرة (بالعربية)", "rtl")}
+            {field("opposing_counsel", "Opposing counsel (English)", "وكيل الخصم (بالإنجليزية)")}
+            {field("opposing_counsel_ar", "Opposing counsel (Arabic)", "وكيل الخصم (بالعربية)", "rtl")}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>{tt("Cancel", "إلغاء")}</Button>
+            <Button onClick={save} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : tt("Save", "حفظ")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
