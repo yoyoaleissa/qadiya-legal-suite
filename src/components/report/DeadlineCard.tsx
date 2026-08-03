@@ -50,7 +50,7 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineInfo | null }) {
             {Math.abs(deadline.days_remaining)}
           </p>
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            {overdue ? (lang === "ar" ? "يوماً متأخراً" : "days overdue") : t("days_remaining")}
+            {overdue ? (lang === "ar" ? "يوماً متأخراً عن الميعاد" : "days overdue") : t("days_remaining")}
           </p>
         </div>
       </div>

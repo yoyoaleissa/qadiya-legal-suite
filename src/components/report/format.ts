@@ -1,7 +1,7 @@
 import type { Lang } from "@/lib/app-context";
 
 export function formatDate(dateStr: string | null, lang: Lang): string {
-  if (!dateStr) return lang === "ar" ? "غير محدد" : "—";
+  if (!dateStr) return lang === "ar" ? "غير محدَّد" : "—";
   const d = new Date(dateStr + (dateStr.length === 10 ? "T00:00:00Z" : ""));
   if (Number.isNaN(d.getTime())) return dateStr;
   return new Intl.DateTimeFormat(lang === "ar" ? "ar-KW" : "en-GB", {

@@ -58,9 +58,9 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
               const statusText =
                 lang === "ar" ? report.status_headline_ar : report.status_headline_en;
               const msg =
-                `📋 تحديث قضية ${report.case_number}\n` +
+                `تحديث بشأن الدعوى رقم ${report.case_number}\n` +
                 `المحكمة: ${court}\n` +
-                `الجلسة القادمة: ${nextHearing?.session_date ?? "—"}\n` +
+                `موعد الجلسة القادمة: ${nextHearing?.session_date ?? "—"}\n` +
                 `الحالة: ${statusText}\n\n— Qadiya AI`;
               window.open(
                 `https://wa.me/?text=${encodeURIComponent(msg)}`,
@@ -70,7 +70,7 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
             }}
           >
             <Share2 className="h-4 w-4" />{" "}
-            {lang === "ar" ? "📤 مشاركة واتساب" : "Share on WhatsApp"}
+            {lang === "ar" ? "مشاركة عبر واتساب" : "Share on WhatsApp"}
           </Button>
           <Button size="sm" onClick={handleDownload} disabled={exporting} className="gap-1.5">
             {exporting ? (
