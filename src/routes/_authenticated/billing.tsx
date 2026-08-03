@@ -129,7 +129,7 @@ function BillingPage() {
             title={tt("Admins only", "للمسؤولين فقط")}
             desc={tt(
               "Billing and financial data are restricted to firm administrators.",
-              "الفاتورة والبيانات المالية مقصورة على مسؤولي المكتب.",
+              "بيانات الفوترة والبيانات المالية مقصورة على مسؤولي المكتب.",
             )}
           />
         </CardContent>
@@ -152,7 +152,7 @@ function BillingPage() {
           <div className="text-xs uppercase tracking-widest text-muted-foreground">
             {tt("Finance", "المالية")}
           </div>
-          <h1 className="font-display text-3xl">{tt("Billing", "الفاتورة")}</h1>
+          <h1 className="font-display text-3xl">{tt("Billing", "الفوترة")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {tt(
               "Invoices, payments, and outstanding balances.",
@@ -261,7 +261,7 @@ function BillingPage() {
                 <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                   <tr>
                     <th className="px-4 py-3 text-start">{tt("Invoice", "الفاتورة")}</th>
-                    <th className="px-4 py-3 text-start">{tt("Client", "العميل")}</th>
+                    <th className="px-4 py-3 text-start">{tt("Client", "الموكّل")}</th>
                     <th className="px-4 py-3 text-start">{tt("Amount", "المبلغ")}</th>
                     <th className="px-4 py-3 text-start">{tt("Status", "الحالة")}</th>
                     <th className="px-4 py-3 text-start">{tt("Issue Date", "تاريخ الإصدار")}</th>
@@ -275,7 +275,7 @@ function BillingPage() {
                       <td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">
                         {tt(
                           "No invoices match this filter.",
-                          "لا توجد فواتير مطابقة لهذا التصفية.",
+                          "لا توجد فواتير مطابقة لهذه التصفية.",
                         )}
                       </td>
                     </tr>

@@ -86,7 +86,7 @@ export async function exportInvoicePdf(opts: InvoiceExportOptions): Promise<void
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;">
         <div>
-          <div style="font-size:11px;color:${COLORS.muted};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">${esc(tt("Billed To", "المُرسل إليه"))}</div>
+          <div style="font-size:11px;color:${COLORS.muted};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">${esc(tt("Billed To", "الفوترة إلى"))}</div>
           <div style="font-size:14px;font-weight:600;color:${COLORS.ink};">${esc(clientName || tt("Client", "الموكّل"))}</div>
           ${opts.case_number ? `<div style="font-size:12px;color:${COLORS.muted};margin-top:4px;">${esc(tt("Case", "القضية"))} · ${esc(opts.case_number)}</div>` : ""}
         </div>

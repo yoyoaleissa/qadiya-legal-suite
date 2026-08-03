@@ -30,11 +30,11 @@ export function ActivityFeed({ limit = 20 }: { limit?: number }) {
       </CardHeader>
       <CardContent className="space-y-3">
         {isLoading && (
-          <p className="text-xs text-muted-foreground">{t("Loading…", "جاري التحميل…")}</p>
+          <p className="text-xs text-muted-foreground">{t("Loading…", "جارٍ التحميل…")}</p>
         )}
         {!isLoading && (!data || data.length === 0) && (
           <p className="text-xs text-muted-foreground">
-            {t("No recent activity yet.", "لا يوجد نشاط حديث.")}
+            {t("No recent activity yet.", "لا يوجد نشاط حديث في السجل.")}
           </p>
         )}
         {data?.map((row) => {
