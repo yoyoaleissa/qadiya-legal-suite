@@ -664,6 +664,9 @@ function NewCaseDialog({
   const [titleAr, setTitleAr] = useState("");
   const [clientId, setClientId] = useState<string>("");
   const [caseType, setCaseType] = useState("");
+  const [opposingParty, setOpposingParty] = useState("");
+  const [judgeName, setJudgeName] = useState("");
+  const [opposingCounsel, setOpposingCounsel] = useState("");
   const [status, setStatus] = useState<"open" | "active" | "appeal" | "execution" | "closed">(
     "open",
   );
@@ -682,6 +685,9 @@ function NewCaseDialog({
           title_ar: titleAr || undefined,
           client_id: clientId || undefined,
           case_type: caseType || undefined,
+          opposing_party: opposingParty || undefined,
+          judge_name: judgeName || undefined,
+          opposing_counsel: opposingCounsel || undefined,
           overall_status: status,
         },
       });
@@ -693,6 +699,9 @@ function NewCaseDialog({
       setTitleAr("");
       setClientId("");
       setCaseType("");
+      setOpposingParty("");
+      setJudgeName("");
+      setOpposingCounsel("");
       setStatus("open");
     } finally {
       setLoading(false);
@@ -753,6 +762,38 @@ function NewCaseDialog({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">
+              {t("Opposing party", "الخصم")}
+            </label>
+            <Input
+              value={opposingParty}
+              onChange={(e) => setOpposingParty(e.target.value)}
+              placeholder={t("Name of opposing party", "اسم الخصم")}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">
+                {t("Presiding judge", "رئيس الدائرة")}
+              </label>
+              <Input
+                value={judgeName}
+                onChange={(e) => setJudgeName(e.target.value)}
+                placeholder={t("Optional", "اختياري")}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">
+                {t("Opposing counsel", "وكيل الخصم")}
+              </label>
+              <Input
+                value={opposingCounsel}
+                onChange={(e) => setOpposingCounsel(e.target.value)}
+                placeholder={t("Optional", "اختياري")}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

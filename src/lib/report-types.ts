@@ -60,6 +60,17 @@ export interface DeadlineInfo {
   days_remaining: number;
 }
 
+export interface CasePartyInfo {
+  client_name: string | null;
+  client_name_ar: string | null;
+  opposing_party: string | null;
+  opposing_party_ar: string | null;
+  judge_name: string | null;
+  judge_name_ar: string | null;
+  opposing_counsel: string | null;
+  opposing_counsel_ar: string | null;
+}
+
 export interface CaseReport {
   found: boolean;
   case_number: string;
@@ -73,6 +84,7 @@ export interface CaseReport {
   summary_ar: string;
   recommendation_en: string;
   recommendation_ar: string;
+  parties: CasePartyInfo;
   deadline: DeadlineInfo | null;
   court_levels: CourtLevelRow[];
   judgments: JudgmentRow[];

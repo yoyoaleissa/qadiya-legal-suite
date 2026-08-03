@@ -6,6 +6,7 @@
 import type { CaseReport } from "@/lib/report-types";
 import type { Lang } from "@/lib/app-context";
 import { COURT_LEVEL_LABELS } from "@/lib/app-context";
+import { buildPartyLines } from "@/lib/report-parties";
 
 const COLORS = {
   navy: "#16233d",
@@ -72,6 +73,19 @@ export async function exportCaseReportPdf(report: CaseReport, lang: Lang): Promi
       </div>`
     : `<div style="font-size:13px;color:${COLORS.muted};">${t("No active deadlines — this case is closed.", "لا توجد مواعيد نشطة — القضية مغلقة.")}</div>`;
 
+  const partyLines = buildPartyLines(report.parties, lang);
+  const partiesBlock = partyLines.length
+    ? `<table style="width:100%;border-collapse:collapse;">${partyLines
+        .map(
+          (p) => `
+        <tr>
+          <td style="width:150px;vertical-align:top;padding:7px 10px;border-bottom:1px solid ${COLORS.border};font-size:11px;color:${COLORS.muted};">${esc(p.label)}</td>
+          <td style="vertical-align:top;padding:7px 10px;border-bottom:1px solid ${COLORS.border};font-size:13px;font-weight:600;color:${COLORS.ink};">${esc(p.value)}</td>
+        </tr>`,
+        )
+        .join("")}</table>`
+    : "";
+
   const timelineRows = (report.timeline || [])
     .map((e) => {
       const ttl = isAr ? (e.title_ar ?? e.title) : e.title;
@@ -132,6 +146,7 @@ export async function exportCaseReportPdf(report: CaseReport, lang: Lang): Promi
       ${chips ? `<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">${chips}</div>` : ""}
     </div>
 
+    ${partiesBlock ? section(t("Parties involved", "أطراف الدعوى"), partiesBlock) : ""}
     ${section(t("Case summary", "ملخص القضية"), `<div style="font-size:13px;line-height:1.7;color:${COLORS.ink};">${esc(summary || "")}</div>`)}
     ${section(t("Next deadline", "الموعد القادم"), deadlineBlock)}
     ${section(t("What this means for you", "ماذا يعني هذا لك"), `<div style="font-size:13px;line-height:1.7;color:${COLORS.ink};background:${COLORS.soft};border:1px solid ${COLORS.border};border-radius:10px;padding:12px 14px;">${esc(recommendation || "")}</div>`)}

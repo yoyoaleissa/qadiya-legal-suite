@@ -108,7 +108,7 @@ function buildPremiumDossierHTML(data, aiSummary, qrDataUrl) {
   // qrDataUrl is generated locally from a fixed URL so it is safe as-is.
   data = deepEscape(data);
   aiSummary = deepEscape(aiSummary);
-  const { caseNumber, firstInstance, appeal, execution, police, events, hearings, judgments } = data;
+  const { caseNumber, parties, firstInstance, appeal, execution, police, events, hearings, judgments } = data;
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = now.toTimeString().substring(0, 5);
@@ -466,6 +466,9 @@ ${buildAISummaryHTML(aiSummary)}
 <!-- NEXT HEARING ALERT -->
 ${nextHearing ? buildNextHearingHTML(nextHearing, daysUntil, caseNumber, nextHearingCourt) : ''}
 
+<!-- PARTIES INVOLVED -->
+${buildPartiesHTML(parties)}
+
 <!-- FIRST INSTANCE COURT -->
 ${buildFirstInstanceHTML(firstInstance)}
 
@@ -502,6 +505,29 @@ ${buildEventsHTML(events)}
 
 </body>
 </html>`;
+}
+
+/**
+ * People involved in the case. Each line is omitted when the value is empty.
+ * `parties` shape: { clientName, opposingParty, judgeName, opposingCounsel }
+ */
+function buildPartiesHTML(parties) {
+  if (!parties) return '';
+  const rows = [
+    ['المُوكِّل / Client', parties.clientName],
+    ['الخصم / Opposing party', parties.opposingParty],
+    ['رئيس الدائرة / Presiding judge', parties.judgeName],
+    ['وكيل الخصم / Opposing counsel', parties.opposingCounsel],
+  ].filter(([, v]) => v !== null && v !== undefined && String(v).trim() !== '');
+
+  if (rows.length === 0) return '';
+
+  return `<div class="section">
+    <div class="section-title navy">👥 أطراف الدعوى / Parties Involved</div>
+    <table class="data-table">
+      ${rows.map(([k, v]) => `<tr><td class="lbl">${k}</td><td class="val">${v}</td></tr>`).join('')}
+    </table>
+  </div>`;
 }
 
 function buildAISummaryHTML(aiSummary) {

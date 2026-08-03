@@ -45,6 +45,9 @@ export const createCase = createServerFn({ method: "POST" })
         client_id: z.string().uuid().optional(),
         case_type: z.string().optional(),
         case_type_ar: z.string().optional(),
+        opposing_party: z.string().optional(),
+        judge_name: z.string().optional(),
+        opposing_counsel: z.string().optional(),
         court: z.string().optional(),
         overall_status: z.enum(["open", "active", "appeal", "execution", "closed"]).default("open"),
         filed_date: z.string().optional(),
@@ -62,6 +65,9 @@ export const createCase = createServerFn({ method: "POST" })
         client_id: data.client_id || null,
         case_type: data.case_type || null,
         case_type_ar: data.case_type_ar || null,
+        opposing_party: data.opposing_party || null,
+        judge_name: data.judge_name || null,
+        opposing_counsel: data.opposing_counsel || null,
         overall_status: data.overall_status,
       })
       .select("id")

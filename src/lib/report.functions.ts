@@ -6,6 +6,7 @@ import type {
   CourtLevelKey,
   CourtLevelRow,
   DeadlineInfo,
+  CasePartyInfo,
   ExecutionRow,
   HearingRow,
   JudgmentRow,
@@ -136,7 +137,9 @@ export const generateCaseReport = createServerFn({ method: "POST" })
 
     const { data: caseRow } = await supabase
       .from("cases")
-      .select("id, case_number, case_type, case_type_ar, overall_status")
+      .select(
+        "id, case_number, case_type, case_type_ar, overall_status, opposing_party, opposing_party_ar, judge_name, judge_name_ar, opposing_counsel, opposing_counsel_ar, clients(name, name_ar)",
+      )
       .eq("case_number", caseNumber)
       .maybeSingle();
 
@@ -153,6 +156,16 @@ export const generateCaseReport = createServerFn({ method: "POST" })
       summary_ar: "",
       recommendation_en: "",
       recommendation_ar: "",
+      parties: {
+        client_name: null,
+        client_name_ar: null,
+        opposing_party: null,
+        opposing_party_ar: null,
+        judge_name: null,
+        judge_name_ar: null,
+        opposing_counsel: null,
+        opposing_counsel_ar: null,
+      },
       deadline: null,
       court_levels: [],
       judgments: [],
@@ -225,6 +238,19 @@ export const generateCaseReport = createServerFn({ method: "POST" })
         .sort((a, b) => STAGE_ORDER.indexOf(b.level) - STAGE_ORDER.indexOf(a.level))[0]?.level ??
       null;
 
+    const clientRow = (caseRow as unknown as { clients?: { name: string | null; name_ar: string | null } | null })
+      .clients ?? null;
+    const parties: CasePartyInfo = {
+      client_name: clientRow?.name ?? null,
+      client_name_ar: clientRow?.name_ar ?? null,
+      opposing_party: caseRow.opposing_party ?? null,
+      opposing_party_ar: caseRow.opposing_party_ar ?? null,
+      judge_name: caseRow.judge_name ?? null,
+      judge_name_ar: caseRow.judge_name_ar ?? null,
+      opposing_counsel: caseRow.opposing_counsel ?? null,
+      opposing_counsel_ar: caseRow.opposing_counsel_ar ?? null,
+    };
+
     const deadline = computeDeadline(caseRow.overall_status, judgments);
 
     const narrative = await generateNarrative({
@@ -246,6 +272,7 @@ export const generateCaseReport = createServerFn({ method: "POST" })
       overall_status: caseRow.overall_status,
       current_stage,
       ...narrative,
+      parties,
       deadline,
       court_levels,
       judgments,
