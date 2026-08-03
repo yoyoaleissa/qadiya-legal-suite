@@ -104,7 +104,7 @@ function ClientPortal() {
         {session ? <PortalHome /> : <PortalGuest />}
         <footer className="text-center mt-12 text-xs text-muted-foreground">
           <p>Powered by Qadiya AI</p>
-          <p className="mt-1">هذه البوابة للاطلاع فقط ولا تُغني عن الاستشارة القانونية</p>
+          <p className="mt-1">هذا المحتوى معروض للاطلاع فقط، ولا يُعدّ مشورة قانونية</p>
         </footer>
       </main>
     </div>
