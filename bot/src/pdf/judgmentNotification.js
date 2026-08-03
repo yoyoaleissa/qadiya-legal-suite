@@ -22,6 +22,8 @@ const OUTPUT_DIR = process.env.PDF_OUTPUT_DIR || path.join(__dirname, '../../out
  * @param {string} params.ruling - Ruling text
  * @param {number} params.amount - Amount in KD (if monetary)
  * @param {string} params.clientRole - Client role (مدعي/مدعي عليه)
+ * @param {string} [params.judgeName] - Presiding judge name (optional, omitted from PDF if empty)
+ * @param {string} [params.opposingCounsel] - Opposing counsel name (optional, omitted if empty)
  * @param {string} params.lawyerName - Lawyer name
  * @param {string} params.firmName - Law firm name
  * @param {Object} params.caseData - Full scraped case data (optional)
@@ -111,6 +113,13 @@ async function generateJudgmentNotification(params) {
   } finally {
     if (browser) await browser.close();
   }
+}
+
+// Renders one label/value row, or nothing at all when the value is empty —
+// empty party fields are omitted from the report rather than shown blank.
+function row(label, value) {
+  if (value === null || value === undefined || String(value).trim() === '') return '';
+  return `<div class="judgment-item"><span class="judgment-label">${label}:</span><span class="judgment-value">${value}</span></div>`;
 }
 
 function buildNotificationHTML(params, computed) {
@@ -489,7 +498,10 @@ function buildNotificationHTML(params, computed) {
     <div class="judgment-item"><span class="judgment-label">تاريخ الحكم:</span><span class="judgment-value">${judgmentDate.toLocaleDateString('en-GB')}</span></div>
     <div class="judgment-item"><span class="judgment-label">المحكمة:</span><span class="judgment-value">${params.court} — ${params.courtType}</span></div>
     <div class="judgment-item"><span class="judgment-label">الدائرة:</span><span class="judgment-value">${params.circuit}</span></div>
-    <div class="judgment-item"><span class="judgment-label">المدعي:</span><span class="judgment-value">${params.opponentName}</span></div>
+    ${row('الموكِّل / Client', params.clientName)}
+    ${row('الخصم / Opposing party', params.opponentName)}
+    ${row('رئيس الدائرة / Presiding judge', params.judgeName)}
+    ${row('وكيل الخصم / Opposing counsel', params.opposingCounsel)}
     <div class="judgment-item"><span class="judgment-label">صفة الموكل:</span><span class="judgment-value">${params.clientRole}</span></div>
     <div class="judgment-ruling">
       <div class="ruling-text">
