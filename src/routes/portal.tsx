@@ -304,12 +304,12 @@ function PortalHome() {
 function PortalCases() {
   const fn = useServerFn(listPortalCases);
   const { data, isLoading } = useQuery({ queryKey: ["portal-cases"], queryFn: () => fn() });
-  if (isLoading) return <p className="text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>;
   if (!data?.length)
     return (
       <Card>
         <CardContent className="pt-6 text-sm text-center text-muted-foreground">
-          لا توجد قضايا مرتبطة بحسابك بعد.
+          لا توجد دعاوى مرتبطة بحسابك بعد.
         </CardContent>
       </Card>
     );
@@ -320,7 +320,7 @@ function PortalCases() {
           <CardContent className="pt-5 space-y-2">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="font-semibold">{c.title_ar || c.title || `قضية ${c.case_number}`}</div>
+                <div className="font-semibold">{c.title_ar || c.title || `الدعوى رقم ${c.case_number}`}</div>
                 <div className="text-xs text-muted-foreground" dir="ltr">
                   {c.case_number}
                 </div>
@@ -348,12 +348,12 @@ function PortalCases() {
 function PortalInvoices() {
   const fn = useServerFn(listPortalInvoices);
   const { data, isLoading } = useQuery({ queryKey: ["portal-invoices"], queryFn: () => fn() });
-  if (isLoading) return <p className="text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>;
   if (!data?.length)
     return (
       <Card>
         <CardContent className="pt-6 text-sm text-center text-muted-foreground">
-          لا توجد فواتير بعد.
+          لا توجد فواتير حتى الآن.
         </CardContent>
       </Card>
     );
@@ -412,7 +412,7 @@ function PortalMessages() {
     <Card>
       <CardContent className="pt-4 space-y-3">
         <div className="h-72 overflow-y-auto border rounded-md p-3 bg-muted/30 space-y-2">
-          {isLoading && <p className="text-xs text-muted-foreground">جاري التحميل…</p>}
+          {isLoading && <p className="text-xs text-muted-foreground">جارٍ التحميل…</p>}
           {!isLoading && (!data || data.length === 0) && (
             <p className="text-xs text-muted-foreground text-center">
               ابدأ محادثتك مع مكتب المحاماة.
