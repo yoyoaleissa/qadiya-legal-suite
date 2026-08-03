@@ -41,7 +41,7 @@ export function LogHoursDialog({
       const h = Number(hours);
       const r = Number(rate);
       if (!Number.isFinite(h) || h <= 0)
-        throw new Error(t("Enter valid hours", "أدخل عدد ساعات صحيح"));
+        throw new Error(t("Enter valid hours", "يُرجى إدخال عدد ساعات صحيح"));
       const minutes = Math.max(1, Math.round(h * 60));
       const notePrefix = Number.isFinite(r) && r > 0 ? `[${r} KWD/hr] ` : "";
       return save({

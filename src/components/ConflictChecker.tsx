@@ -68,7 +68,7 @@ export function ConflictChecker() {
       <p className="text-xs text-muted-foreground">
         {t(
           "Check if a new client or opposing party conflicts with existing firm data.",
-          "تحقق مما إذا كان موكل جديد أو خصم يتعارض مع بيانات المكتب الحالية."
+          "تحقّق مما إذا كان الموكّل الجديد أو الخصم يتعارض مع بيانات المكتب الحالية."
         )}
       </p>
 
@@ -76,7 +76,7 @@ export function ConflictChecker() {
         <input
           type="text"
           className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
-          placeholder={t("Enter name to check...", "أدخل الاسم للفحص...")}
+          placeholder={t("Enter name to check...", "أدخل الاسم لإجراء الفحص...")}
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -126,7 +126,7 @@ export function ConflictChecker() {
                     <span className="text-muted-foreground">
                       {" — "}
                       {m.type === "client_name"
-                        ? t("Existing client", "موكل حالي")
+                        ? t("Existing client", "موكّل حالي")
                         : t("Opposing party", "خصم")}
                       {m.caseTitle && ` (${m.caseTitle})`}
                       {" — "}
@@ -141,7 +141,7 @@ export function ConflictChecker() {
             <div className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
               <p className="font-semibold text-sm text-green-700 dark:text-green-400">
-                {t("✓ No conflicts found — clear to proceed", "✓ لا يوجد تعارض — يمكنك المتابعة")}
+                {t("✓ No conflicts found — clear to proceed", "✓ لا يوجد تعارض في المصالح — يمكن المتابعة")}
               </p>
             </div>
           )}

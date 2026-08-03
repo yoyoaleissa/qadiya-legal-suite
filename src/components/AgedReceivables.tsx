@@ -80,7 +80,7 @@ export function AgedReceivables() {
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-amber-500" />
           <span className={lang === "ar" ? "font-arabic" : ""}>
-            {t("Aged receivables", "الذمم المدينة المتأخرة")}
+            {t("Aged receivables", "المبالغ المستحقة المتأخرة")}
           </span>
         </CardTitle>
       </CardHeader>
@@ -105,7 +105,7 @@ export function AgedReceivables() {
           </p>
         ) : overdue.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            {t("No overdue invoices. Nice work.", "لا توجد فواتير متأخرة. عمل رائع.")}
+            {t("No overdue invoices. Nice work.", "لا توجد فواتير متأخرة السداد.")}
           </p>
         ) : (
           <div className="divide-y">
@@ -143,7 +143,7 @@ export function AgedReceivables() {
       <Dialog open={!!reminder} onOpenChange={(o) => !o && setReminder(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{t("Arabic reminder", "تذكير بالعربية")}</DialogTitle>
+            <DialogTitle>{t("Arabic reminder", "نص تذكير بالعربية")}</DialogTitle>
           </DialogHeader>
           {reminder && (
             <div className="space-y-3" dir="rtl">

@@ -74,7 +74,7 @@ export function KnowledgePanel({
         tt("Document loaded — review and upload.", "تم تحميل المستند — راجعه ثم ارفعه."),
       );
     } catch {
-      toast.error(tt("Could not read that file.", "تعذّرت قراءة الملف."));
+      toast.error(tt("Could not read that file.", "تعذّرت قراءة الملف المرفق."));
     } finally {
       setParsing(false);
     }
@@ -92,10 +92,10 @@ export function KnowledgePanel({
     } catch (err) {
       const msg = (err as Error).message;
       if (msg === "RATE_LIMIT")
-        toast.error(tt("Too many requests — try again shortly.", "طلبات كثيرة — حاول بعد قليل."));
+        toast.error(tt("Too many requests — try again shortly.", "عدد الطلبات كبير — يُرجى المحاولة مرة أخرى لاحقاً."));
       else if (msg === "NO_CREDITS")
         toast.error(tt("AI credits exhausted.", "انتهى رصيد الذكاء الاصطناعي."));
-      else toast.error(tt("Upload failed. Please try again.", "فشل الرفع. حاول مرة أخرى."));
+      else toast.error(tt("Upload failed. Please try again.", "تعذّر الرفع. يُرجى المحاولة مرة أخرى."));
     } finally {
       setIngesting(false);
     }
@@ -107,7 +107,7 @@ export function KnowledgePanel({
       qc.invalidateQueries({ queryKey: ["knowledge"] });
       toast.success(tt("Removed from knowledge base.", "تمت الإزالة من قاعدة المعرفة."));
     } catch {
-      toast.error(tt("Could not remove.", "تعذّرت الإزالة."));
+      toast.error(tt("Could not remove.", "تعذّر حذف المستند."));
     }
   };
 
