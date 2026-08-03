@@ -27,6 +27,12 @@ export interface ClientCase {
   case_type: string | null;
   case_type_ar: string | null;
   overall_status: string;
+  opposing_party: string | null;
+  opposing_party_ar: string | null;
+  judge_name: string | null;
+  judge_name_ar: string | null;
+  opposing_counsel: string | null;
+  opposing_counsel_ar: string | null;
   timeline: ClientTimelineEvent[];
 }
 
@@ -79,7 +85,9 @@ export const getClientDetail = createServerFn({ method: "GET" })
 
     const { data: cases } = await supabase
       .from("cases")
-      .select("id, case_number, title, title_ar, case_type, case_type_ar, overall_status")
+      .select(
+        "id, case_number, title, title_ar, case_type, case_type_ar, overall_status, opposing_party, opposing_party_ar, judge_name, judge_name_ar, opposing_counsel, opposing_counsel_ar",
+      )
       .eq("client_id", data.clientId)
       .order("created_at");
 
@@ -98,6 +106,12 @@ export const getClientDetail = createServerFn({ method: "GET" })
         case_type: cs.case_type,
         case_type_ar: cs.case_type_ar,
         overall_status: cs.overall_status,
+        opposing_party: cs.opposing_party,
+        opposing_party_ar: cs.opposing_party_ar,
+        judge_name: cs.judge_name,
+        judge_name_ar: cs.judge_name_ar,
+        opposing_counsel: cs.opposing_counsel,
+        opposing_counsel_ar: cs.opposing_counsel_ar,
         timeline: (timeline ?? []).map((t) => ({
           event_date: t.event_date,
           title: t.title ?? "",
