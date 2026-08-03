@@ -30,6 +30,7 @@ import { Route as AuthenticatedReportBotRouteImport } from './routes/_authentica
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedNotesRouteImport } from './routes/_authenticated/notes'
+import { Route as AuthenticatedMojUpdatesRouteImport } from './routes/_authenticated/moj-updates'
 import { Route as AuthenticatedDraftingRouteImport } from './routes/_authenticated/drafting'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -148,6 +149,11 @@ const AuthenticatedNotesRoute = AuthenticatedNotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMojUpdatesRoute = AuthenticatedMojUpdatesRouteImport.update({
+  id: '/moj-updates',
+  path: '/moj-updates',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDraftingRoute = AuthenticatedDraftingRouteImport.update({
   id: '/drafting',
   path: '/drafting',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/drafting': typeof AuthenticatedDraftingRoute
+  '/moj-updates': typeof AuthenticatedMojUpdatesRoute
   '/notes': typeof AuthenticatedNotesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/report': typeof AuthenticatedReportRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/drafting': typeof AuthenticatedDraftingRoute
+  '/moj-updates': typeof AuthenticatedMojUpdatesRoute
   '/notes': typeof AuthenticatedNotesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/report': typeof AuthenticatedReportRoute
@@ -310,6 +318,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/drafting': typeof AuthenticatedDraftingRoute
+  '/_authenticated/moj-updates': typeof AuthenticatedMojUpdatesRoute
   '/_authenticated/notes': typeof AuthenticatedNotesRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
@@ -347,6 +356,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/drafting'
+    | '/moj-updates'
     | '/notes'
     | '/onboarding'
     | '/report'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/drafting'
+    | '/moj-updates'
     | '/notes'
     | '/onboarding'
     | '/report'
@@ -418,6 +429,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
     | '/_authenticated/drafting'
+    | '/_authenticated/moj-updates'
     | '/_authenticated/notes'
     | '/_authenticated/onboarding'
     | '/_authenticated/report'
@@ -601,6 +613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/moj-updates': {
+      id: '/_authenticated/moj-updates'
+      path: '/moj-updates'
+      fullPath: '/moj-updates'
+      preLoaderRoute: typeof AuthenticatedMojUpdatesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/drafting': {
       id: '/_authenticated/drafting'
       path: '/drafting'
@@ -705,6 +724,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
   AuthenticatedDraftingRoute: typeof AuthenticatedDraftingRoute
+  AuthenticatedMojUpdatesRoute: typeof AuthenticatedMojUpdatesRoute
   AuthenticatedNotesRoute: typeof AuthenticatedNotesRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
@@ -727,6 +747,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
   AuthenticatedDraftingRoute: AuthenticatedDraftingRoute,
+  AuthenticatedMojUpdatesRoute: AuthenticatedMojUpdatesRoute,
   AuthenticatedNotesRoute: AuthenticatedNotesRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
