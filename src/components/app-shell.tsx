@@ -84,6 +84,7 @@ const NAV: NavItem[] = [
   { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
   { to: "/team", labelEn: "Team", labelAr: "الفريق", icon: UsersRound },
   { to: "/tools", labelEn: "Tools", labelAr: "الأدوات", icon: Shield },
+  { to: "/admin/users", labelEn: "User Accounts", labelAr: "حسابات المستخدمين", icon: UsersRound, adminOnly: true },
   { to: "/audit", labelEn: "Audit Log", labelAr: "سجل التدقيق", icon: ShieldCheck, adminOnly: true },
   { to: "/settings", labelEn: "Settings", labelAr: "الإعدادات", icon: Settings, adminOnly: true },
 ];
