@@ -51,7 +51,7 @@ const SECTIONS: Section[] = [
     titleAr: "القضايا",
     titleEn: "Cases",
     bodyAr:
-      "أنشئ قضية من زر ‹قضية جديدة›، اربطها بموكل، وسجّل رقم الدعوى ومحكمة الاختصاص. تُظهر شاشة القضية الجلسات، المستندات، الملاحظات، الوقت المسجَّل، والتذكيرات في مكان واحد.",
+      "افتح دعوى من زر ‹دعوى جديدة›، اربطها بالموكّل، وسجّل رقم الدعوى والمحكمة المختصة. تعرض شاشة الدعوى الجلسات والمستندات والملاحظات والوقت المسجَّل والتذكيرات في مكان واحد.",
     bodyEn:
       "Create a matter from ‘New case’, link a client, and record the case number and court. The case screen shows hearings, documents, notes, time entries, and reminders in one place.",
   },
@@ -69,7 +69,7 @@ const SECTIONS: Section[] = [
     titleAr: "الموكّلون وبوابة الموكّل",
     titleEn: "Clients & portal",
     bodyAr:
-      "من صفحة الموكل، فعّل بوابة العميل وأرسل رابط دخول برمز مؤقت. يرى الموكل قضاياه وفواتيره ورسائلك — دون الاطلاع على ملاحظاتك الداخلية.",
+      "من صفحة الموكّل، فعِّل بوابة الموكّل وأرسل له رابط دخول برمز مؤقت. يرى الموكّل دعاواه وفواتيره ورسائلك، دون الاطلاع على ملاحظاتك الداخلية.",
     bodyEn:
       "From a client's page, enable portal access and send a magic-link login. Clients see only their own cases, invoices, and messages — never your internal notes.",
   },
@@ -96,7 +96,7 @@ const SECTIONS: Section[] = [
     titleAr: "مساعد الصياغة الذكي",
     titleEn: "AI drafting assistant",
     bodyAr:
-      "من صفحة ‹Drafting›، اختر نوع المستند (مذكرة، لائحة، إعذار…) ولغته، وأدخل الوقائع. يستشهد المساعد بالمعرفة القانونية المُدخلة في مكتبك وبالمرجع العام المشترك.",
+      "من صفحة ‹الصياغة›، اختر نوع المستند (مذكرة، صحيفة دعوى، إنذار…) ولغته، ثم أدخل الوقائع. يستشهد المساعد بالمعرفة القانونية المُدخلة في مكتبك وبالمرجع العام المشترك.",
     bodyEn:
       "On the Drafting page, pick a document type (memo, statement of claim, notice…) and language, then paste the facts. The assistant cites both your firm's private knowledge and the shared Kuwaiti legal reference corpus.",
   },
@@ -114,7 +114,7 @@ const SECTIONS: Section[] = [
     titleAr: "التقارير",
     titleEn: "Reports",
     bodyAr:
-      "يولّد بوت التقارير ملخصًا ثنائي اللغة لأي موكل بضغطة واحدة، مع طباعة أو تصدير PDF، أو حفظه كملاحظة داخلية بالقضية.",
+      "يُصدر بوت التقارير ملخصاً ثنائي اللغة لأي موكّل بضغطة واحدة، قابلاً للطباعة أو التصدير بصيغة PDF، أو الحفظ كملاحظة داخلية في الدعوى.",
     bodyEn:
       "The report bot produces a bilingual client summary in one click; print, export PDF, or save as an internal case note.",
   },
