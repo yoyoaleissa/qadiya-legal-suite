@@ -114,7 +114,7 @@ const SECTIONS: Section[] = [
     titleAr: "التقارير",
     titleEn: "Reports",
     bodyAr:
-      "يُصدر بوت التقارير ملخصاً ثنائي اللغة لأي موكّل بضغطة واحدة، قابلاً للطباعة أو التصدير بصيغة PDF، أو الحفظ كملاحظة داخلية في الدعوى.",
+      "يُصدر مساعد التقارير ملخصاً ثنائي اللغة لأي موكّل بضغطة واحدة، قابلاً للطباعة أو التصدير بصيغة PDF، أو الحفظ كملاحظة داخلية في الدعوى.",
     bodyEn:
       "The report bot produces a bilingual client summary in one click; print, export PDF, or save as an internal case note.",
   },
