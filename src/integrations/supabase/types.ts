@@ -1018,6 +1018,60 @@ export type Database = {
           },
         ]
       }
+      moj_updates: {
+        Row: {
+          category: string
+          content: string | null
+          content_ar: string | null
+          content_hash: string
+          created_at: string
+          detected_at: string
+          id: string
+          published_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_url: string
+          status: string
+          title: string | null
+          title_ar: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content?: string | null
+          content_ar?: string | null
+          content_hash: string
+          created_at?: string
+          detected_at?: string
+          id?: string
+          published_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_url: string
+          status?: string
+          title?: string | null
+          title_ar: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          content_ar?: string | null
+          content_hash?: string
+          created_at?: string
+          detected_at?: string
+          id?: string
+          published_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_url?: string
+          status?: string
+          title?: string | null
+          title_ar?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           clicked_at: string | null

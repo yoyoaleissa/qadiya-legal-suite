@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   Shield,
   Activity,
+  ScrollText,
   UsersRound,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
@@ -74,6 +75,12 @@ const NAV: NavItem[] = [
   { to: "/notes", labelEn: "Case Notes", labelAr: "الملاحظات", icon: StickyNote },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
   { to: "/drafting", labelEn: "AI Drafting", labelAr: "الصياغة الذكية", icon: Sparkles },
+  {
+    to: "/moj-updates",
+    labelEn: "MOJ Updates",
+    labelAr: "مستجدات وزارة العدل",
+    icon: ScrollText,
+  },
   { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
   { to: "/team", labelEn: "Team", labelAr: "الفريق", icon: UsersRound },
   { to: "/tools", labelEn: "Tools", labelAr: "الأدوات", icon: Shield },
