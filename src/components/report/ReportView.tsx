@@ -9,11 +9,17 @@ import { DeadlineCard } from "./DeadlineCard";
 import { CaseTimeline } from "./CaseTimeline";
 import { FullDetails } from "./FullDetails";
 import { formatDate } from "./format";
+import { buildPartyLines } from "@/lib/report-parties";
+
+function t2(lang: "en" | "ar", en: string, ar: string) {
+  return lang === "ar" ? ar : en;
+}
 
 export function ReportView({ report, onNew }: { report: CaseReport; onNew: () => void }) {
   const { lang, t } = useApp();
   const [exporting, setExporting] = useState(false);
   const headline = lang === "ar" ? report.status_headline_ar : report.status_headline_en;
+  const partyLines = buildPartyLines(report.parties, lang);
   const stageLabel = report.current_stage ? COURT_LEVEL_LABELS[report.current_stage]?.[lang] : null;
 
   const handleDownload = async () => {
@@ -113,6 +119,23 @@ export function ReportView({ report, onNew }: { report: CaseReport; onNew: () =>
             )}
           </div>
         </div>
+
+        {/* a2. People involved */}
+        {partyLines.length > 0 && (
+          <section>
+            <h3 className="mb-2 text-sm font-semibold text-foreground">
+              {t2(lang, "Parties involved", "أطراف الدعوى")}
+            </h3>
+            <dl className="grid gap-2 rounded-xl border border-border bg-muted/30 p-4 sm:grid-cols-2">
+              {partyLines.map((p) => (
+                <div key={p.label} className="flex flex-col gap-0.5">
+                  <dt className="text-xs text-muted-foreground">{p.label}</dt>
+                  <dd className="text-sm font-medium text-foreground">{p.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
 
         {/* b. Bilingual summary */}
         <section>
