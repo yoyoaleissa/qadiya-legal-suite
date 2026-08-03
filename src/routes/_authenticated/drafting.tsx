@@ -205,7 +205,7 @@ function DraftingPage() {
                         ? tt("Formal", "رسمي")
                         : t === "assertive"
                           ? tt("Assertive", "حازم")
-                          : tt("Conciliatory", "مصالح")}
+                          : tt("Conciliatory", "توفيقي")}
                     </button>
                   ))}
                 </div>

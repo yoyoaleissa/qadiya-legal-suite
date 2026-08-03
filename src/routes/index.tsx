@@ -270,10 +270,10 @@ function DashboardMock({ t }: { t: TT }) {
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         {[
-          { l: t("قضايا نشطة", "Active cases"), v: "142", d: "+8" },
+          { l: t("الدعاوى النشطة", "Active cases"), v: "142", d: "+8" },
           { l: t("جلسات هذا الأسبوع", "Hearings this week"), v: "17", d: "3 today" },
-          { l: t("فواتير معلّقة", "Outstanding"), v: "12,450 KWD", d: "9 invoices" },
-          { l: t("مهام متأخرة", "Overdue tasks"), v: "4", d: "" },
+          { l: t("المبالغ المستحقة", "Outstanding"), v: "12,450 KWD", d: "9 invoices" },
+          { l: t("المهام المتأخرة", "Overdue tasks"), v: "4", d: "" },
         ].map((k) => (
           <div key={k.l} className="rounded-md border border-border/60 bg-background/40 p-3">
             <div className="text-[11px] text-muted-foreground">{k.l}</div>
@@ -289,8 +289,8 @@ function DashboardMock({ t }: { t: TT }) {
           {t("أهم ما اليوم", "Focus today")}
         </div>
         {[
-          { i: "10:00", l: t("جلسة القضية 222486500 — التمييز", "Cassation hearing 222486500") },
-          { i: "12:30", l: t("مذكرة الرد — قضية الحمود", "Reply memo — Al-Hamoud case") },
+          { i: "10:00", l: t("جلسة الدعوى رقم 222486500 — التمييز", "Cassation hearing 222486500") },
+          { i: "12:30", l: t("مذكرة الرد — دعوى الحمود", "Reply memo — Al-Hamoud case") },
           { i: "15:00", l: t("مكالمة موكّل جديد", "New client intake call") },
         ].map((r) => (
           <div
@@ -315,7 +315,7 @@ function TrustBar({ t }: { t: TT }) {
     t("تكامل بوابة وزارة العدل", "MOJ portal integrated"),
     t("بيانات آمنة", "Encrypted at rest"),
     t("ثنائي اللغة AR/EN", "Bilingual AR / EN"),
-    t("داكن و فاتح", "Dark & light modes"),
+    t("داكن وفاتح", "Dark & light modes"),
   ];
   return (
     <section className="border-b border-border/60 bg-muted/30">
@@ -385,7 +385,7 @@ function Pillars({ t }: { t: TT }) {
   const items = [
     {
       icon: FileText,
-      title: t("تقارير القضايا و مزامنة العدل", "Case reports & MOJ sync"),
+      title: t("تقارير الدعاوى ومزامنة وزارة العدل", "Case reports & MOJ sync"),
       body: t(
         "استخرج آخر مستجدات قضاياك من بوابة وزارة العدل بضغطة زر، مع إشعارات عند أي تغيير.",
         "Pull the latest MOJ case updates on demand, with alerts on every change.",
@@ -395,7 +395,7 @@ function Pillars({ t }: { t: TT }) {
       icon: Bot,
       title: t("مساعد قانوني ذكي", "AI legal assistant"),
       body: t(
-        "بحث ذكي في أرشيف الأحكام و القوانين الكويتية، بالعربية وبالإنجليزية.",
+        "بحث دلالي في أرشيف الأحكام والقوانين الكويتية، بالعربية وبالإنجليزية.",
         "Semantic search over Kuwaiti case law and statutes — Arabic and English.",
       ),
     },
@@ -403,15 +403,15 @@ function Pillars({ t }: { t: TT }) {
       icon: Calendar,
       title: t("التقويم القضائي", "Court calendar"),
       body: t(
-        "جلسات و مواعيد الاستئناف و الطعن، مع حاسبة مواعيد رسمية و ربط بتقويم Google.",
+        "الجلسات ومواعيد الاستئناف والطعن، مع حاسبة مواعيد رسمية وربط بتقويم Google.",
         "Hearings, appeal windows, and cassation deadlines — with an official calculator and Google Calendar sync.",
       ),
     },
     {
       icon: Receipt,
-      title: t("الفوترة و حساب الأمانة", "Billing & trust"),
+      title: t("الفوترة وحساب الأمانة", "Billing & trust"),
       body: t(
-        "فواتير KWD، حساب أمانة موكّل، مؤقت وقت، و تقارير مديونيات متقادمة بالعربية.",
+        "فواتير بالدينار الكويتي، حساب أمانة الموكّل، مؤقت للوقت، وتقارير مديونيات متقادمة بالعربية.",
         "KWD invoices, client trust ledger, time tracker, and Arabic aged-receivables reports.",
       ),
     },
@@ -474,25 +474,25 @@ function DeepDive({ t, lang }: { t: TT; lang: "ar" | "en" }) {
       title: t("المساعد القانوني", "The legal assistant"),
       bullets: [
         t("بحث دلالي في الأحكام", "Semantic search across judgments"),
-        t("مذكرات و مسودات مقترحة", "Suggested memos and drafts"),
-        t("مصادر و مراجع دقيقة", "Cited sources you can verify"),
+        t("مذكرات ومسودات مقترحة", "Suggested memos and drafts"),
+        t("مصادر ومراجع دقيقة", "Cited sources you can verify"),
       ],
       mock: <MockAssistant t={t} />,
     },
     {
-      title: t("تقويم و مواعيد رسمية", "Court calendar & deadlines"),
+      title: t("تقويم ومواعيد رسمية", "Court calendar & deadlines"),
       bullets: [
-        t("حاسبة الاستئناف و التمييز", "Appeal and cassation calculators"),
+        t("حاسبة مواعيد الاستئناف والتمييز", "Appeal and cassation calculators"),
         t("خرائط للمحاكم الكويتية", "Maps for Kuwaiti courts"),
         t("إشعارات قبل موعد الجلسة", "Alerts before each hearing"),
       ],
       mock: <MockCalendar t={t} />,
     },
     {
-      title: t("فوترة و حساب أمانة", "Billing & trust"),
+      title: t("فوترة وحساب أمانة", "Billing & trust"),
       bullets: [
-        t("فواتير KWD و مذكّرات دفع", "KWD invoices & Arabic reminders"),
-        t("حساب أمانة و مسحوبات", "Trust ledger & drawdowns"),
+        t("فواتير بالدينار الكويتي ومذكّرات سداد", "KWD invoices & Arabic reminders"),
+        t("حساب أمانة ومسحوبات", "Trust ledger & drawdowns"),
         t("مديونيات متقادمة و KPIs", "Aged receivables & partner KPIs"),
       ],
       mock: <MockBilling t={t} />,
@@ -750,7 +750,7 @@ function Pricing({ t, lang }: { t: TT; lang: "ar" | "en" }) {
         t("محامٍ واحد", "1 lawyer"),
         t("حتى 50 قضية", "Up to 50 cases"),
         t("تقارير العدل", "MOJ reports"),
-        t("تقويم و مهام", "Calendar & tasks"),
+        t("تقويم ومهام", "Calendar & tasks"),
       ],
       cta: t("ابدأ", "Start"),
     },
@@ -858,21 +858,21 @@ function FAQ({ t }: { t: TT }) {
     {
       q: t("أين تُخزَّن بياناتنا؟", "Where is our data stored?"),
       a: t(
-        "بيانات المكتب مشفّرة و مُخزّنة في بنية سحابية موثوقة مع نسخ احتياطية يومية.",
+        "بيانات المكتب مشفّرة ومُخزّنة في بنية سحابية موثوقة مع نسخ احتياطية يومية.",
         "Firm data is encrypted at rest in a trusted cloud with daily backups.",
       ),
     },
     {
       q: t("هل السحب من بوابة العدل قانوني؟", "Is pulling data from the MOJ portal legal?"),
       a: t(
-        "نعم — نستعلم بنفس الطريقة التي يستعلم بها المحامي: باسم المستخدم و رقم القضية العلني.",
+        "نعم — يجري الاستعلام بالطريقة ذاتها التي يعتمدها المحامي: باسم المستخدم ورقم القضية العلني.",
         "Yes — the same public lookup a lawyer would run manually, using their credentials and the public case number.",
       ),
     },
     {
       q: t("هل تدعمون العربية بالكامل؟", "Do you fully support Arabic?"),
       a: t(
-        "التطبيق و التقارير و الفواتير و الإشعارات كلها بالعربية و بالإنجليزية، RTL كامل.",
+        "التطبيق والتقارير والفواتير والإشعارات كلها بالعربية وبالإنجليزية، مع دعم كامل لاتجاه الكتابة من اليمين لليسار.",
         "The app, reports, invoices, and notifications are fully bilingual with complete RTL support.",
       ),
     },

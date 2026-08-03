@@ -173,7 +173,7 @@ function TasksPage() {
           <p className="text-sm text-muted-foreground mt-1">
             {tt(
               "Manage your team's workflow and deadlines.",
-              "أدِر سير عمل فريقك والمواعيد النهائية.",
+              "أدِر سير عمل فريقك ومواعيد إنجاز المهام.",
             )}
           </p>
         </div>

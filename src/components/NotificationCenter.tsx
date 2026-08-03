@@ -250,7 +250,7 @@ export function NotificationCenter() {
             <div className="px-4 py-10 text-center text-sm text-muted-foreground">
               <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-emerald-500/70" />
               <p className={lang === "ar" ? "font-arabic" : ""}>
-                {t("No pending alerts.", "لا توجد تنبيهات معلقة.")}
+                {t("No pending alerts.", "لا توجد تنبيهات قائمة.")}
               </p>
             </div>
           ) : (

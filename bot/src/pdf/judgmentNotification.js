@@ -573,7 +573,7 @@ function buildNotificationHTML(params, computed) {
       <div class="option-title">الخيار 3: التسوية</div>
       <div class="option-desc">التواصل مع المدعي (${params.opponentName}) للوصول لتسوية ودية بمبلغ أقل أو بالتقسيط.</div>
       <div class="option-pros">✓ تخفيض محتمل | ✓ مرونة في السداد | ✓ حفظ العلاقة التجارية</div>
-      <div class="option-cons">✗ يتطلب موافقة الطرف الآخر | ✗ قد لا ينجح</div>
+      <div class="option-cons">✗ يتطلب موافقة الطرف الخصم | ✗ قد لا ينجح</div>
     </div>
   </div>
 </div>
@@ -617,7 +617,7 @@ function buildNotificationHTML(params, computed) {
       AI-Powered Legal Intelligence — إشعار حكم ذكي<br>
       مصدر البيانات: وزارة العدل الكويتية — بوابة العدل الإلكترونية
     </div>
-    <div class="footer-disclaimer">⚠️ هذا التقرير للاسترشاد فقط وليس بديلاً عن الاستشارة القانونية</div>
+    <div class="footer-disclaimer">⚠️ لا يُعدّ هذا التقرير مشورة قانونية، وإنما هو للاسترشاد فقط</div>
   </div>
   <img class="footer-qr" src="${qrDataUrl}" alt="QR" />
 </div>

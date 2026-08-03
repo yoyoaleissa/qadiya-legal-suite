@@ -86,7 +86,7 @@ export function DeadlineAlert({
         <span className={cn("text-lg font-bold", textColor)}>
           {deadline.isExpired
             ? lang === "ar"
-              ? "انتهت المهلة"
+              ? "انقضى الميعاد"
               : "EXPIRED"
             : `${deadline.daysRemaining} ${lang === "ar" ? "يوم" : "days"}`}
         </span>

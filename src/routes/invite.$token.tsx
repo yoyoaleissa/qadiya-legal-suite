@@ -73,7 +73,7 @@ function InvitePage() {
               <span className={isAr ? "font-arabic" : ""}>
                 {t(
                   "This invitation link is invalid or has expired. Ask your firm to send a new one.",
-                  "رابط الدعوة غير صالح أو منتهي الصلاحية. اطلب من مكتبك إرسال دعوة جديدة.",
+                  "رابط الدعوة غير صالح أو منتهي الصلاحية. يُرجى مطالبة مكتبكم بإرسال دعوة جديدة.",
                 )}
               </span>
             </p>

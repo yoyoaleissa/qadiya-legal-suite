@@ -31,10 +31,10 @@ function buildJudgmentAlert(params) {
 
 ━━━━━━━━━━━━━━━━━━━━
 
-📋 *القضية:* \`${params.caseNumber}\`
+📋 *رقم الدعوى:* \`${params.caseNumber}\`
 ⚖️ *المحكمة:* ${params.court} — ${params.courtType}
 🏢 *المدعي:* ${params.opponentName}
-👤 *صفتك:* ${params.clientRole}
+👤 *صفة الموكّل في الدعوى:* ${params.clientRole}
 
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -51,8 +51,8 @@ function buildJudgmentAlert(params) {
 
 💡 *التوصية:*
 ${params.amount > 2000 
-  ? '→ المبلغ يستحق الاستئناف. راجع محاميك فوراً.'
-  : '→ المبلغ بسيط. قيّم تكلفة الاستئناف مقابل السداد.'}
+  ? '→ يُنصح بالاستئناف نظراً لقيمة المبلغ المحكوم به؛ يرجى التواصل مع المحامي فوراً.'
+  : '→ المبلغ محدود القيمة؛ يُنصح بتقييم جدوى الاستئناف مقارنة بالسداد.'}
 
 _Powered by Qadiya AI 🤖_`;
 

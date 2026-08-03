@@ -28,7 +28,7 @@ export function ReportBot() {
       kind: "text",
       text: "Hello — I'm the Qadiya Report Bot. Send me a case number (e.g. 222486500) and I'll pull the latest status, timeline, and next steps from the Ministry of Justice.",
       textAr:
-        "أهلاً — أنا بوت تقارير قضية. أرسل لي رقم قضية (مثلاً 222486500) وسأعرض لك آخر حالة والجدول الزمني والخطوات القادمة من وزارة العدل.",
+        "أهلاً بك، أنا بوت تقارير قضية. أرسل رقم الدعوى (مثال: 222486500) وسأعرض لك آخر حالة لها والجدول الزمني والخطوات الإجرائية القادمة من وزارة العدل.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -61,10 +61,10 @@ export function ReportBot() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "AI_ERROR";
       if (msg === "RATE_LIMIT")
-        toast.error(t("Service busy — please retry shortly.", "الخدمة مشغولة، حاول بعد قليل."));
+        toast.error(t("Service busy — please retry shortly.", "الخدمة مشغولة حالياً، يُرجى المحاولة بعد قليل."));
       else if (msg === "NO_CREDITS")
-        toast.error(t("AI credits exhausted.", "نفدت أرصدة الذكاء الاصطناعي."));
-      else toast.error(t("Couldn't generate the report.", "تعذّر إعداد التقرير."));
+        toast.error(t("AI credits exhausted.", "نفد رصيد الذكاء الاصطناعي."));
+      else toast.error(t("Couldn't generate the report.", "تعذّر إعداد التقرير. يُرجى المحاولة مرة أخرى."));
       setMessages((m) => [
         ...m.slice(0, -1),
         { role: "bot", kind: "notfound", caseNumber: trimmed },
@@ -81,7 +81,7 @@ export function ReportBot() {
         kind: "text",
         text: "Hello — I'm the Qadiya Report Bot. Send me a case number (e.g. 222486500) and I'll pull the latest status, timeline, and next steps from the Ministry of Justice.",
         textAr:
-          "أهلاً — أنا بوت تقارير قضية. أرسل لي رقم قضية (مثلاً 222486500) وسأعرض لك آخر حالة والجدول الزمني والخطوات القادمة من وزارة العدل.",
+          "أهلاً بك، أنا بوت تقارير قضية. أرسل رقم الدعوى (مثال: 222486500) وسأعرض لك آخر حالة لها والجدول الزمني والخطوات الإجرائية القادمة من وزارة العدل.",
       },
     ]);
     setInput("");
@@ -101,7 +101,7 @@ export function ReportBot() {
             <div className="text-xs text-white/70">
               {t(
                 "Client-facing case status assistant · MOJ-connected",
-                "مساعد حالة القضية للموكّل · متصل بوزارة العدل",
+                "مساعد متابعة حالة الدعوى للموكّل · متصل بوزارة العدل",
               )}
             </div>
           </div>
@@ -154,7 +154,7 @@ export function ReportBot() {
             disabled={busy}
             className="mt-2 text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-accent/20 hover:border-accent transition-colors disabled:opacity-50"
           >
-            222486500 · {t("Closed case demo", "قضية مغلقة")}
+            222486500 · {t("Closed case demo", "دعوى منتهية")}
           </button>
         </div>
       </Card>
@@ -170,22 +170,22 @@ export function ReportBot() {
               <li>
                 {t(
                   "Client sends a case number in Telegram / WhatsApp.",
-                  "يرسل الموكّل رقم القضية عبر تلغرام / واتساب.",
+                  "يرسل الموكّل رقم الدعوى عبر تلغرام / واتساب.",
                 )}
               </li>
               <li>
-                {t("Bot fetches the latest MOJ extract.", "يجلب البوت آخر بيانات وزارة العدل.")}
+                {t("Bot fetches the latest MOJ extract.", "يستخرج البوت أحدث بيانات وزارة العدل.")}
               </li>
               <li>
                 {t(
                   "AI produces a bilingual, plain-language brief.",
-                  "يُولّد الذكاء الاصطناعي ملخصاً واضحاً بالعربية والإنجليزية.",
+                  "يُعِدّ الذكاء الاصطناعي ملخصاً واضحاً بالعربية والإنجليزية.",
                 )}
               </li>
               <li>
                 {t(
                   "Client downloads a branded PDF report.",
-                  "يحمّل الموكّل تقريراً بصيغة PDF بهوية المكتب.",
+                  "يحمّل الموكّل تقريراً بصيغة PDF يحمل هوية المكتب.",
                 )}
               </li>
             </ol>
@@ -193,20 +193,20 @@ export function ReportBot() {
         </Card>
         <Card>
           <CardContent className="pt-6 space-y-3 text-sm">
-            <div className="font-medium">{t("Why partners love it", "لماذا يفضّله الشركاء")}</div>
+            <div className="font-medium">{t("Why partners love it", "لماذا يُفضّله الشركاء")}</div>
             <ul className="space-y-2 text-muted-foreground">
               <li className="flex gap-2">
                 <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" />{" "}
                 {t(
                   "Cuts 8+ status calls per associate per day.",
-                  "يقلل 8+ مكالمات استفسار يومياً لكل محامٍ.",
+                  "يُقلّل أكثر من 8 مكالمات استفسار يومياً لكل محامٍ.",
                 )}
               </li>
               <li className="flex gap-2">
                 <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500" />{" "}
                 {t(
                   "Never gives verdicts — only procedural facts.",
-                  "لا يُصدر أحكاماً — يعرض الوقائع الإجرائية فقط.",
+                  "لا يُصدر أحكاماً قضائية — يعرض الوقائع الإجرائية فقط.",
                 )}
               </li>
               <li className="flex gap-2">
@@ -240,7 +240,7 @@ function MessageBubble({ msg, onNew, onTry }: { msg: Msg; onNew: () => void; onT
       <BotWrap>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin text-gold" />
-          {t("Fetching MOJ extract and generating report…", "جاري جلب البيانات وإعداد التقرير…")}
+          {t("Fetching MOJ extract and generating report…", "جارٍ استخراج البيانات وإعداد التقرير…")}
         </div>
       </BotWrap>
     );
@@ -261,13 +261,13 @@ function MessageBubble({ msg, onNew, onTry }: { msg: Msg; onNew: () => void; onT
             <div className="font-medium">
               {t(
                 `No case found for ${msg.caseNumber}`,
-                `لم يتم العثور على قضية للرقم ${msg.caseNumber}`,
+                `لم يُعثر على دعوى بالرقم ${msg.caseNumber}`,
               )}
             </div>
             <div className="text-muted-foreground mt-1">
               {t(
                 "Try 222486500 for the live seeded case.",
-                "جرّب 222486500 للقضية المضافة في النظام.",
+                "جرّب الرقم 222486500 للدعوى المضافة في النظام.",
               )}
             </div>
             <Button variant="outline" size="sm" onClick={onTry} className="mt-2">

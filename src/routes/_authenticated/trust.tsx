@@ -124,7 +124,7 @@ function TrustPage() {
           <div className="text-xs uppercase tracking-widest text-muted-foreground">
             {t("Compliance", "الامتثال")}
           </div>
-          <h1 className="font-display text-3xl">{t("Trust Account", "حساب الأمانة")}</h1>
+          <h1 className="font-display text-3xl">{t("Trust Account", "حساب الأمانات")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {t(
               "Kuwait Bar-compliant tracking of client deposits and drawdowns.",

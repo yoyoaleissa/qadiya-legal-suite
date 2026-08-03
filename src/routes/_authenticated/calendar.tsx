@@ -264,7 +264,7 @@ function CalendarPage() {
             )}
           >
             <CalendarDays className="h-4 w-4" />
-            {tt("Daily Agenda", "أجندة اليوم")}
+            {tt("Daily Agenda", "جدول أعمال اليوم")}
           </Button>
           <Button
             variant={showMonth ? "default" : "outline"}
@@ -288,7 +288,7 @@ function CalendarPage() {
             )}
           >
             <AlarmClock className="h-4 w-4" />
-            {tt("Deadlines", "المواعيد النهائية")}
+            {tt("Deadlines", "المواعيد الإجرائية")}
             {deadlines.filter((d) => d.days_remaining <= 7 && d.days_remaining >= 0).length > 0 && (
               <span className="inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold">
                 {deadlines.filter((d) => d.days_remaining <= 7 && d.days_remaining >= 0).length}
@@ -442,7 +442,7 @@ function CalendarPage() {
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-destructive" />{" "}
-              {tt("Deadline", "ميعاد نهائي")}
+              {tt("Deadline", "ميعاد إجرائي")}
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-success" /> {tt("Completed", "تم الإنجاز")}
@@ -485,7 +485,7 @@ function CalendarPage() {
               <CardContent className="pt-6">
                 <EmptyState
                   icon={AlarmClock}
-                  title={tt("No open deadlines", "لا توجد مواعيد نهائية")}
+                  title={tt("No open deadlines", "لا توجد مواعيد إجرائية قائمة")}
                   desc={tt(
                     "Appeal and cassation deadlines will appear here after judgments are recorded.",
                     "ستظهر مواعيد الاستئناف والتمييز هنا بعد تسجيل الأحكام.",
@@ -570,7 +570,7 @@ function CalendarPage() {
                         className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-gold transition-colors"
                       >
                         <ExternalLink className="h-3 w-3" />
-                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
+                        {tt("📅 Add to Calendar", "📅 إضافة إلى التقويم")}
                       </a>
                     </div>
                   </li>
@@ -583,7 +583,7 @@ function CalendarPage() {
         <div>
           <div className="flex flex-wrap items-end justify-between gap-2 mb-3">
             <h2 className="font-display text-xl">
-              {tt("All appointments —", "كل المواعيد —")}{" "}
+              {tt("All appointments —", "جميع المواعيد —")}{" "}
               <span className="text-gold">
                 {monthName} {view.year}
               </span>
@@ -592,7 +592,7 @@ function CalendarPage() {
               <div className="text-xs text-muted-foreground">
                 {tt(
                   `${monthHearings} hearings · ${monthDeadlines} deadlines`,
-                  `${monthHearings} جلسة · ${monthDeadlines} ميعاد نهائي`,
+                  `${monthHearings} جلسة · ${monthDeadlines} ميعاد إجرائي`,
                 )}
               </div>
               <Button
@@ -666,10 +666,10 @@ function CalendarPage() {
               <CardContent className="pt-6">
                 <EmptyState
                   icon={CalendarRange}
-                  title={tt("Nothing scheduled this month", "لا يوجد مواعيد هذا الشهر")}
+                  title={tt("Nothing scheduled this month", "لا توجد مواعيد هذا الشهر")}
                   desc={tt(
                     "Hearings and deadlines for this month will appear here as they are added.",
-                    "ستظهر هنا الجلسات والمواعيد النهائية لهذا الشهر بمجرد إضافتها.",
+                    "ستظهر هنا الجلسات والمواعيد الإجرائية لهذا الشهر بمجرد إضافتها.",
                   )}
                 />
               </CardContent>
@@ -721,7 +721,7 @@ function CalendarPage() {
                           )}
                           {e.type === "hearing"
                             ? tt("Hearing", "جلسة")
-                            : tt("Deadline", "ميعاد نهائي")}
+                            : tt("Deadline", "ميعاد إجرائي")}
                         </span>
                         {e.case_number && (
                           <span className="text-xs text-muted-foreground">#{e.case_number}</span>
@@ -749,7 +749,7 @@ function CalendarPage() {
                         className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-gold transition-colors"
                       >
                         <ExternalLink className="h-3 w-3" />
-                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
+                        {tt("📅 Add to Calendar", "📅 إضافة إلى التقويم")}
                       </a>
                     </div>
                   </li>
@@ -776,7 +776,7 @@ function CalendarPage() {
               <CardContent className="pt-6">
                 <EmptyState
                   icon={CalendarDays}
-                  title={tt("Nothing scheduled", "لا يوجد مواعيد")}
+                  title={tt("Nothing scheduled", "لا توجد مواعيد")}
                   desc={tt(
                     "Select a highlighted day to see its hearings and deadlines.",
                     "اختر يوماً مميزاً لعرض جلساته ومواعيده.",
@@ -828,7 +828,7 @@ function CalendarPage() {
                           ? tt("Completed", "تم الإنجاز")
                           : e.type === "hearing"
                             ? tt("Hearing", "جلسة")
-                            : tt("Deadline", "ميعاد نهائي")}
+                            : tt("Deadline", "ميعاد إجرائي")}
                       </span>
                       {e.case_number && (
                         <span className="text-xs text-muted-foreground">#{e.case_number}</span>
@@ -856,7 +856,7 @@ function CalendarPage() {
                         className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors"
                       >
                         <ExternalLink className="h-3 w-3" />
-                        {tt("📅 Add to Calendar", "📅 أضف للتقويم")}
+                        {tt("📅 Add to Calendar", "📅 إضافة إلى التقويم")}
                       </a>
                       {!isDone ? (
                         <Button

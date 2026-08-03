@@ -145,14 +145,14 @@ function buildCaseContext(data) {
  * Fallback summary when AI is unavailable
  */
 function getDefaultSummary(data) {
-  let statusAr = 'قضية مسجلة في وزارة العدل الكويتية';
+  let statusAr = 'دعوى مسجّلة لدى وزارة العدل الكويتية';
   let statusEn = 'Case registered in Kuwait Ministry of Justice';
   
   // Try to determine status from events
   if (data.events && data.events.length > 0) {
     const latest = data.events[0];
     if (latest.action.includes('حكم')) {
-      statusAr = `صدر حكم بتاريخ ${latest.date}`;
+      statusAr = `صدر الحكم بتاريخ ${latest.date}`;
       statusEn = `Judgment issued on ${latest.date}`;
     }
   }

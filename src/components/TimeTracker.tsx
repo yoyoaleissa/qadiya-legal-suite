@@ -84,7 +84,7 @@ export function TimeTracker() {
           .select("id")
           .eq("case_number", state.caseNumber.trim())
           .maybeSingle();
-        if (!cs) throw new Error(t("Case number not found", "لم يتم العثور على القضية"));
+        if (!cs) throw new Error(t("Case number not found", "لم يُعثر على الدعوى"));
         case_id = cs.id;
       }
       return save({

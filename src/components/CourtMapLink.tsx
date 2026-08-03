@@ -66,7 +66,7 @@ export function CourtMapLink({ courtName, showIcon = true, className = "" }: Cou
                 className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
               >
                 <Navigation className="h-3 w-3" />
-                {lang === "ar" ? "اتجاهات" : "Directions"}
+                {lang === "ar" ? "الاتجاهات" : "Directions"}
               </a>
             </div>
           </div>

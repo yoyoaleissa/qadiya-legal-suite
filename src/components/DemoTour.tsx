@@ -110,7 +110,7 @@ const TOUR_STEPS: TourStep[] = [
     description:
       "Generate legal documents from templates — Power of Attorney, contracts, pleadings. Auto-fills client and case data. Export as PDF.",
     descriptionAr:
-      "أنشئ مستندات قانونية من النماذج — وكالات، عقود، صحف دعوى. تعبئة تلقائية ببيانات العميل والقضية. تصدير كـ PDF.",
+      "إعداد المستندات القانونية من النماذج — التوكيلات، والعقود، وصحف الدعاوى. تُستكمل بياناتها تلقائياً من ملف الموكّل والدعوى، مع إمكانية التصدير بصيغة PDF.",
     icon: <FileText className="h-8 w-8 text-[hsl(var(--navy))]" />,
     route: "/documents",
   },

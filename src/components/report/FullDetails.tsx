@@ -100,7 +100,7 @@ export function FullDetails({ report }: { report: CaseReport }) {
                 <div className="mt-4">
                   <h5 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {lang === "ar"
-                      ? "المواعيد المحسوبة من تاريخ الحكم"
+                      ? "المواعيد الإجرائية المحسوبة من تاريخ صدور الحكم"
                       : "Deadlines from judgment date"}
                   </h5>
                   <AllDeadlines

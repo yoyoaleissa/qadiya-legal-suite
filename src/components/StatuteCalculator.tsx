@@ -27,7 +27,7 @@ export function StatuteCalculator() {
       <div className="flex items-center gap-2">
         <Calculator className="h-5 w-5 text-primary" />
         <h3 className="font-semibold text-foreground">
-          {t("Statute of Limitations Calculator", "حاسبة التقادم")}
+          {t("Statute of Limitations Calculator", "حاسبة مدة التقادم")}
         </h3>
       </div>
 
@@ -101,14 +101,14 @@ export function StatuteCalculator() {
             <div className="space-y-1 flex-1">
               <p className="font-semibold text-sm">
                 {result.isExpired
-                  ? t("EXPIRED — Statute has lapsed", "منتهية — سقطت الدعوى بالتقادم")
+                  ? t("EXPIRED — Statute has lapsed", "منقضية — سقط الحق بالتقادم")
                   : result.daysRemaining === Infinity
                     ? t("No limitation period applies", "لا تسقط بالتقادم")
                     : `${result.daysRemaining} ${t("days remaining", "يوم متبقي")}`}
               </p>
               {result.daysRemaining !== Infinity && (
                 <p className="text-xs text-muted-foreground">
-                  {t("Deadline:", "الموعد النهائي:")}{" "}
+                  {t("Deadline:", "الميعاد النهائي:")}{" "}
                   {result.deadline.toLocaleDateString(isAr ? "ar-KW" : "en-US", {
                     year: "numeric",
                     month: "long",

@@ -94,7 +94,7 @@ function ClientPortal() {
               }}
             >
               <LogOut className="h-4 w-4 ml-1" />
-              خروج
+              تسجيل الخروج
             </Button>
           )}
         </div>
@@ -104,7 +104,7 @@ function ClientPortal() {
         {session ? <PortalHome /> : <PortalGuest />}
         <footer className="text-center mt-12 text-xs text-muted-foreground">
           <p>Powered by Qadiya AI</p>
-          <p className="mt-1">هذه البوابة للاطلاع فقط ولا تُغني عن الاستشارة القانونية</p>
+          <p className="mt-1">هذا المحتوى معروض للاطلاع فقط، ولا يُعدّ مشورة قانونية</p>
         </footer>
       </main>
     </div>
@@ -133,9 +133,9 @@ function PortalGuest() {
         options: { emailRedirectTo: `${window.location.origin}/portal` },
       });
       if (error) throw error;
-      toast.success("تم إرسال رابط تسجيل الدخول إلى بريدك");
+      toast.success("تم إرسال رابط تسجيل الدخول إلى بريدك الإلكتروني");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "تعذّر الإرسال");
+      toast.error(e instanceof Error ? e.message : "تعذّر إرسال الرابط");
     } finally {
       setSending(false);
     }
@@ -170,9 +170,9 @@ function PortalGuest() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">متابعة قضيتك</h1>
+        <h1 className="text-3xl font-bold mb-2">متابعة ملف الدعوى</h1>
         <p className="text-muted-foreground">
-          سجّل الدخول برابط سحري لعرض قضاياك وفواتيرك، أو ابحث عن قضية بالرقم الآلي
+          سجّل الدخول برابط آمن لعرض دعاواك وفواتيرك، أو ابحث عن دعوى برقمها الآلي
         </p>
       </div>
 
@@ -191,11 +191,11 @@ function PortalGuest() {
               dir="ltr"
             />
             <Button onClick={sendMagic} disabled={sending}>
-              {sending ? "…" : "أرسل الرابط"}
+              {sending ? "…" : "إرسال الرابط"}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            سيصلك رابط دخول آمن. يجب أن يكون بريدك مسجّلاً لدى مكتب المحاماة.
+            سيصلك رابط دخول آمن. يجب أن يكون بريدك الإلكتروني مسجّلاً لدى مكتب المحاماة.
           </p>
         </CardContent>
       </Card>
@@ -204,32 +204,32 @@ function PortalGuest() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Search className="h-4 w-4" />
-            بحث سريع عن قضية
+            بحث سريع عن دعوى
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
             <Input
-              placeholder="الرقم الآلي (مثال: 222486500)"
+              placeholder="الرقم الآلي للدعوى (مثال: 222486500)"
               value={caseNumber}
               onChange={(e) => setCaseNumber(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && doLookup()}
               dir="ltr"
             />
             <Button variant="outline" onClick={doLookup} disabled={lookupLoading}>
-              بحث
+              البحث
             </Button>
           </div>
           {lookup && !("notFound" in lookup && lookup.notFound) && "case_number" in lookup && (
             <div className="mt-4 p-3 bg-muted rounded-lg text-sm space-y-1">
-              <div className="font-medium">قضية {lookup.case_number}</div>
+              <div className="font-medium">الدعوى رقم {lookup.case_number}</div>
               <div className="text-xs text-muted-foreground">
                 آخر تحديث: {new Date(lookup.updated_at).toLocaleDateString("ar-KW")}
               </div>
             </div>
           )}
           {lookup && "notFound" in lookup && lookup.notFound && (
-            <p className="text-xs mt-3 text-muted-foreground">لم يتم العثور على تقرير لهذه القضية.</p>
+            <p className="text-xs mt-3 text-muted-foreground">لم يُعثر على تقرير لهذه الدعوى.</p>
           )}
         </CardContent>
       </Card>
@@ -247,7 +247,7 @@ function PortalHome() {
   });
 
   if (isLoading) {
-    return <p className="text-center text-sm text-muted-foreground">جاري التحميل…</p>;
+    return <p className="text-center text-sm text-muted-foreground">جارٍ التحميل…</p>;
   }
 
   if (!profile?.client) {
@@ -255,10 +255,10 @@ function PortalHome() {
       <Card>
         <CardContent className="pt-6 text-center space-y-2">
           <p className="text-sm">
-            بريدك الإلكتروني ({profile?.email}) غير مرتبط بأي ملف موكل في المكتب.
+            بريدك الإلكتروني ({profile?.email}) غير مرتبط بأي ملف موكِّل لدى المكتب.
           </p>
           <p className="text-xs text-muted-foreground">
-            تواصل مع مكتب المحاماة لربط بريدك بملفك.
+            يُرجى التواصل مع المكتب لربط بريدك الإلكتروني بملفك.
           </p>
         </CardContent>
       </Card>
@@ -269,14 +269,14 @@ function PortalHome() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">أهلاً {profile.client.name_ar || profile.client.name}</h1>
-        <p className="text-sm text-muted-foreground">هذه لوحتك الخاصة كموكل في المكتب.</p>
+        <p className="text-sm text-muted-foreground">هذه لوحتك الخاصة بصفتك موكِّلاً لدى المكتب.</p>
       </div>
 
       <Tabs defaultValue="cases">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="cases">
             <FileText className="h-4 w-4 ml-1" />
-            قضاياي
+            دعاواي
           </TabsTrigger>
           <TabsTrigger value="invoices">
             <Receipt className="h-4 w-4 ml-1" />
@@ -284,7 +284,7 @@ function PortalHome() {
           </TabsTrigger>
           <TabsTrigger value="messages">
             <MessageCircle className="h-4 w-4 ml-1" />
-            رسائل
+            الرسائل
           </TabsTrigger>
         </TabsList>
         <TabsContent value="cases" className="mt-4">
@@ -304,12 +304,12 @@ function PortalHome() {
 function PortalCases() {
   const fn = useServerFn(listPortalCases);
   const { data, isLoading } = useQuery({ queryKey: ["portal-cases"], queryFn: () => fn() });
-  if (isLoading) return <p className="text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>;
   if (!data?.length)
     return (
       <Card>
         <CardContent className="pt-6 text-sm text-center text-muted-foreground">
-          لا توجد قضايا مرتبطة بحسابك بعد.
+          لا توجد دعاوى مرتبطة بحسابك بعد.
         </CardContent>
       </Card>
     );
@@ -320,7 +320,7 @@ function PortalCases() {
           <CardContent className="pt-5 space-y-2">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="font-semibold">{c.title_ar || c.title || `قضية ${c.case_number}`}</div>
+                <div className="font-semibold">{c.title_ar || c.title || `الدعوى رقم ${c.case_number}`}</div>
                 <div className="text-xs text-muted-foreground" dir="ltr">
                   {c.case_number}
                 </div>
@@ -348,12 +348,12 @@ function PortalCases() {
 function PortalInvoices() {
   const fn = useServerFn(listPortalInvoices);
   const { data, isLoading } = useQuery({ queryKey: ["portal-invoices"], queryFn: () => fn() });
-  if (isLoading) return <p className="text-sm text-muted-foreground">جاري التحميل…</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>;
   if (!data?.length)
     return (
       <Card>
         <CardContent className="pt-6 text-sm text-center text-muted-foreground">
-          لا توجد فواتير بعد.
+          لا توجد فواتير حتى الآن.
         </CardContent>
       </Card>
     );
@@ -412,7 +412,7 @@ function PortalMessages() {
     <Card>
       <CardContent className="pt-4 space-y-3">
         <div className="h-72 overflow-y-auto border rounded-md p-3 bg-muted/30 space-y-2">
-          {isLoading && <p className="text-xs text-muted-foreground">جاري التحميل…</p>}
+          {isLoading && <p className="text-xs text-muted-foreground">جارٍ التحميل…</p>}
           {!isLoading && (!data || data.length === 0) && (
             <p className="text-xs text-muted-foreground text-center">
               ابدأ محادثتك مع مكتب المحاماة.

@@ -58,7 +58,7 @@ export function CaseFreshness() {
         <CardTitle className="flex items-center gap-2 text-base">
           <Radio className="h-4 w-4 text-gold" />
           <span className={lang === "ar" ? "font-arabic" : ""}>
-            {t("MOJ sync freshness", "تحديث بيانات وزارة العدل")}
+            {t("MOJ sync freshness", "حالة تحديث بيانات وزارة العدل")}
           </span>
         </CardTitle>
       </CardHeader>
@@ -71,7 +71,7 @@ export function CaseFreshness() {
           <p className="text-sm text-muted-foreground py-6 text-center">
             {t(
               "No synced cases yet. Generate a report to start tracking.",
-              "لا توجد قضايا متزامنة بعد.",
+              "لا توجد دعاوى متزامنة بعد.",
             )}
           </p>
         ) : (
@@ -81,7 +81,7 @@ export function CaseFreshness() {
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-mono truncate">{row.case_number}</div>
                   <div className="text-[11px] text-muted-foreground truncate">
-                    {row.status_hint ?? t("no status", "بدون حالة")}
+                    {row.status_hint ?? t("no status", "بلا حالة")}
                   </div>
                 </div>
                 <span className={`text-xs tabular-nums ${ageTone(row.minutes_since)}`}>

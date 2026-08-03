@@ -65,7 +65,7 @@ async function syncCase(caseData, caseNumber) {
     // Extract case title from first instance or appeal
     if (caseData.firstInstance) {
       caseRecord.title = caseData.firstInstance.caseType || `Case ${caseNumber}`;
-      caseRecord.title_ar = caseData.firstInstance.caseType || `قضية ${caseNumber}`;
+      caseRecord.title_ar = caseData.firstInstance.caseType || `الدعوى رقم ${caseNumber}`;
       caseRecord.court = caseData.firstInstance.court || null;
       caseRecord.filed_date = caseData.firstInstance.filingDate || null;
     }

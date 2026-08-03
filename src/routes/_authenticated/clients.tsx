@@ -114,7 +114,7 @@ function ClientsPage() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder={tt("Search clients…", "بحث…")}
+              placeholder={tt("Search clients…", "البحث عن موكّل…")}
               className="ps-9"
             />
           </div>
@@ -365,7 +365,7 @@ function ClientsPage() {
                   <AlertTriangle className="h-4 w-4" />
                   {tt(
                     `${conflicts.length} possible conflict${conflicts.length > 1 ? "s" : ""} found`,
-                    `تم العثور على ${conflicts.length} تعارض محتمل`,
+                    `تم العثور على ${conflicts.length} تعارض محتمل في المصالح`,
                   )}
                 </div>
                 <ul className="text-xs space-y-1">
@@ -386,14 +386,14 @@ function ClientsPage() {
                   />
                   {tt(
                     "I've reviewed these and confirm no conflict",
-                    "راجعت النتائج وأؤكد عدم وجود تعارض",
+                    "راجعت النتائج وأؤكّد عدم وجود تعارض في المصالح",
                   )}
                 </label>
               </div>
             )}
             {conflicts && conflicts.length === 0 && (
               <div className="text-xs text-emerald-700 dark:text-emerald-400">
-                {tt("No conflicts found.", "لا توجد تعارضات.")}
+                {tt("No conflicts found.", "لم يُعثر على أي تعارض في المصالح.")}
               </div>
             )}
 
@@ -413,7 +413,7 @@ function ClientsPage() {
               {checking ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                tt("Check for conflicts", "فحص التعارض")
+                tt("Check for conflicts", "فحص تعارض المصالح")
               )}
             </Button>
             <Button

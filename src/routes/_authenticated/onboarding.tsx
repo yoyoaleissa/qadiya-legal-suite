@@ -97,7 +97,7 @@ function OnboardingPage() {
           <span className={isAr ? "font-arabic" : ""}>
             {t(
               "Create a new firm to bring your team in, or accept an invitation to join one.",
-              "أنشئ مكتباً جديداً لإحضار فريقك، أو اقبل دعوة للانضمام إلى مكتب موجود.",
+              "أنشئ مكتباً جديداً لضم فريقك، أو اقبل دعوة للانضمام إلى مكتب قائم.",
             )}
           </span>
         </p>
@@ -184,7 +184,7 @@ function OnboardingPage() {
                     <span className={isAr ? "font-arabic" : ""}>
                       {t(
                         "Paste the token from the invitation link your firm sent you.",
-                        "الصق الرمز من رابط الدعوة الذي أرسله لك مكتبك.",
+                        "الصق الرمز الوارد في رابط الدعوة الذي أرسله لك مكتبك.",
                       )}
                     </span>
                   </p>

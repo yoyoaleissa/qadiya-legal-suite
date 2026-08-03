@@ -55,7 +55,7 @@ export async function exportMonthlyOverviewPdf(opts: MonthlyExportOptions): Prom
       const wd = (isAr ? WEEK_AR : WEEK_EN)[new Date(e.date).getDay()];
       const isHearing = e.type === "hearing";
       const badgeColor = isHearing ? COLORS.navy : COLORS.deadline;
-      const badgeText = isHearing ? t("Hearing", "جلسة") : t("Deadline", "ميعاد نهائي");
+      const badgeText = isHearing ? t("Hearing", "جلسة") : t("Deadline", "الميعاد الإجرائي");
       const title = esc(e.title || "");
       const sub = e.sub
         ? `<div style="font-size:12px;color:${COLORS.muted};margin-top:2px;">${esc(e.sub)}</div>`
@@ -115,7 +115,7 @@ export async function exportMonthlyOverviewPdf(opts: MonthlyExportOptions): Prom
           ${esc(monthName)} ${year}
         </div>
         <div style="font-size:13px;color:${COLORS.muted};margin-top:4px;">
-          ${t(`${hearings} hearings · ${deadlines} deadlines`, `${hearings} جلسة، ${deadlines} ميعاد نهائي`)}
+          ${t(`${hearings} hearings · ${deadlines} deadlines`, `${hearings} جلسة، ${deadlines} ميعاد إجرائي`)}
         </div>
       </div>
       <div style="text-align:${isAr ? "left" : "right"};font-size:11px;color:${COLORS.muted};">

@@ -67,7 +67,7 @@ export function FocusToday() {
           <p className="text-sm text-muted-foreground">
             {t(
               "No overdue tasks, hearings, or overdue invoices right now.",
-              "لا توجد مهام متأخرة أو جلسات أو فواتير متأخرة الآن.",
+              "لا توجد مهام متأخرة أو جلسات أو فواتير متأخرة السداد حالياً.",
             )}
           </p>
         ) : (

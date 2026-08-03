@@ -155,14 +155,14 @@ function Dashboard() {
             {t("Overview", "نظرة عامة")}
           </div>
           <h1 className="font-display text-4xl mt-1">
-            {t("Firm Dashboard", "لوحة تحكم المكتب")}
+            {t("Firm Dashboard", "لوحة متابعة المكتب")}
           </h1>
           <p className="text-base text-foreground/80 mt-1">
             {getGreeting(lang)},{" "}
             <span className="text-gold">{t(roleLabel(role, "en"), roleLabel(role, "ar"))}</span>
           </p>
           <p className="text-sm text-muted-foreground mt-1">
-            {t("Here's what needs your attention today.", "إليك أهم ما يحتاج انتباهك اليوم.")}
+            {t("Here's what needs your attention today.", "فيما يلي أبرز ما يستدعي اهتمامكم اليوم.")}
           </p>
         </div>
         <Link
@@ -734,7 +734,7 @@ function NewCaseDialog({
               value={titleAr}
               onChange={(e) => setTitleAr(e.target.value)}
               dir="rtl"
-              placeholder="نزاع عقدي"
+              placeholder="نزاع تعاقدي"
             />
           </div>
           <div>

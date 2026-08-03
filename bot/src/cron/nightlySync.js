@@ -75,7 +75,7 @@ async function detectChanges(oldData, newData) {
     const latestJudgment = newJson.judgments[newJson.judgments.length - 1];
     changes.push({
       type: "new_judgment",
-      description: `حكم جديد صدر: ${latestJudgment.decision || ""}`,
+      description: `صدر حكم جديد: ${latestJudgment.decision || ""}`,
       data: latestJudgment,
     });
   }
@@ -120,7 +120,7 @@ async function sendNotification(caseInfo, changes) {
     })
     .join("\n");
 
-  const message = `🔔 *تحديث تلقائي — قضية ${caseInfo.case_number}*\n\n${caseInfo.title || ""}\n\n${changesList}\n\n_تم الكشف عن هذا التحديث تلقائياً بواسطة Qadiya AI_`;
+  const message = `🔔 *تحديث تلقائي — الدعوى رقم ${caseInfo.case_number}*\n\n${caseInfo.title || ""}\n\n${changesList}\n\n_تم الكشف عن هذا التحديث تلقائياً بواسطة Qadiya AI_`;
 
   try {
     await bot.telegram.sendMessage(profile.telegram_chat_id, message, {
@@ -141,7 +141,7 @@ async function createUrgentTask(caseInfo, change) {
 
   const { error } = await supabase.from("tasks").insert({
     title: `⚠️ مهلة استئناف — ${caseInfo.title || caseInfo.case_number}`,
-    description: `صدر حكم جديد في القضية. مهلة الاستئناف 30 يوم تنتهي في ${deadline.toLocaleDateString("ar-KW")}`,
+    description: `صدر حكم جديد في الدعوى. تنتهي مهلة الاستئناف البالغة 30 يوماً بتاريخ ${deadline.toLocaleDateString("ar-KW")}`,
     due_date: deadline.toISOString(),
     status: "todo",
     priority: "urgent",
