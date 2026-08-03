@@ -1152,6 +1152,54 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          description: string | null
+          description_ar: string | null
+          id: string
+          is_active: boolean
+          name: string
+          name_ar: string
+          price: number
+          sort_order: number
+          trial_days: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          description_ar?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          name_ar: string
+          price?: number
+          sort_order?: number
+          trial_days?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          description_ar?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          name_ar?: string
+          price?: number
+          sort_order?: number
+          trial_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1382,6 +1430,47 @@ export type Database = {
             columns: ["firm_id"]
             isOneToOne: false
             referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_plans: {
+        Row: {
+          created_at: string
+          id: string
+          plan_id: string
+          status: string
+          trial_ends_at: string | null
+          trial_started_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan_id: string
+          status?: string
+          trial_ends_at?: string | null
+          trial_started_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan_id?: string
+          status?: string
+          trial_ends_at?: string | null
+          trial_started_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_plans_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
             referencedColumns: ["id"]
           },
         ]
