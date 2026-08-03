@@ -341,7 +341,7 @@ function LoginPage() {
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-gold transition-colors"
             >
               <span className={isAr ? "font-arabic" : ""}>
-                {t("Client? Track your case here →", "موكل؟ تابع قضيتك من هنا ←")}
+                {t("Client? Track your case here →", "هل أنتم من المُوكِّلين؟ لمتابعة سير الدعوى من هنا ←")}
               </span>
             </a>
           </div>

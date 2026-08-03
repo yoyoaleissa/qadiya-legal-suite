@@ -102,7 +102,7 @@ export const translations = {
     enter_case: "أدخل رقم دعواك",
     case_number: "رقم الدعوى",
     generate_report: "إصدار التقرير",
-    generating: "جارٍ إعداد تقرير قضيتك…",
+    generating: "جارٍ إعداد التقرير الخاص بدعواكم…",
     download_pdf: "تحميل PDF",
     new_lookup: "بحث جديد",
     status: "الحالة",
