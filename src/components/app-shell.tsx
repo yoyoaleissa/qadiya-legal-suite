@@ -68,12 +68,12 @@ const NAV: NavItem[] = [
   { to: "/clients", labelEn: "Clients & Cases", labelAr: "الموكّلون والقضايا", icon: Users },
   { to: "/calendar", labelEn: "Court Calendar", labelAr: "التقويم القضائي", icon: Calendar },
   { to: "/tasks", labelEn: "Tasks", labelAr: "المهام", icon: CheckSquare },
-  { to: "/billing", labelEn: "Billing", labelAr: "الفاتورة", icon: Receipt, adminOnly: true },
+  { to: "/billing", labelEn: "Billing", labelAr: "الفوترة", icon: Receipt, adminOnly: true },
   { to: "/trust", labelEn: "Trust Account", labelAr: "حساب الأمانة", icon: Wallet, adminOnly: true },
   { to: "/documents", labelEn: "Documents", labelAr: "المستندات", icon: FileText },
   { to: "/notes", labelEn: "Case Notes", labelAr: "الملاحظات", icon: StickyNote },
   { to: "/ai-assistant", labelEn: "AI Assistant", labelAr: "المساعد الذكي", icon: Sparkles },
-  { to: "/drafting", labelEn: "AI Drafting", labelAr: "المسودة الذكية", icon: Sparkles },
+  { to: "/drafting", labelEn: "AI Drafting", labelAr: "الصياغة الذكية", icon: Sparkles },
   { to: "/activity", labelEn: "Activity", labelAr: "النشاط", icon: Activity },
   { to: "/team", labelEn: "Team", labelAr: "الفريق", icon: UsersRound },
   { to: "/tools", labelEn: "Tools", labelAr: "الأدوات", icon: Shield },
@@ -257,7 +257,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <Search className="h-4 w-4 shrink-0" />
               <span className={cn("flex-1 text-start truncate", lang === "ar" && "font-arabic")}>
-                {t("Search clients, cases, tasks…", "بحث الموكّلين والقضايا والمهام…")}
+                {t("Search clients, cases, tasks…", "بحث الموكّلين والدعاوى والمهام…")}
               </span>
               <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
                 ⌘K

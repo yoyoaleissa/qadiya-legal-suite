@@ -485,7 +485,7 @@ function CalendarPage() {
               <CardContent className="pt-6">
                 <EmptyState
                   icon={AlarmClock}
-                  title={tt("No open deadlines", "لا توجد مواعيد نهائية")}
+                  title={tt("No open deadlines", "لا توجد مواعيد إجرائية قائمة")}
                   desc={tt(
                     "Appeal and cassation deadlines will appear here after judgments are recorded.",
                     "ستظهر مواعيد الاستئناف والتمييز هنا بعد تسجيل الأحكام.",
