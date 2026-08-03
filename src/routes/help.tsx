@@ -66,7 +66,7 @@ const SECTIONS: Section[] = [
   },
   {
     icon: Users,
-    titleAr: "الموكلون وبوابة العميل",
+    titleAr: "الموكّلون وبوابة الموكّل",
     titleEn: "Clients & portal",
     bodyAr:
       "من صفحة الموكل، فعّل بوابة العميل وأرسل رابط دخول برمز مؤقت. يرى الموكل قضاياه وفواتيره ورسائلك — دون الاطلاع على ملاحظاتك الداخلية.",
@@ -120,10 +120,10 @@ const SECTIONS: Section[] = [
   },
   {
     icon: ShieldCheck,
-    titleAr: "الأمان والفِرَق",
+    titleAr: "الأمان وفريق العمل",
     titleEn: "Security & team",
     bodyAr:
-      "كل مكتب معزول بيانيًا. تدير الأدوار (شريك، محامٍ، مساعد قانوني) من ‹الإعدادات ← الفريق›، وتُدعى الأعضاء الجدد برابط دعوة برمز صلاحية.",
+      "بيانات كل مكتب معزولة تماماً. تُدار الأدوار (شريك، محامٍ مساعد، مساعد قانوني) من ‹الإعدادات ← الفريق›، ويُدعى الأعضاء الجدد برابط دعوة يحمل رمز صلاحية.",
     bodyEn:
       "Each firm is fully isolated. Manage roles (Partner, Associate, Paralegal) from Settings → Team, and invite new members via a tokenised invite link.",
   },
@@ -154,7 +154,7 @@ function HelpPage() {
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
-            {ar ? "العودة للرئيسية" : "Back to home"}
+            {ar ? "العودة إلى الصفحة الرئيسية" : "Back to home"}
           </Link>
         </div>
       </header>
@@ -164,7 +164,7 @@ function HelpPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           {ar
-            ? "كل ما تحتاجه للبدء بمنظومة قضية — من إنشاء قضية إلى إصدار فاتورة وتصدير تسوية الأمانة."
+            ? "كل ما تحتاجه للبدء باستخدام منظومة قضية — من فتح دعوى إلى إصدار فاتورة وتصدير تسوية حساب الأمانة."
             : "Everything you need to get productive with Qadiya OS — from opening a case to issuing an invoice and exporting a trust reconciliation."}
         </p>
 
@@ -195,14 +195,14 @@ function HelpPage() {
 
         <div className="mt-12 rounded-lg border border-border/60 bg-muted/30 p-6 text-sm">
           <div className="font-medium">
-            {ar ? "تحتاج مساعدة إضافية؟" : "Need more help?"}
+            {ar ? "بحاجة إلى مزيد من المساعدة؟" : "Need more help?"}
           </div>
           <div className="mt-1 text-muted-foreground">
-            {ar ? "راسلنا على " : "Email us at "}
+            {ar ? "يُرجى مراسلتنا على " : "Email us at "}
             <a className="text-primary underline" href="mailto:support@qadiya.app">
               support@qadiya.app
             </a>
-            {ar ? " ونردّ خلال يوم عمل." : " and we reply within one business day."}
+            {ar ? " وسنردّ خلال يوم عمل واحد." : " and we reply within one business day."}
           </div>
         </div>
       </main>
