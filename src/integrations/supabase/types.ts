@@ -286,7 +286,12 @@ export type Database = {
           created_at: string
           firm_id: string
           id: string
+          judge_name: string | null
+          judge_name_ar: string | null
+          opposing_counsel: string | null
+          opposing_counsel_ar: string | null
           opposing_party: string | null
+          opposing_party_ar: string | null
           overall_status: string
           title: string | null
           title_ar: string | null
@@ -300,7 +305,12 @@ export type Database = {
           created_at?: string
           firm_id?: string
           id?: string
+          judge_name?: string | null
+          judge_name_ar?: string | null
+          opposing_counsel?: string | null
+          opposing_counsel_ar?: string | null
           opposing_party?: string | null
+          opposing_party_ar?: string | null
           overall_status?: string
           title?: string | null
           title_ar?: string | null
@@ -314,7 +324,12 @@ export type Database = {
           created_at?: string
           firm_id?: string
           id?: string
+          judge_name?: string | null
+          judge_name_ar?: string | null
+          opposing_counsel?: string | null
+          opposing_counsel_ar?: string | null
           opposing_party?: string | null
+          opposing_party_ar?: string | null
           overall_status?: string
           title?: string | null
           title_ar?: string | null
