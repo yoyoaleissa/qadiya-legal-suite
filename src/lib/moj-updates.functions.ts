@@ -22,6 +22,8 @@ export type MojUpdate = {
   detected_at: string;
   status: string;
   reviewed_at: string | null;
+  explanation_en: string | null;
+  explanation_ar: string | null;
 };
 
 export const listMojUpdates = createServerFn({ method: "GET" })
@@ -30,13 +32,39 @@ export const listMojUpdates = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("moj_updates")
       .select(
-        "id, title, title_ar, content, content_ar, source_url, category, published_at, detected_at, status, reviewed_at",
+        "id, title, title_ar, content, content_ar, source_url, category, published_at, detected_at, status, reviewed_at, explanation_en, explanation_ar",
       )
       .order("detected_at", { ascending: false })
       .limit(200);
     if (error) throw new Error(error.message);
     return (data ?? []) as MojUpdate[];
   });
+
+/**
+ * On-demand run of the same detection job the daily cron triggers, plus
+ * plain-language explanations for anything new (and any older rows still
+ * missing one). Returns aiAvailable: false when no AI provider is configured.
+ */
+export const refreshMojUpdates = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { detectAndStoreMojUpdates, explainMissingMojUpdates } = await import(
+      "@/lib/moj-detect.sync.server"
+    );
+
+    const result = await detectAndStoreMojUpdates(supabaseAdmin);
+    const backfill = await explainMissingMojUpdates(supabaseAdmin);
+
+    return {
+      checked: result.checked,
+      inserted: result.inserted,
+      skipped: result.skipped,
+      explained: backfill.explained,
+      aiAvailable: result.aiAvailable && backfill.aiAvailable,
+    };
+  });
+
 
 export const setMojUpdateStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
