@@ -163,7 +163,26 @@ function MojUpdatesPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {body && <p className="text-sm text-muted-foreground">{snippet(body)}</p>}
+
+                {explanation ? (
+                  <div className="rounded-md border border-border bg-muted/40 p-3">
+                    <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {t("What this means in practice", "المدلول العملي لهذا المستجد")}
+                    </p>
+                    <p className="text-sm leading-relaxed">{explanation}</p>
+                  </div>
+                ) : (
+                  <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
+                    {t(
+                      "Raw detected text shown above — needs a working AI connection to summarize.",
+                      "المعروض أعلاه هو النص المرصود كما ورد — ويلزم توفّر اتصال فعّال بالمساعد الذكي لإعداد بيان توضيحي له.",
+                    )}
+                  </p>
+                )}
+
                 <div className="flex flex-wrap items-center gap-2">
+
                   <Button asChild variant="outline" size="sm">
                     <a href={u.source_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-1 h-3.5 w-3.5" />
