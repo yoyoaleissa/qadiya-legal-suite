@@ -43,6 +43,7 @@ function MojUpdatesPage() {
   const queryClient = useQueryClient();
   const runList = useServerFn(listMojUpdates);
   const runSetStatus = useServerFn(setMojUpdateStatus);
+  const runRefresh = useServerFn(refreshMojUpdates);
 
   const { data: updates, isLoading } = useQuery({
     queryKey: ["moj-updates"],
@@ -56,6 +57,33 @@ function MojUpdatesPage() {
     },
     onError: () => {
       toast.error(t("Could not update the review status.", "تعذّر تحديث حالة المراجعة."));
+    },
+  });
+
+  const refresh = useMutation({
+    mutationFn: () => runRefresh(),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["moj-updates"] });
+      if (!res.aiAvailable) {
+        toast.warning(
+          t(
+            "Detection ran, but no working AI connection is available to summarize the updates.",
+            "تمّت عملية الرصد، إلا أنه لا يتوفر اتصال فعّال بالمساعد الذكي لتلخيص المستجدات.",
+          ),
+        );
+        return;
+      }
+      toast.success(
+        t(
+          `Detection complete — ${res.inserted} new, ${res.explained} explanation(s) generated.`,
+          `اكتمل الرصد — ${res.inserted} مستجد جديد، وتم إعداد ${res.explained} بيان توضيحي.`,
+        ),
+      );
+    },
+    onError: () => {
+      toast.error(
+        t("Could not run the detection job.", "تعذّر تشغيل مهمة رصد المستجدات."),
+      );
     },
   });
 
@@ -76,12 +104,21 @@ function MojUpdatesPage() {
             )}
           </p>
         </div>
-        {pending > 0 && (
-          <Badge variant="destructive" className="shrink-0">
-            {t(`${pending} pending review`, `${pending} بانتظار المراجعة`)}
-          </Badge>
-        )}
+        <div className="flex shrink-0 items-center gap-2">
+          {pending > 0 && <Badge variant="destructive">{t(`${pending} pending review`, `${pending} بانتظار المراجعة`)}</Badge>}
+          <Button onClick={() => refresh.mutate()} disabled={refresh.isPending}>
+            {refresh.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            {refresh.isPending
+              ? t("Checking…", "جارٍ الرصد…")
+              : t("Update Knowledge", "تحديث المعرفة")}
+          </Button>
+        </div>
       </div>
+
 
       {isLoading && (
         <div className="space-y-3">
