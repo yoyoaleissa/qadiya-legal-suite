@@ -1041,6 +1041,8 @@ export type Database = {
           content_hash: string
           created_at: string
           detected_at: string
+          explanation_ar: string | null
+          explanation_en: string | null
           id: string
           published_at: string | null
           reviewed_at: string | null
@@ -1058,6 +1060,8 @@ export type Database = {
           content_hash: string
           created_at?: string
           detected_at?: string
+          explanation_ar?: string | null
+          explanation_en?: string | null
           id?: string
           published_at?: string | null
           reviewed_at?: string | null
@@ -1075,6 +1079,8 @@ export type Database = {
           content_hash?: string
           created_at?: string
           detected_at?: string
+          explanation_ar?: string | null
+          explanation_en?: string | null
           id?: string
           published_at?: string | null
           reviewed_at?: string | null
