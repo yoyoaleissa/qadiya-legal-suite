@@ -144,6 +144,11 @@ function MojUpdatesPage() {
           const heading = lang === "ar" ? u.title_ar : u.title || u.title_ar;
           const body = lang === "ar" ? u.content_ar || u.content : u.content || u.content_ar;
           const isReviewed = u.status === "reviewed";
+          const explanation =
+            lang === "ar"
+              ? u.explanation_ar || u.explanation_en
+              : u.explanation_en || u.explanation_ar;
+
           return (
             <Card key={u.id} className={isReviewed ? "opacity-70" : undefined}>
               <CardHeader className="pb-2">
