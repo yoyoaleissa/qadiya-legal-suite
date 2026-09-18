@@ -42,6 +42,11 @@ export const Route = createFileRoute("/_authenticated/reports")({
     meta: [
       { title: "Case Reports — Qadiya OS" },
       { name: "description", content: "View and act on case reports generated from MOJ data." },
+      { property: "og:title", content: "Case Reports — Qadiya OS" },
+      { property: "og:description", content: "View and act on case reports generated from MOJ data." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
 });

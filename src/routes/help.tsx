@@ -31,6 +31,8 @@ export const Route = createFileRoute("/help")({
         property: "og:description",
         content: "Step-by-step guide to Qadiya OS for Kuwaiti law firms.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/help" }],
   }),

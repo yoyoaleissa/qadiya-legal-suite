@@ -24,6 +24,7 @@ export const Route = createFileRoute("/login")({
       },
       { property: "og:url", content: "https://qadiya.lovable.app/login" },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         property: "og:image",
         content:

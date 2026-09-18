@@ -31,6 +31,17 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
   validateSearch: (s: Record<string, unknown>) => ({
     authorization_id: typeof s.authorization_id === "string" ? s.authorization_id : "",
   }),
+  head: () => ({
+    meta: [
+      { title: "Authorize Qadiya OS MCP access" },
+      { name: "description", content: "Review and approve secure MCP access to Qadiya OS." },
+      { property: "og:title", content: "Authorize Qadiya OS MCP access" },
+      { property: "og:description", content: "Review and approve secure MCP access to Qadiya OS." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   beforeLoad: async ({ search, location }) => {
     if (!search.authorization_id) throw new Error("Missing authorization_id");
     const { data } = await supabase.auth.getSession();

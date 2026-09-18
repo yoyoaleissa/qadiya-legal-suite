@@ -60,6 +60,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — Qadiya OS" },
+      { name: "description", content: "Firm command center for cases, deadlines, billing, alerts, and legal team priorities." },
+      { property: "og:title", content: "Dashboard — Qadiya OS" },
+      {
+        property: "og:description",
+        content: "Firm command center for cases, deadlines, billing, alerts, and legal team priorities.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

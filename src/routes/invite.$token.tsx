@@ -13,7 +13,12 @@ export const Route = createFileRoute("/invite/$token")({
   head: () => ({
     meta: [
       { title: "Firm invitation — Qadiya OS" },
-      { name: "robots", content: "noindex" },
+      { name: "description", content: "Accept a secure law firm invitation to join Qadiya OS." },
+      { property: "og:title", content: "Firm invitation — Qadiya OS" },
+      { property: "og:description", content: "Accept a secure law firm invitation to join Qadiya OS." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: InvitePage,

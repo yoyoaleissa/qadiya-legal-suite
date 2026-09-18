@@ -27,6 +27,15 @@ export const Route = createFileRoute("/_authenticated/trust")({
         content:
           "Track client trust/escrow deposits, drawdowns and balances in KWD — required for Kuwait Bar compliance.",
       },
+      { property: "og:title", content: "Trust Account — Qadiya OS" },
+      {
+        property: "og:description",
+        content:
+          "Track client trust/escrow deposits, drawdowns and balances in KWD — required for Kuwait Bar compliance.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: TrustPage,

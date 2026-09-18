@@ -27,6 +27,15 @@ export const Route = createFileRoute("/_authenticated/documents")({
         content:
           "Upload, share and auto-generate court-ready legal documents for cases and clients in Arabic and English.",
       },
+      { property: "og:title", content: "Documents — Qadiya OS" },
+      {
+        property: "og:description",
+        content:
+          "Upload, share and auto-generate court-ready legal documents for cases and clients in Arabic and English.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: DocumentsPage,

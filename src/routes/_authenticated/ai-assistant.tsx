@@ -32,6 +32,15 @@ export const Route = createFileRoute("/_authenticated/ai-assistant")({
         content:
           "A bilingual AI legal assistant grounded on your firm's cases and Kuwaiti law — draft, research, and reason in Arabic or English.",
       },
+      { property: "og:title", content: "AI Legal Assistant — Qadiya OS" },
+      {
+        property: "og:description",
+        content:
+          "A bilingual AI legal assistant grounded on your firm's cases and Kuwaiti law — draft, research, and reason in Arabic or English.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: AiAssistantPage,
