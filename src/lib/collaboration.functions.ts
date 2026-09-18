@@ -113,6 +113,50 @@ export const createCaseNote = createServerFn({ method: "POST" })
     return row;
   });
 
+export const createCaseNoteForCaseNumber = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        case_number: z.string().min(1).max(40),
+        body: z.string().min(1).max(4000),
+        is_internal: z.boolean().default(true),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }) => {
+    const supabase = context.supabase;
+    const { data: caseRow, error: caseError } = await supabase
+      .from("cases")
+      .select("id")
+      .eq("case_number", data.case_number.trim())
+      .maybeSingle();
+    if (caseError) throw new Error(caseError.message);
+    if (!caseRow) throw new Error("Case not found");
+
+    const { data: row, error } = await supabase
+      .from("case_notes")
+      .insert({
+        case_id: caseRow.id,
+        author_id: context.userId,
+        body: data.body.trim(),
+        is_internal: data.is_internal,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_log").insert({
+      actor_id: context.userId,
+      actor_email: context.claims?.email ?? null,
+      action: "case_note.create",
+      resource_type: "case_note",
+      resource_id: row.id,
+      metadata: { case_id: caseRow.id, case_number: data.case_number.trim(), internal: data.is_internal },
+    });
+    return row;
+  });
+
 // ============ Audit Log ============
 
 export interface AuditEntry {

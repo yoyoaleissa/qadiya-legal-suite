@@ -9,8 +9,13 @@ export const Route = createFileRoute("/api/public/hooks/moj-updates-sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apiKey = request.headers.get("apikey");
-        if (!apiKey || apiKey !== process.env["SUPABASE_ANON_KEY"]) {
+        const apiKey =
+          request.headers.get("apikey") ?? request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+        const acceptedKeys = [
+          process.env["SUPABASE_ANON_KEY"],
+          process.env["SUPABASE_PUBLISHABLE_KEY"],
+        ].filter(Boolean);
+        if (!apiKey || !acceptedKeys.includes(apiKey)) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },

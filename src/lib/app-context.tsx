@@ -160,12 +160,12 @@ export const COURT_LEVEL_LABELS: Record<string, { en: string; ar: string }> = {
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
-  const [lang, setLangState] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>("ar");
   const [role, setRoleState] = useState<Role>("partner");
 
   useEffect(() => {
     const storedTheme = (localStorage.getItem("qadiya-theme") as Theme) || "light";
-    const storedLang = (localStorage.getItem("qadiya-lang") as Lang) || "en";
+    const storedLang = (localStorage.getItem("qadiya-lang") as Lang) || "ar";
     const storedRole = (localStorage.getItem("qadiya-role") as Role) || "partner";
     setTheme(storedTheme);
     setLangState(storedLang);

@@ -10,13 +10,13 @@ import {
   Receipt,
   FileText,
   ShieldCheck,
-  Landmark,
+  BriefcaseBusiness,
   Bot,
   Check,
   Star,
   Users,
   Building2,
-  Phone,
+  Mail,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/lib/app-context";
@@ -175,6 +175,20 @@ function LandingHeader({
           </Button>
         </div>
       </div>
+      <nav className="container mx-auto flex max-w-6xl gap-5 overflow-x-auto px-4 pb-3 text-xs md:hidden">
+        <a href="#pillars" className="whitespace-nowrap text-muted-foreground hover:text-foreground">
+          {t("المميزات", "Features")}
+        </a>
+        <a href="#how" className="whitespace-nowrap text-muted-foreground hover:text-foreground">
+          {t("كيف تعمل", "How it works")}
+        </a>
+        <a href="#pricing" className="whitespace-nowrap text-muted-foreground hover:text-foreground">
+          {t("الأسعار", "Pricing")}
+        </a>
+        <a href="#faq" className="whitespace-nowrap text-muted-foreground hover:text-foreground">
+          {t("الأسئلة", "FAQ")}
+        </a>
+      </nav>
     </header>
   );
 }
@@ -298,7 +312,7 @@ function DashboardMock({ t }: { t: TT }) {
             className="flex items-center justify-between border-b border-border/40 py-1.5 text-xs last:border-0"
           >
             <span className="font-mono text-muted-foreground">{r.i}</span>
-            <span className="flex-1 px-3 text-right rtl:text-left">{r.l}</span>
+            <span className="flex-1 px-3 text-left rtl:text-right">{r.l}</span>
             <Check className="h-3 w-3 text-muted-foreground" />
           </div>
         ))}
@@ -643,7 +657,7 @@ function HowItWorks({ t }: { t: TT }) {
     {
       n: "2",
       title: t("استورد قضاياك", "Import your cases"),
-      body: t("أدخل رقم القضية، وقضية تسحب البيانات من العدل.", "Enter a case number; Qadiya pulls MOJ data."),
+      body: t("أدخل رقم القضية، ونقوم تلقائياً بسحب بياناتها من وزارة العدل.", "Enter a case number; Qadiya pulls MOJ data."),
     },
     {
       n: "3",
@@ -770,7 +784,7 @@ function Pricing({ t, lang }: { t: TT; lang: "ar" | "en" }) {
       highlighted: true,
     },
     {
-      icon: Landmark,
+      icon: BriefcaseBusiness,
       name: t("شركاء", "Partners"),
       price: "149",
       tag: t("للشركات الكبيرة", "For larger firms"),
@@ -822,7 +836,7 @@ function Pricing({ t, lang }: { t: TT; lang: "ar" | "en" }) {
                 {!tier.highlighted && (
                   <p className="text-xs text-muted-foreground">{tier.tag}</p>
                 )}
-                <div className="mt-5 flex items-baseline gap-1.5">
+                <div dir="ltr" className="mt-5 flex items-baseline gap-1.5">
                   <span className="font-serif text-4xl font-semibold">{tier.price}</span>
                   <span className="text-sm text-muted-foreground">{currency}</span>
                   <span className="text-sm text-muted-foreground">{perMonth}</span>
@@ -865,8 +879,8 @@ function FAQ({ t }: { t: TT }) {
     {
       q: t("هل السحب من بوابة العدل قانوني؟", "Is pulling data from the MOJ portal legal?"),
       a: t(
-        "نعم — يجري الاستعلام بالطريقة ذاتها التي يعتمدها المحامي: باسم المستخدم ورقم القضية العلني.",
-        "Yes — the same public lookup a lawyer would run manually, using their credentials and the public case number.",
+        "صُمم السحب ليتم عبر الاستعلامات المصرّح بها التي يجريها المحامي عادةً، باستخدام بيانات الاعتماد ورقم القضية المتاح له.",
+        "It is designed to use the permitted lookups a lawyer would normally run, with their credentials and the case number available to them.",
       ),
     },
     {
@@ -927,7 +941,7 @@ function FounderNote({ t }: { t: TT }) {
           className="text-xs font-medium uppercase tracking-widest"
           style={{ color: "hsl(45 55% 55%)" }}
         >
-          {t("رسالة", "A note")}
+          {t("كلمة من المؤسس", "A note from the founder")}
         </p>
         <blockquote className="mt-5 font-serif text-2xl leading-relaxed md:text-3xl">
           {t(
@@ -1000,7 +1014,7 @@ function Footer({ t }: { t: TT }) {
         <FooterCol
           title={t("تواصل", "Contact")}
           items={[
-            { l: "hello@qadiya.app", h: "mailto:hello@qadiya.app", icon: Phone },
+            { l: "hello@qadiya.app", h: "mailto:hello@qadiya.app", icon: Mail },
           ]}
         />
 
@@ -1017,7 +1031,7 @@ function FooterCol({
   items,
 }: {
   title: string;
-  items: { l: string; h: string; icon?: typeof Phone }[];
+  items: { l: string; h: string; icon?: typeof Mail }[];
 }) {
   return (
     <div>
@@ -1027,7 +1041,8 @@ function FooterCol({
       <ul className="space-y-2 text-sm">
         {items.map((it) => (
           <li key={it.l}>
-            <a href={it.h} className="hover:text-primary">
+            <a href={it.h} className="inline-flex items-center gap-2 hover:text-primary">
+              {it.icon ? <it.icon className="h-3.5 w-3.5" /> : null}
               {it.l}
             </a>
           </li>
