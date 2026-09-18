@@ -11,15 +11,28 @@ export const Route = createFileRoute("/api/public/hooks/moj-updates-sync")({
       POST: async ({ request }) => {
         const apiKey =
           request.headers.get("apikey") ?? request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-        const acceptedKeys = [process.env["MOJ_UPDATES_CRON_KEY"]].filter(Boolean);
-        if (!apiKey || !acceptedKeys.includes(apiKey)) {
+
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const apiKeyHash = apiKey ? await sha256(apiKey) : null;
+        const { data: cronKey, error: cronKeyError } = await supabaseAdmin
+          .from("app_internal_secret_hashes")
+          .select("secret_sha256")
+          .eq("name", "moj_updates_cron_key")
+          .maybeSingle();
+
+        const keyMatches =
+          Boolean(apiKeyHash) &&
+          !cronKeyError &&
+          typeof cronKey?.secret_sha256 === "string" &&
+          safeEqual(apiKeyHash, cronKey.secret_sha256);
+
+        if (!keyMatches) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },
           });
         }
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { detectAndStoreMojUpdates } = await import("@/lib/moj-detect.sync.server");
 
         try {
@@ -40,3 +53,20 @@ export const Route = createFileRoute("/api/public/hooks/moj-updates-sync")({
     },
   },
 });
+
+async function sha256(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function safeEqual(left: string, right: string) {
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return diff === 0;
+}
