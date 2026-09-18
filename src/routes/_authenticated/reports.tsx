@@ -24,6 +24,7 @@ import {
   getCaseReport,
   type RecentReportRow,
 } from "@/lib/case-reports.functions";
+import { createCaseNoteForCaseNumber } from "@/lib/collaboration.functions";
 import type { CaseReport } from "@/lib/report-types";
 import { useApp } from "@/lib/app-context";
 import { buildGoogleCalendarUrl } from "@/lib/google-calendar";
@@ -33,6 +34,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ReportView } from "@/components/report/ReportView";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   component: CaseReportsPage,
@@ -72,11 +74,13 @@ function CaseReportsPage() {
   const saveReport = useServerFn(saveCaseReport);
   const fetchRecent = useServerFn(listRecentReports);
   const fetchReport = useServerFn(getCaseReport);
+  const saveNote = useServerFn(createCaseNoteForCaseNumber);
   const [report, setReport] = useState<CaseReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
   const [noteText, setNoteText] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [savingNote, setSavingNote] = useState(false);
   const [recent, setRecent] = useState<RecentReportRow[]>(() => readCachedRecent());
   const [loadingRecent, setLoadingRecent] = useState(false);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -190,6 +194,31 @@ function CaseReportsPage() {
   async function handleDownloadPdf() {
     if (!report) return;
     await exportCaseReportPdf(report, lang);
+  }
+
+  async function handleSaveNote() {
+    if (!report || !noteText.trim() || savingNote) return;
+    setSavingNote(true);
+    try {
+      await saveNote({
+        data: {
+          case_number: report.case_number,
+          body: noteText.trim(),
+          is_internal: true,
+        },
+      });
+      toast.success(tt("Internal note saved", "تم حفظ الملاحظة الداخلية"));
+      setNoteText("");
+      setShowNoteInput(false);
+    } catch (err) {
+      const fallback = tt(
+        "Could not save the note. Confirm the case exists in your firm workspace.",
+        "تعذّر حفظ الملاحظة. يُرجى التأكد من وجود القضية ضمن مساحة عمل المكتب.",
+      );
+      toast.error(err instanceof Error && err.message !== "Case not found" ? err.message : fallback);
+    } finally {
+      setSavingNote(false);
+    }
   }
 
   return (
@@ -419,19 +448,11 @@ function CaseReportsPage() {
                       />
                       <Button
                         size="sm"
-                        onClick={() => {
-                          if (noteText.trim()) {
-                            alert(
-                              tt(
-                                "Note saved (requires Supabase connection)",
-                                "تم حفظ الملاحظة (يتطلب اتصال Supabase)",
-                              ),
-                            );
-                            setNoteText("");
-                            setShowNoteInput(false);
-                          }
-                        }}
+                        onClick={handleSaveNote}
+                        disabled={savingNote || !noteText.trim()}
+                        className="gap-2"
                       >
+                        {savingNote && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                         {tt("Save", "حفظ")}
                       </Button>
                     </div>

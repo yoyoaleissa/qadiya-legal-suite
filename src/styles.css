@@ -195,7 +195,9 @@
   }
 
   [dir="rtl"] body,
-  [dir="rtl"] .font-arabic {
+  [dir="rtl"] .font-arabic,
+  [dir="rtl"] .font-serif,
+  [dir="rtl"] .font-display {
     font-family: "Noto Naskh Arabic", "Amiri", "Segoe UI", sans-serif;
   }
 }

@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, ShieldAlert, UsersRound } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
 import { useApp } from "@/lib/app-context";
 import { useIsAdmin } from "@/hooks/use-roles";
 import { listSignedUpUsers } from "@/lib/plans.functions";
@@ -52,8 +51,7 @@ function AdminUsersPage() {
   });
 
   return (
-    <AppShell>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center gap-3">
           <span className="grid h-10 w-10 place-items-center rounded-lg bg-gold/15 text-gold">
             <UsersRound className="h-5 w-5" />
@@ -176,6 +174,5 @@ function AdminUsersPage() {
           </Card>
         )}
       </div>
-    </AppShell>
   );
 }
