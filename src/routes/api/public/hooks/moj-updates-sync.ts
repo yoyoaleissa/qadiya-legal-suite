@@ -21,7 +21,7 @@ export const Route = createFileRoute("/api/public/hooks/moj-updates-sync")({
           .maybeSingle();
 
         const keyMatches =
-          Boolean(apiKeyHash) &&
+          apiKeyHash !== null &&
           !cronKeyError &&
           typeof cronKey?.secret_sha256 === "string" &&
           safeEqual(apiKeyHash, cronKey.secret_sha256);
