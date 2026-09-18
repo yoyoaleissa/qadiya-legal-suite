@@ -5,17 +5,48 @@
  * (src/routes/api/public/hooks/moj-updates-sync.ts) and the on-demand
  * "Update Knowledge" button (src/lib/moj-updates.functions.ts).
  *
- * LIVE SOURCE URL STILL NEEDS CONFIRMATION — the MOJ SharePoint listing pages
- * render their rows client-side, so the plain fetch may parse zero items; the
- * demo fixture below keeps the pipeline demoable end to end.
+ * Source pages (confirmed live against www.moj.gov.kw):
+ *   - /AR/pages/Search02.aspx                 الأخبار              (news)
+ *       items link to  DisplayNews.aspx?ItemID=<n>
+ *   - /AR/pages/Search03.aspx                 الإعلانات            (announcements)
+ *       items link to  DisplayAnn.aspx?ItemID=<n>
+ *   - /AR/Pages/Decisions_and_circulars.aspx  القرارات والتعاميم الوزارية (regulations)
+ *       items link directly to PDF files under
+ *       /AR/Decisions_and circulars/<Arabic title>.pdf (note the literal
+ *       space in the folder name, and Arabic filenames — both need URL
+ *       encoding, handled in absolute() below).
+ *
+ * These pages ARE plain server-rendered HTML (confirmed by direct fetch) —
+ * an earlier version of this file assumed they were SharePoint pages that
+ * render client-side and could only be parsed with a headless browser. That
+ * assumption was wrong and masked two real bugs instead:
+ *   1. the item-link regex looked for literal "?ID=" / "&ID=", but every
+ *      live listing page actually uses "ItemID=" (e.g. "?ItemID=3478"),
+ *      which never matches "[?&]ID=" — so zero items ever matched, and the
+ *      fabricated MOCK_UPDATES fixture was shown in the app as if real.
+ *   2. the previous source list pointed at Search09.aspx (a general
+ *      procedures/services directory, not regulations) and looked for PDFs
+ *      under "/Documents/", which isn't where circulars actually live
+ *      (they're under "/Decisions_and circulars/").
+ *
+ * Both are fixed below via per-source `match` modes. MOCK_UPDATES is kept
+ * purely as a last-resort fallback (network hiccup, page redesign) so the
+ * detect → store → display pipeline never goes fully dark — it should
+ * rarely if ever trigger now.
+ *
+ * If the ministry redesigns these pages again: re-fetch each URL, confirm
+ * the query param / path pattern item links use, and update `SOURCES` /
+ * `looksLikeItem()` accordingly. Nothing downstream changes.
  */
 
 const BASE = "https://www.moj.gov.kw";
 
-const SOURCES = [
-  { url: `${BASE}/AR/pages/Search03.aspx`, category: "announcement" },
-  { url: `${BASE}/AR/pages/Search09.aspx`, category: "regulation" },
-  { url: `${BASE}/AR/pages/Search02.aspx`, category: "news" },
+type MatchMode = "itemid" | "document";
+
+const SOURCES: { url: string; category: string; match: MatchMode }[] = [
+  { url: `${BASE}/AR/pages/Search02.aspx`, category: "news", match: "itemid" },
+  { url: `${BASE}/AR/pages/Search03.aspx`, category: "announcement", match: "itemid" },
+  { url: `${BASE}/AR/Pages/Decisions_and_circulars.aspx`, category: "regulation", match: "document" },
 ];
 
 export type DetectedItem = {
@@ -35,7 +66,7 @@ const MOCK_UPDATES = [
     title: "Circular on filing deadlines before the Courts of Appeal",
     content_ar:
       "يُعمل اعتباراً من تاريخ صدور هذا التعميم بضرورة إيداع صحيفة الاستئناف خلال الميعاد المقرر قانوناً، مع إرفاق سند الوكالة وصورة الحكم المستأنف، ولا تُقبل الصحيفة المودعة بغير ذلك.",
-    source_url: `${BASE}/AR/pages/Search09.aspx#demo-circular-appeal-filing`,
+    source_url: `${BASE}/AR/Pages/Decisions_and_circulars.aspx#demo-circular-appeal-filing`,
     category: "regulation",
   },
   {
@@ -51,7 +82,7 @@ const MOCK_UPDATES = [
     title: "Ministerial decision on fees for copies of judgments and court documents",
     content_ar:
       "صدر قرار وزاري بتعديل الرسوم المقررة على استخراج صور الأحكام والمستندات القضائية، ويُعمل به من تاريخ نشره في الجريدة الرسمية.",
-    source_url: `${BASE}/AR/pages/Search03.aspx#demo-fees-decision`,
+    source_url: `${BASE}/AR/Pages/Decisions_and_circulars.aspx#demo-fees-decision`,
     category: "regulation",
   },
 ];
@@ -72,23 +103,39 @@ function stripTags(html: string) {
     .trim();
 }
 
-function absolute(href: string) {
-  if (/^https?:/i.test(href)) return href;
-  return `${BASE}${href.startsWith("/") ? "" : "/"}${href}`;
+/**
+ * Resolve a possibly-relative href against the page it was found on, and
+ * normalize spaces/Arabic characters to a valid encoded URL. decodeURI+
+ * encodeURI is idempotent, so this is safe whether href was already encoded
+ * or not.
+ */
+function absolute(href: string, pageUrl: string): string | null {
+  try {
+    const resolved = new URL(href, pageUrl).href;
+    return encodeURI(decodeURI(resolved));
+  } catch {
+    return null;
+  }
 }
 
-function parseListing(html: string, category: string) {
+function looksLikeItem(href: string, matchMode: MatchMode) {
+  if (matchMode === "itemid") return /[?&]ItemID=\d+/i.test(href);
+  if (matchMode === "document") return /\.(pdf|docx?)$/i.test(href);
+  return false;
+}
+
+function parseListing(html: string, source: { url: string; category: string; match: MatchMode }) {
   const out: Omit<DetectedItem, "content_hash">[] = [];
   const seen = new Set<string>();
+  const minTextLen = source.match === "document" ? 4 : 15;
   const anchor = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
   let m: RegExpExecArray | null;
   while ((m = anchor.exec(html)) !== null) {
     const href = m[1] ?? "";
     const text = stripTags(m[2] ?? "");
-    const looksLikeItem = /[?&]ID=\d+/i.test(href) || /\/Documents\/.+\.(pdf|docx?)$/i.test(href);
-    if (!looksLikeItem || text.length < 15) continue;
-    const url = absolute(href);
-    if (seen.has(url)) continue;
+    if (!looksLikeItem(href, source.match) || text.length < minTextLen) continue;
+    const url = absolute(href, source.url);
+    if (!url || seen.has(url)) continue;
     seen.add(url);
     out.push({
       title_ar: text,
@@ -96,7 +143,7 @@ function parseListing(html: string, category: string) {
       content_ar: text,
       content: null,
       source_url: url,
-      category,
+      category: source.category,
       published_at: null,
     });
   }
@@ -112,7 +159,7 @@ export async function fetchMojUpdates() {
           signal: AbortSignal.timeout(25000),
         });
         if (!res.ok) return [];
-        return parseListing(await res.text(), source.category);
+        return parseListing(await res.text(), source);
       } catch {
         return [];
       }
