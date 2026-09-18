@@ -47,6 +47,7 @@ export const Route = createFileRoute("/portal")({
       },
       { property: "og:url", content: "https://qadiya.lovable.app/portal" },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/portal" }],
   }),

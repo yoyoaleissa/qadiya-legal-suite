@@ -9,7 +9,17 @@ import { ShieldCheck } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-roles";
 
 export const Route = createFileRoute("/_authenticated/audit")({
-  head: () => ({ meta: [{ title: "Audit Log — Qadiya OS" }] }),
+  head: () => ({
+    meta: [
+      { title: "Audit Log — Qadiya OS" },
+      { name: "description", content: "Administrator audit trail for privileged Qadiya OS activity." },
+      { property: "og:title", content: "Audit Log — Qadiya OS" },
+      { property: "og:description", content: "Administrator audit trail for privileged Qadiya OS activity." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AuditPage,
 });
 

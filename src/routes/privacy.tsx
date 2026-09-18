@@ -13,6 +13,8 @@ export const Route = createFileRoute("/privacy")({
       },
       { property: "og:title", content: "Privacy Policy — Qadiya OS" },
       { property: "og:description", content: "Data protection policy for Qadiya OS." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/privacy" }],
   }),

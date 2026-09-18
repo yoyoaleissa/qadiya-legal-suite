@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_internal_secret_hashes: {
+        Row: {
+          description: string | null
+          name: string
+          secret_sha256: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string | null
+          name: string
+          secret_sha256: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string | null
+          name?: string
+          secret_sha256?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string

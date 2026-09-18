@@ -13,6 +13,8 @@ export const Route = createFileRoute("/terms")({
       },
       { property: "og:title", content: "Terms of Service — Qadiya OS" },
       { property: "og:description", content: "Terms of service for Qadiya OS subscribers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/terms" }],
   }),

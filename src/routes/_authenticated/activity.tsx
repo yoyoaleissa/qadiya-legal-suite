@@ -7,6 +7,11 @@ export const Route = createFileRoute("/_authenticated/activity")({
     meta: [
       { title: "Team Activity — Qadiya OS" },
       { name: "description", content: "Firm-wide activity feed across cases, invoices, and tasks." },
+      { property: "og:title", content: "Team Activity — Qadiya OS" },
+      { property: "og:description", content: "Firm-wide activity feed across cases, invoices, and tasks." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: ActivityPage,

@@ -24,6 +24,15 @@ export const Route = createFileRoute("/_authenticated/settings")({
         content:
           "Manage firm profile, invoice numbering, Kuwait working hours and holidays, and payment details.",
       },
+      { property: "og:title", content: "Firm Settings — Qadiya OS" },
+      {
+        property: "og:description",
+        content:
+          "Manage firm profile, invoice numbering, Kuwait working hours and holidays, and payment details.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: SettingsPage,

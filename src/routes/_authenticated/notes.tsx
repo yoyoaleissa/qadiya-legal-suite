@@ -14,7 +14,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notes")({
-  head: () => ({ meta: [{ title: "Case Notes — Qadiya OS" }] }),
+  head: () => ({
+    meta: [
+      { title: "Case Notes — Qadiya OS" },
+      { name: "description", content: "Internal legal notes and team collaboration for Qadiya OS case files." },
+      { property: "og:title", content: "Case Notes — Qadiya OS" },
+      { property: "og:description", content: "Internal legal notes and team collaboration for Qadiya OS case files." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: NotesPage,
 });
 

@@ -39,6 +39,15 @@ export const Route = createFileRoute("/_authenticated/drafting")({
         content:
           "Generate Kuwaiti-court-ready legal drafts grounded on your case data and the firm's knowledge base.",
       },
+      { property: "og:title", content: "AI Drafting — Qadiya OS" },
+      {
+        property: "og:description",
+        content:
+          "Generate Kuwaiti-court-ready legal drafts grounded on your case data and the firm's knowledge base.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: DraftingPage,
