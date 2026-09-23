@@ -24,18 +24,8 @@ export const Route = createFileRoute("/login")({
       },
       { property: "og:url", content: "https://qadiya.lovable.app/login" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        property: "og:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1f1d6b8-c929-40e4-b365-93440d11ad42",
-      },
-    ],
+       { name: "twitter:card", content: "summary_large_image" },
+     ],
     links: [{ rel: "canonical", href: "https://qadiya.lovable.app/login" }],
   }),
   validateSearch: (s: Record<string, unknown>) => ({
@@ -224,7 +214,7 @@ function LoginPage() {
 
         <div className="text-xs text-primary-foreground/50">
           <span className={isAr ? "font-arabic" : ""}>
-            {t("Secured by Lovable Cloud", "محميّ عبر لوفابل كلاود")}
+            {t("Secured by Qadiya OS", "محميّ عبر قاضيّا")}
           </span>
         </div>
       </div>
