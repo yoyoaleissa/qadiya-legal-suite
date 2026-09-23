@@ -214,7 +214,7 @@ function LoginPage() {
 
         <div className="text-xs text-primary-foreground/50">
           <span className={isAr ? "font-arabic" : ""}>
-            {t("Secured by Qadiya OS", "محميّ عبر قاضيّا")}
+            {t("Secured by Qadiya OS", "محمي عبر قضية")}
           </span>
         </div>
       </div>

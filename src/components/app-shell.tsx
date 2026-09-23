@@ -219,7 +219,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="p-4 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
         <div>
           <span className={lang === "ar" ? "font-arabic" : ""}>
-            {t("Live backend — Qadiya OS", "خادم مباشر — قاضيّا")}
+            {t("Live backend — Qadiya OS", "خادم مباشر — قضية")}
           </span>
         </div>
         <div className="mt-1">v2.0 • {t("Kuwait", "الكويت")}</div>
